@@ -1,0 +1,269 @@
+:: StoryTitle
+TestStory
+
+
+:: StoryData
+{
+  "ifid": "237AA265-E94F-4DA1-8822-40A1112CA802",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Start Game",
+  "zoom": 1
+}
+
+
+:: Antique Shop {"position":"625,275","size":"100,100"}
+
+
+
+:: Back Alley {"position":"600,400","size":"100,100"}
+<<display MainLocationHUD>>
+
+A narrow passage connecting Back Street and Main Plaza in between the buildings. Due to being relatively conceiled, many kinds of shady characters find safety here, contributing to the unsafety of the not so shady.
+
+Got to:
+[[Main Plaza]]
+[[Back Street]]
+[[Antique Shop]]
+----
+----
+
+
+:: Back Street {"position":"300,300","size":"100,100"}
+<<display MainLocationHUD>>
+
+Perhaps to its proximity to the creepy cemetery, Back Street has become the most neglected part of town with no apparent plans to change that. The only people that still live here are ruffians or poor souls who cannot afford any better.
+
+Got to:
+[[North Street]]
+[[Cemetery]]
+[[Dead End]]
+[[Back Alley]]
+[[Main Street]]
+----
+----
+
+
+:: Cafe {"position":"475,675","size":"100,100"}
+<<display MainLocationHUD>>
+
+Ivan's Flat Baker Café has long been a source of unwinding for the people of $TOWN_NAME, more so after the election results. With the cozy ambience it provides and top-notch service, it's no wonder that old Ivan has managed to endure for so long in one of the most competitive business areasin town.
+
+Got to:
+[[Main Street]]
+----
+----
+
+
+:: Cell {"position":"775,525","size":"100,100"}
+
+
+
+:: Cemetery {"position":"175,300","size":"100,100"}
+<<display MainLocationHUD>>
+
+This used to be a normal cemetery, I think, where people could peacefully pay their respects to their deceased loved ones. But apparently the new government doesn't consider that to be too much of a necessity, so the place has fallen into disregard, which has, in turn, attracted some more unsavory crowds.
+
+Got to:
+[[Back Street]]
+----
+----
+
+
+:: Dead End {"position":"275,525","size":"100,100"}
+<<display MainLocationHUD>>
+
+A well hidden spot between buildings which doesn't really lead to anywhere except a lone trash container.
+
+
+:: General Store {"position":"600,675","size":"100,100"}
+<<display MainLocationHUD>>
+
+The general goods store run by Mika is nothing too fancy but it's really the only real choice for everyone in town to get their basic necessities, so no one really minds or questions its underwhelming appearance. Not even Mika.
+
+Got to:
+[[Main Street]]
+----
+----
+
+
+:: Harbour {"position":"900,225","size":"100,100"}
+
+
+
+:: Main Plaza {"position":"900,350","size":"100,100"}
+<<display MainLocationHUD>>
+
+By far the busiest place in $TOWN_NAME. People can always be found here rushing to and fro their own affairs and duties. Amid the constantly dynamic commotion, however, at least there is always a sense of relative safety in numbers, if anything.
+
+Got to:
+[[North Street]]
+[[Main Street]]
+[[Harbour]]
+----
+----
+
+
+:: Main Street {"position":"600,550","size":"100,100"}
+<<display MainLocationHUD>>
+
+The commercial heart of $TOWN_NAME, where most stores and respectable business establishments thrive. It is also home to the more adequate and comfortable residences. Of course, these are only affordable to equally adequate residents.
+
+Got to:
+[[Back Street]]
+[[Main Plaza]]
+[[Cafe]]
+[[General Store]]
+[[Police Station]]
+----
+----
+
+
+:: MainLocationHUD {"position":"1100,100","size":"100,100"}
+<<script>>advanceTimeStep();<</script>>
+
+<<set $money to getMoney()>>
+<<set $day to getDay()>>
+<<set $time to getTime()>>
+
+Money: $money
+Datetime: Day $day, $time
+
+<<link "Wait for 1 hour">>
+<<script>>advanceTimeStep();<</script>>
+<<set $day to getDay()>>
+<<set $time to getTime()>>
+
+<<set _this_passage to passage()>>
+<<goto _this_passage>>
+<</link>>
+
+----
+----
+
+
+:: North Street {"position":"575,150","size":"100,100"}
+<<display MainLocationHUD>>
+
+Possibly the quietest corner in $TOWN_NAME. This is where the majority of the middle-class has come to reside. The houses here are nowhere near as luxurious as the ones in Main Street, but also not as decadent as the ones in Back Street.
+
+Got to:
+[[Room]]
+[[Back Street]]
+[[Main Plaza]]
+----
+----
+
+
+:: Police Station {"position":"725,675","size":"100,100"}
+<<display MainLocationHUD>>
+
+The place everyones hopes to avoid nowadays. Used to be a time when police officers of $TOWN_NAME were actually respected and appreciated (probably in part because they never had much work anyway). But ever since the new management settled in the station, no one's been too keen on socializing with the boys in blue.
+
+Got to:
+[[Main Street]]
+[[Cell]]
+----
+----
+
+
+:: Room {"position":"375,125","size":"100,100"}
+<<display MainLocationHUD>>
+
+My humble abode. It may not be as grand or accomodating as the apartments in Main Street, mostly due to the fact that it is even just a single division, but I actually prefer it that way. Limiting how much space I can occupy makes me less anxious about the day I eventually lose it.
+
+Got to:
+[[North Street]]
+----
+----
+
+
+:: Start Game {"position":"200,125","size":"100,100"}
+/* constants */
+<<set $TOWN_NAME to "New Caershire">>
+
+[[Start Game|Room]]
+
+
+:: StoryScript [script]
+// || --- Data --- ||
+
+class ItemData {
+  constructor(id, space) {
+    this.id = id;
+    this.space = space;
+  }
+}
+
+if (!window.Items) {
+  window.Items = [
+    new ItemData("package", 4),
+    new ItemData("cigarettes", 1)
+  ];
+}
+else {
+  console.log("duplicate variable");
+}
+
+
+
+// || --- Stats --- ||
+
+// money
+if (!window.money) {
+  window.money = 0.0;
+}
+else {
+  console.log("duplicate variable");
+}
+
+// day
+if (!window.day_counter) {
+  window.day_counter = 0;
+}
+else {
+  console.log("duplicate variable");
+}
+
+// time
+if (!window.day_counter) {
+  window.time_steps = 0;
+}
+else {
+  console.log("duplicate variable");
+}
+
+
+
+// || --- Utilities --- ||
+
+window.getItem = function(index) {
+  return Items[index];
+}
+
+window.getMoney = function() {
+  return money;
+}
+
+window.addMoney = function(toAdd) {
+  money += toAdd;
+}
+
+window.getDay = function() {
+  return day_counter;
+}
+
+window.getTime = function() {
+  let m = (time_steps % 2) * 30;
+  let h = Math.floor(time_steps / 2);
+  
+  return "" + h + ":" + m;
+}
+
+window.advanceTimeStep = function() {
+  time_steps += 1;
+  if (time_steps >= 48) {
+    time_steps = 0;
+    day_counter += 1;
+  }
+}
