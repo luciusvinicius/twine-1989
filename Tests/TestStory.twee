@@ -7,132 +7,27 @@ TestStory
   "ifid": "237AA265-E94F-4DA1-8822-40A1112CA802",
   "format": "SugarCube",
   "format-version": "2.36.1",
-  "start": "Start Game",
+  "start": "Start Point",
   "zoom": 1
 }
-
-
-:: Antique Shop {"position":"625,275","size":"100,100"}
-
-
-
-:: Back Alley {"position":"600,400","size":"100,100"}
-<<display MainLocationHUD>>
-
-A narrow passage connecting Back Street and Main Plaza in between the buildings. Due to being relatively conceiled, many kinds of shady characters find safety here, contributing to the unsafety of the not so shady.
-
-Got to:
-[[Main Plaza]]
-[[Back Street]]
-[[Antique Shop]]
-----
-----
-
-
-:: Back Street {"position":"300,300","size":"100,100"}
-<<display MainLocationHUD>>
-
-Perhaps to its proximity to the creepy cemetery, Back Street has become the most neglected part of town with no apparent plans to change that. The only people that still live here are ruffians or poor souls who cannot afford any better.
-
-Got to:
-[[North Street]]
-[[Cemetery]]
-[[Dead End]]
-[[Back Alley]]
-[[Main Street]]
-----
-----
-
-
-:: Cafe {"position":"475,675","size":"100,100"}
-<<display MainLocationHUD>>
-
-Ivan's Flat Baker Café has long been a source of unwinding for the people of $TOWN_NAME, more so after the election results. With the cozy ambience it provides and top-notch service, it's no wonder that old Ivan has managed to endure for so long in one of the most competitive business areasin town.
-
-Got to:
-[[Main Street]]
-----
-----
-
-
-:: Cell {"position":"775,525","size":"100,100"}
-
-
-
-:: Cemetery {"position":"175,300","size":"100,100"}
-<<display MainLocationHUD>>
-
-This used to be a normal cemetery, I think, where people could peacefully pay their respects to their deceased loved ones. But apparently the new government doesn't consider that to be too much of a necessity, so the place has fallen into disregard, which has, in turn, attracted some more unsavory crowds.
-
-Got to:
-[[Back Street]]
-----
-----
-
-
-:: Dead End {"position":"275,525","size":"100,100"}
-<<display MainLocationHUD>>
-
-A well hidden spot between buildings which doesn't really lead to anywhere except a lone trash container.
-
-
-:: General Store {"position":"600,675","size":"100,100"}
-<<display MainLocationHUD>>
-
-The general goods store run by Mika is nothing too fancy but it's really the only real choice for everyone in town to get their basic necessities, so no one really minds or questions its underwhelming appearance. Not even Mika.
-
-Got to:
-[[Main Street]]
-----
-----
-
-
-:: Harbour {"position":"900,225","size":"100,100"}
-
-
-
-:: Main Plaza {"position":"900,350","size":"100,100"}
-<<display MainLocationHUD>>
-
-By far the busiest place in $TOWN_NAME. People can always be found here rushing to and fro their own affairs and duties. Amid the constantly dynamic commotion, however, at least there is always a sense of relative safety in numbers, if anything.
-
-Got to:
-[[North Street]]
-[[Main Street]]
-[[Harbour]]
-----
-----
-
-
-:: Main Street {"position":"600,550","size":"100,100"}
-<<display MainLocationHUD>>
-
-The commercial heart of $TOWN_NAME, where most stores and respectable business establishments thrive. It is also home to the more adequate and comfortable residences. Of course, these are only affordable to equally adequate residents.
-
-Got to:
-[[Back Street]]
-[[Main Plaza]]
-[[Cafe]]
-[[General Store]]
-[[Police Station]]
-----
-----
 
 
 :: MainLocationHUD {"position":"1100,100","size":"100,100"}
 <<script>>advanceTimeStep();<</script>>
 
 <<set $money to getMoney()>>
+<<set $susmeter to getSusmeter()>>
 <<set $day to getDay()>>
 <<set $time to getTime()>>
 
 Money: $money
+Suspicion Level: $susmeter
 Datetime: Day $day, $time
 
 <<link "Wait for 1 hour">>
-<<script>>advanceTimeStep();<</script>>
-<<set $day to getDay()>>
-<<set $time to getTime()>>
+<<script>>advanceTimeStep(HOUR_DIVIDER - 1);<</script>>
+<<set _day to getDay()>>
+<<set _time to getTime()>>
 
 <<set _this_passage to passage()>>
 <<goto _this_passage>>
@@ -142,51 +37,139 @@ Datetime: Day $day, $time
 ----
 
 
-:: North Street {"position":"575,150","size":"100,100"}
-<<display MainLocationHUD>>
+:: Start Point {"position":"200,125","size":"100,100"}
+<<set $last_location to "Newspaper Stand">>
 
-Possibly the quietest corner in $TOWN_NAME. This is where the majority of the middle-class has come to reside. The houses here are nowhere near as luxurious as the ones in Main Street, but also not as decadent as the ones in Back Street.
-
-Got to:
-[[Room]]
-[[Back Street]]
-[[Main Plaza]]
-----
-----
+[[Start Game|Newspaper Stand]]
 
 
-:: Police Station {"position":"725,675","size":"100,100"}
-<<display MainLocationHUD>>
+:: Newspaper Stand
+<<set $last_location to "Newspaper Stand">>
+<<include "MainLocationHUD">>
+//My humble newspaper stand. Selling newspapers is not the most profitable or even successful career path, but it's all I have.//
 
-The place everyones hopes to avoid nowadays. Used to be a time when police officers of $TOWN_NAME were actually respected and appreciated (probably in part because they never had much work anyway). But ever since the new management settled in the station, no one's been too keen on socializing with the boys in blue.
-
-Got to:
-[[Main Street]]
-[[Cell]]
-----
-----
+[[Attend next customer|Simple Customer]]
+[[Leave|Start Point]]
 
 
-:: Room {"position":"375,125","size":"100,100"}
-<<display MainLocationHUD>>
+:: Simple Customer
+//A new customer approaches. Time to put on my best smile.//
 
-My humble abode. It may not be as grand or accomodating as the apartments in Main Street, mostly due to the fact that it is even just a single division, but I actually prefer it that way. Limiting how much space I can occupy makes me less anxious about the day I eventually lose it.
+"Mornin'.
+I want the Tribune Times."
 
-Got to:
-[[North Street]]
-----
-----
+<<set _choice to either("Entry Talk 1", "No talk")>>
+[[Give newspaper|_choice]]
+[[Refuse|Order Refused]]
 
 
-:: Start Game {"position":"200,125","size":"100,100"}
-/* constants */
-<<set $TOWN_NAME to "New Caershire">>
+:: Entry Talk 1
+"Thanks. Hope your day is better than mine."
 
-[[Start Game|Room]]
+//Seems like they're in a chatty mood.//
+
+[[Something troubling you?|Small Talk 1]]
+[[Thanks. See you again.|$last_location]]
+
+
+:: No talk
+"Thanks. Bye."
+
+[[Back|$last_location]]
+
+
+:: Order Refused
+"What the fuck?!"
+
+//They left rather angry.//
+
+//I guess that's to be expected.//
+
+[[Back|$last_location]]
+
+
+:: Small Talk 1
+"O-Oh, uh, same as what's troubling everyone else, I'spose."
+
+//They seem to have realised they were about to imply their life wasn't good.//
+
+''It must be hard sometimes. Supporting your family, I mean.''
+
+"I... suppose so."
+
+//They look intrigued.//
+
+<<link "Across the border, things don't seem to be so difficult, I hear." "Suggest help 1">>
+  /* this choice attempts to start the dialogue to say you can help with leaving. It always adds a bit of sus */
+  <<script>>addSusmeter(1)<</script>>
+<</link>>
+<<link "Well, that's just how it is, I guess. See you again, then." "Cancel help">>
+  /* this cancels the conversation in a neutral way. */
+<</link>>
+<<link "But of course, our government will always find a way to provide for us. ''Right?''" "Scare off">>
+  /* this choice cancels the help suggestion talk and removes some sus, but should also have adverse effects (maybe less people ask for help) */
+  <<script>>addSusmeter(1)<</script>>
+<</link>>
+
+
+:: Suggest help 1
+"Even if that were true." //They look somewhat disheartened.// "Crossing the border is strictly forbidden."
+
+''Well, yes... And no.''
+
+"How so?"
+
+TODO
+
+
+:: Cancel help
+"Y-Yes, so long.""
+
+[[Back|$last_location]]
+
+
+:: Scare off
+//They left, without even saying anything.//
+
+//Probably scared I'd snitch.//
+
+[[Back|$last_location]]
 
 
 :: StoryScript [script]
+// --------------------
+// || --- Config --- ||
+// --------------------
+
+// failsafe error message
+window.logVariableError = function(variable) {
+  console.error("Could not declare "+variable+" in this namespace");
+}
+
+// makeshift enum
+if (!window.HealthState) {
+  window.HealthState = {
+    GOOD: 0,
+    MILD: 1,
+    BAD: 2,
+    DEAD: 3
+  }
+}
+else {
+  logVariableError("HealthState")
+}
+
+// the ratio of an hour to lowest time interval
+if (!window.HOUR_DIVIDER) {
+  window.HOUR_DIVIDER = 2; // this means that the shortest time interval is hour/2
+}
+else {
+  logVariableError("HOUR_DIVIDER")
+}
+
+// ------------------
 // || --- Data --- ||
+// ------------------
 
 class ItemData {
   constructor(id, space) {
@@ -202,68 +185,107 @@ if (!window.Items) {
   ];
 }
 else {
-  console.log("duplicate variable");
+  logVariableError("Items");
 }
 
 
-
+// -------------------
 // || --- Stats --- ||
+// -------------------
 
 // money
-if (!window.money) {
-  window.money = 0.0;
+if (!window._money) {
+  window._money = 0.0;
 }
 else {
-  console.log("duplicate variable");
+  logVariableError("_money")
 }
+// susmeter
+if (!window._susmeter) {
+  window._susmeter = 0;
+}
+else {
+  logVariableError("_susmeter")
+}
+// health
+if (!window._health) {
+  window._health = HealthState.GOOD;
+}
+else {
+  logVariableError("_health")
+}
+
+
+// --- Time Stuff ---
 
 // day
-if (!window.day_counter) {
-  window.day_counter = 0;
+if (!window._day_counter) {
+  window._day_counter = 0;
 }
 else {
-  console.log("duplicate variable");
+  logVariableError("_day_counter")
 }
-
 // time
-if (!window.day_counter) {
-  window.time_steps = 0;
+if (!window._time_steps) {
+  window._time_steps = 0;
 }
 else {
-  console.log("duplicate variable");
+  logVariableError("_time_steps")
 }
 
 
-
+// -----------------------
 // || --- Utilities --- ||
+// -----------------------
 
 window.getItem = function(index) {
   return Items[index];
 }
 
 window.getMoney = function() {
-  return money;
+  return _money;
 }
 
 window.addMoney = function(toAdd) {
-  money += toAdd;
+  _money += toAdd;
 }
+
+window.getSusmeter = function() {
+  return _susmeter;
+}
+
+window.addSusmeter = function(toAdd) {
+  _susmeter += toAdd;
+}
+
+window.getHealth = function() {
+  return _health;
+}
+
+
+// --- Time Stuff ---
 
 window.getDay = function() {
-  return day_counter;
+  return _day_counter;
 }
 
+// convert time steps to "hh:mm" string
 window.getTime = function() {
-  let m = (time_steps % 2) * 30;
-  let h = Math.floor(time_steps / 2);
+  let m = (_time_steps % HOUR_DIVIDER) * 60/HOUR_DIVIDER; // each step corresponds to 60min/HOUR_DIVIDER
+  let h = Math.floor(_time_steps / HOUR_DIVIDER);
   
   return "" + h + ":" + m;
 }
 
-window.advanceTimeStep = function() {
-  time_steps += 1;
-  if (time_steps >= 48) {
-    time_steps = 0;
-    day_counter += 1;
-  }
+// advance on time step and update day if necessary
+window.advanceTimeStep = function(steps = 1) {
+  _time_steps += steps;
+
+  let daySteps = 24 * HOUR_DIVIDER // total steps in a day
+  let rem = _time_steps % daySteps; // the remaining steps
+  
+
+  _day_counter += (_time_steps - rem) / daySteps; // add to days how many full daySteps there are in time steps
+
+  _time_steps = rem; // update time steps
 }
