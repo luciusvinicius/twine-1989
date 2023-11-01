@@ -13,12 +13,14 @@ TestStory
 
 
 :: Cancel help {"position":"475,425","size":"100,100"}
+<<include "Random Image">>
 "Y-Yes, so long.""
 
 [[Back|$last_location]]
 
 
 :: Entry Talk 1 {"position":"250,425","size":"100,100"}
+<<include "Random Image">>
 "Thanks. Hope your day is better than mine."
 
 //Seems like they're in a chatty mood.//
@@ -28,16 +30,18 @@ TestStory
 
 
 :: MainLocationHUD {"position":"825,75","size":"100,100"}
+<<silently>>
 <<script>>advanceTimeStep();<</script>>
-
 <<set $money to getMoney()>>
 <<set $susmeter to getSusmeter()>>
 <<set $day to getDay()>>
 <<set $time to getTime()>>
-
+<</silently>>
+<div class="cursed-margin">
 Money: $money
 Suspicion Level: $susmeter
 Datetime: Day $day, $time
+</div>
 
 <<link "Wait for 1 hour">>
 <<script>>advanceTimeStep(HOUR_DIVIDER - 1);<</script>>
@@ -53,7 +57,9 @@ Datetime: Day $day, $time
 
 
 :: Newspaper Stand {"position":"150,150","size":"100,100"}
+<<silently>>
 <<set $last_location to "Newspaper Stand">>
+<</silently>>
 <<include "MainLocationHUD">>
 //My humble newspaper stand. Selling newspapers is not the most profitable or even successful career path, but it's all I have.//
 
@@ -62,6 +68,7 @@ Datetime: Day $day, $time
 
 
 :: No talk {"position":"725,425","size":"100,100"}
+<<include "Random Image">>
 "Thanks. Bye."
 
 [[Back|$last_location]]
@@ -77,6 +84,13 @@ Datetime: Day $day, $time
 [[Back|$last_location]]
 
 
+:: Random Image {"position":"975,450","size":"100,100"}
+<div class="box">
+<div id="person-img" class="img-blur"></div>
+</div>
+<<done>><<addclass '#person-img' $_img>><</done>>
+
+
 :: Scare off {"position":"700,175","size":"100,100"}
 //They left, without even saying anything.//
 
@@ -87,11 +101,10 @@ Datetime: Day $day, $time
 
 :: Simple Customer {"position":"300,175","size":"100,100"}
 //A new customer approaches. Time to put on my best smile.//
+<<nobr>>
 <<set $_img to either("fisherman", "man1", "man2", "man3", "man4", "man5")>>
-<div class="box">
-<div id="person-img" class="img-blur"></div>
-</div>
-<<done>><<addclass '#person-img' $_img>><</done>>
+<</nobr>>
+<<include "Random Image">>
 
 "Mornin'.
 I want the Tribune Times."
@@ -102,6 +115,7 @@ I want the Tribune Times."
 
 
 :: Small Talk 1 {"position":"100,525","size":"100,100"}
+<<include "Random Image">>
 "O-Oh, uh, same as what's troubling everyone else, I'spose."
 
 //They seem to have realised they were about to imply their life wasn't good.//
@@ -126,12 +140,14 @@ I want the Tribune Times."
 
 
 :: Start Point {"position":"50,0","size":"100,100"}
+<<nobr>>
 <<set $last_location to "Newspaper Stand">>
-
+<</nobr>>
 [[Start Game|Newspaper Stand]]
 
 
 :: Suggest help 1 {"position":"950,250","size":"100,100"}
+<<include "Random Image">>
 "Even if that were true." //They look somewhat disheartened.// "Crossing the border is strictly forbidden."
 
 ''Well, yes... And no.''
@@ -382,6 +398,10 @@ hr {
     width: 85%;
     box-shadow: 0px 0px 20px 12px #be771738;
     border-radius: 7%;
+}
+
+.cursed-margin {
+    margin-top: -5.25em;
 }
 
 a.link-internal {
