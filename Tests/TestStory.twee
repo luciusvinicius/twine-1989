@@ -12,11 +12,28 @@ TestStory
 }
 
 
-:: Cancel help {"position":"475,425","size":"100,100"}
+:: Cancel Help 1 {"position":"475,425","size":"100,100"}
 <<include "Random Image">>
+''Well, that's just how it is, I guess. See you again, then.''
+
 "Y-Yes, so long.""
 
 [[Back|$last_location]]
+
+
+:: Customer Hello 1 {"position":"300,175","size":"100,100"}
+//A new customer approaches. Time to put on my best smile.//
+<<nobr>>
+<<set $_img to either("fisherman", "man1", "man2", "man3", "man4", "man5", "woman1", "woman2", "woman3", "woman4", "woman5")>>
+<</nobr>>
+<<include "Random Image">>
+
+"Mornin'.
+I want the Tribune Times."
+
+<<set _choice to getRandomCustomerPassageFromArray([DialogStages.ENTRY_TALK, DialogStages.NO_TALK])>>
+[[Give them what they ordered|_choice]]
+[[Refuse|Player Refuse 1]]
 
 
 :: Entry Talk 1 {"position":"250,425","size":"100,100"}
@@ -25,7 +42,8 @@ TestStory
 
 //Seems like they're in a chatty mood.//
 
-[[Something troubling you?|Small Talk 1]]
+<<set _choice to getRandomCustomerPassage(DialogStages.SMALL_TALK)>>
+[[Something troubling you?|_choice]]
 [[Thanks. See you again.|$last_location]]
 
 
@@ -54,7 +72,6 @@ Datetime: Day $day, $time
 <</link>>
 
 
-
 :: Newspaper Stand {"position":"150,150","size":"100,100"}
 <<silently>>
 <<set $last_location to "Newspaper Stand">>
@@ -65,19 +82,28 @@ Datetime: Day $day, $time
 </div>
 //My humble newspaper stand. Selling newspapers is not the most profitable or even successful career path, but it's all I have.//
 
-[[Attend next customer|Simple Customer]]
+<<set _choice to getRandomCustomerPassage(DialogStages.CUSTOMER_HELLO)>>
+[[Attend next customer|_choice]]
 [[Leave|Start Point]]
 
 
-:: No talk {"position":"725,425","size":"100,100"}
+:: Offer Help 1 {"position":"950,250","size":"100,100"}
 <<include "Random Image">>
-"Thanks. Bye."
+''Across the border, things seem to be much easier, I hear''
 
-[[Back|$last_location]]
+"But." //They look skeptical, yet somewhat hopeful.// "Crossing the border is strictly forbidden by our government... It's impossible."
+
+''Well, yes... And no.''
+
+"How so?"
+
+TODO
 
 
-:: Order Refused {"position":"525,225","size":"100,100"}
+:: Player Refuse 1 {"position":"525,225","size":"100,100"}
 <<include "Random Image">>
+''Go to hell''
+
 "What the fuck?!"
 
 //They left rather angry.//
@@ -94,27 +120,18 @@ Datetime: Day $day, $time
 <<done>><<addclass '#person-img' $_img>><</done>>
 
 
-:: Scare off {"position":"700,175","size":"100,100"}
+:: Scare Off 1 {"position":"700,175","size":"100,100"}
+<<script>>addSusmeter(-5)<</script>>
+<<script>>addSnitchmeter(1)<</script>>
+
+''But of course, our government will always find a way to provide for us.''
+''Unless... You have some sort of complaint?''
+
 //They left, without even saying anything.//
 
 //Probably scared I'd snitch.//
 
 [[Back|$last_location]]
-
-
-:: Simple Customer {"position":"300,175","size":"100,100"}
-//A new customer approaches. Time to put on my best smile.//
-<<nobr>>
-<<set $_img to either("fisherman", "man1", "man2", "man3", "man4", "man5", "woman1", "woman2", "woman3", "woman4", "woman5")>>
-<</nobr>>
-<<include "Random Image">>
-
-"Mornin'.
-I want the Tribune Times."
-
-<<set _choice to either("Entry Talk 1", "No talk")>>
-[[Give newspaper|_choice]]
-[[Refuse|Order Refused]]	
 
 
 :: Small Talk 1 {"position":"100,525","size":"100,100"}
@@ -129,17 +146,12 @@ I want the Tribune Times."
 
 //They look intrigued.//
 
-<<link "Across the border, things don't seem to be so difficult, I hear." "Suggest help 1">>
-  /* this choice attempts to start the dialogue to say you can help with leaving. It always adds a bit of sus */
-  <<script>>addSusmeter(1)<</script>>
-<</link>>
-<<link "Well, that's just how it is, I guess. See you again, then." "Cancel help">>
-  /* this cancels the conversation in a neutral way. */
-<</link>>
-<<link "But of course, our government will always find a way to provide for us. ''Right?''" "Scare off">>
-  /* this choice cancels the help suggestion talk and removes some sus, but should also have adverse effects (maybe less people ask for help) */
-  <<script>>addSusmeter(1)<</script>>
-<</link>>
+<<set _offer_help to getRandomCustomerPassage(DialogStages.OFFER_HELP)>>
+[["I could offer to help"|_offer_help]]
+<<set _cancel_help to getRandomCustomerPassage(DialogStages.CANCEL_HELP)>>
+[["I think I've said too much."|_cancel_help]]
+<<set _scare_off to getRandomCustomerPassage(DialogStages.SCARE_OFF)>>
+[["I think THEY've said too much."|_scare_off]]
 
 
 :: Start Point {"position":"50,0","size":"100,100"}
@@ -147,17 +159,6 @@ I want the Tribune Times."
 <<set $last_location to "Newspaper Stand">>
 <</nobr>>
 [[Start Game|Newspaper Stand]]
-
-
-:: Suggest help 1 {"position":"950,250","size":"100,100"}
-<<include "Random Image">>
-"Even if that were true." //They look somewhat disheartened.// "Crossing the border is strictly forbidden."
-
-''Well, yes... And no.''
-
-"How so?"
-
-TODO
 
 
 :: StoryScript [script]
@@ -170,7 +171,7 @@ window.logVariableError = function(variable) {
   console.error("Could not declare "+variable+" in this namespace");
 }
 
-// makeshift enum
+// makeshift enum for health states
 if (!window.HealthState) {
   window.HealthState = {
     GOOD: 0,
@@ -191,17 +192,18 @@ else {
   logVariableError("HOUR_DIVIDER")
 }
 
+
 // ------------------
 // || --- Data --- ||
 // ------------------
 
+// --- Items ---
 class ItemData {
   constructor(id, space) {
     this.id = id;
     this.space = space;
   }
 }
-
 if (!window.Items) {
   window.Items = [
     new ItemData("package", 4),
@@ -210,6 +212,48 @@ if (!window.Items) {
 }
 else {
   logVariableError("Items");
+}
+
+
+// ----------------------
+// || --- Dialogue --- ||
+// ----------------------
+
+// makeshift enum for health states
+if (!window.DialogStages) {
+  window.DialogStages = {
+    CUSTOMER_HELLO: 0,
+    PLAYER_REFUSE: 1,
+    NO_TALK: 2,
+    ENTRY_TALK: 3,
+    SMALL_TALK: 4,
+    OFFER_HELP: 6,
+    THANK_HELP: 7,
+
+    CANCEL_HELP: 8,
+    SACRE_OFF: 9
+  }
+}
+else {
+  logVariableError("DialogStages")
+}
+// data for identifying different stages of dialogue
+if (!window.DialogStagesData) {
+  window.DialogStagesData = {};
+  window.DialogStagesData[DialogStages.CUSTOMER_HELLO] = {"passage": "Customer Hello", "variants": 1} // starting dialogue for customers, it can progress to either of the three following stages
+  window.DialogStagesData[DialogStages.PLAYER_REFUSE] = {"passage": "Player Refuse", "variants": 1} // player refuses to give them their order and the customer leaves without paying
+  window.DialogStagesData[DialogStages.NO_TALK] = {"passage": "No Talk", "variants": 1} // customer does not ellaborate, simply pays and is done with it
+  window.DialogStagesData[DialogStages.ENTRY_TALK] = {"passage": "Entry Talk", "variants": 1} // customer talks a bit more, giving player more options
+
+  window.DialogStagesData[DialogStages.SMALL_TALK] = {"passage": "Small Talk", "variants": 1} // customer continues conversing with the player; for different variants, the might be multiple substages (1a, 1b, 1c, 2a, 2b, ...) (but that depends automatically on how many passages are defined)
+  window.DialogStagesData[DialogStages.OFFER_HELP] = {"passage": "Offer Help", "variants": 1} // the player makes mention that they can help them leave the country, at this point, it is impossible to turn back
+  window.DialogStagesData[DialogStages.THANK_HELP] = {"passage": "Thank Help", "variants": 1} // customer thanks for the help and goes to payment (this stage must call the increment to refugees)
+  
+  window.DialogStagesData[DialogStages.CANCEL_HELP] = {"passage": "Cancel Help", "variants": 1} // abort conversation which does not alter stats
+  window.DialogStagesData[DialogStages.SCARE_OFF] = {"passage": "Scare Off", "variants": 1} // intimidate the customer, also cancels conversation but lowers susmeter and raises snitchmeter a bit
+}
+else {
+  logVariableError("DialogStagesData")
 }
 
 
@@ -230,6 +274,13 @@ if (!window._susmeter) {
 }
 else {
   logVariableError("_susmeter")
+}
+// snitchmeter
+if (!window._snitchmeter) {
+  window._snitchmeter = 0;
+}
+else {
+  logVariableError("_snitchmeter")
 }
 // health
 if (!window._health) {
@@ -262,6 +313,8 @@ else {
 // || --- Utilities --- ||
 // -----------------------
 
+// --- Getters/Setters ---
+
 window.getItem = function(index) {
   return Items[index];
 }
@@ -269,7 +322,6 @@ window.getItem = function(index) {
 window.getMoney = function() {
   return _money;
 }
-
 window.addMoney = function(toAdd) {
   _money += toAdd;
 }
@@ -277,9 +329,15 @@ window.addMoney = function(toAdd) {
 window.getSusmeter = function() {
   return _susmeter;
 }
-
 window.addSusmeter = function(toAdd) {
   _susmeter += toAdd;
+}
+
+window.getSnitchmeter = function() {
+  return _snitchmeter;
+}
+window.addSnitchmeter = function(toAdd) {
+  _snitchmeter += toAdd;
 }
 
 window.getHealth = function() {
@@ -312,6 +370,32 @@ window.advanceTimeStep = function(steps = 1) {
   _day_counter += (_time_steps - rem) / daySteps; // add to days how many full daySteps there are in time steps
 
   _time_steps = rem; // update time steps
+}
+
+
+// --- Customer Passages ---
+
+// return a random Customer Passage at one of the given stages as defined in DialogueStages above
+window.getRandomCustomerPassageFromArray = function(stage_choice_array) {
+  let stage = randint(0, stage_choice_array.length - 1); // choose random stage from array
+  stage = stage_choice_array[stage]
+  let base = DialogStagesData[stage]["passage"]; // get the base passage name
+  let variant = randint(1, DialogStagesData[stage]["variants"]); // get a random variant of this stage
+  
+  return base + " " + variant // this will return, for instance, 'Offer Help 2'
+}
+
+// return a random Customer Passage at the given stage as defined in DialogueStages above
+window.getRandomCustomerPassage = function(stage) {
+  return getRandomCustomerPassageFromArray([stage]);
+}
+
+
+// --- Utils ---
+
+// return a random int between min (inclusive) and max (inclusive)
+window.randint = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 :: StoryStylesheet [stylesheet]
@@ -465,4 +549,3 @@ a.link-internal:hover {
 .woman5 {
     background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Woman%205.png");
 }
-
