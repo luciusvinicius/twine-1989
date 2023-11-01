@@ -8,11 +8,26 @@ TestStory
   "format": "SugarCube",
   "format-version": "2.36.1",
   "start": "Start Point",
-  "zoom": 1
+  "zoom": 0.6
 }
 
 
-:: MainLocationHUD {"position":"1100,100","size":"100,100"}
+:: Cancel help {"position":"475,425","size":"100,100"}
+"Y-Yes, so long.""
+
+[[Back|$last_location]]
+
+
+:: Entry Talk 1 {"position":"250,425","size":"100,100"}
+"Thanks. Hope your day is better than mine."
+
+//Seems like they're in a chatty mood.//
+
+[[Something troubling you?|Small Talk 1]]
+[[Thanks. See you again.|$last_location]]
+
+
+:: MainLocationHUD {"position":"825,75","size":"100,100"}
 <<script>>advanceTimeStep();<</script>>
 
 <<set $money to getMoney()>>
@@ -37,13 +52,7 @@ Datetime: Day $day, $time
 ----
 
 
-:: Start Point {"position":"200,125","size":"100,100"}
-<<set $last_location to "Newspaper Stand">>
-
-[[Start Game|Newspaper Stand]]
-
-
-:: Newspaper Stand
+:: Newspaper Stand {"position":"150,150","size":"100,100"}
 <<set $last_location to "Newspaper Stand">>
 <<include "MainLocationHUD">>
 //My humble newspaper stand. Selling newspapers is not the most profitable or even successful career path, but it's all I have.//
@@ -52,33 +61,13 @@ Datetime: Day $day, $time
 [[Leave|Start Point]]
 
 
-:: Simple Customer
-//A new customer approaches. Time to put on my best smile.//
-
-"Mornin'.
-I want the Tribune Times."
-
-<<set _choice to either("Entry Talk 1", "No talk")>>
-[[Give newspaper|_choice]]
-[[Refuse|Order Refused]]
-
-
-:: Entry Talk 1
-"Thanks. Hope your day is better than mine."
-
-//Seems like they're in a chatty mood.//
-
-[[Something troubling you?|Small Talk 1]]
-[[Thanks. See you again.|$last_location]]
-
-
-:: No talk
+:: No talk {"position":"725,425","size":"100,100"}
 "Thanks. Bye."
 
 [[Back|$last_location]]
 
 
-:: Order Refused
+:: Order Refused {"position":"525,225","size":"100,100"}
 "What the fuck?!"
 
 //They left rather angry.//
@@ -88,7 +77,28 @@ I want the Tribune Times."
 [[Back|$last_location]]
 
 
-:: Small Talk 1
+:: Scare off {"position":"700,175","size":"100,100"}
+//They left, without even saying anything.//
+
+//Probably scared I'd snitch.//
+
+[[Back|$last_location]]
+
+
+:: Simple Customer {"position":"300,175","size":"100,100"}
+//A new customer approaches. Time to put on my best smile.//
+
+<div class="img-blur"></div>
+
+"Mornin'.
+I want the Tribune Times."
+
+<<set _choice to either("Entry Talk 1", "No talk")>>
+[[Give newspaper|_choice]]
+[[Refuse|Order Refused]]	
+
+
+:: Small Talk 1 {"position":"100,525","size":"100,100"}
 "O-Oh, uh, same as what's troubling everyone else, I'spose."
 
 //They seem to have realised they were about to imply their life wasn't good.//
@@ -112,7 +122,13 @@ I want the Tribune Times."
 <</link>>
 
 
-:: Suggest help 1
+:: Start Point {"position":"50,0","size":"100,100"}
+<<set $last_location to "Newspaper Stand">>
+
+[[Start Game|Newspaper Stand]]
+
+
+:: Suggest help 1 {"position":"950,250","size":"100,100"}
 "Even if that were true." //They look somewhat disheartened.// "Crossing the border is strictly forbidden."
 
 ''Well, yes... And no.''
@@ -120,20 +136,6 @@ I want the Tribune Times."
 "How so?"
 
 TODO
-
-
-:: Cancel help
-"Y-Yes, so long.""
-
-[[Back|$last_location]]
-
-
-:: Scare off
-//They left, without even saying anything.//
-
-//Probably scared I'd snitch.//
-
-[[Back|$last_location]]
 
 
 :: StoryScript [script]
@@ -274,7 +276,7 @@ window.getTime = function() {
   let m = (_time_steps % HOUR_DIVIDER) * 60/HOUR_DIVIDER; // each step corresponds to 60min/HOUR_DIVIDER
   let h = Math.floor(_time_steps / HOUR_DIVIDER);
   
-  return "" + h + ":" + m;
+  return ("0" + h).slice(-2) + ":" + ("0" + m).slice(-2);
 }
 
 // advance on time step and update day if necessary
@@ -288,4 +290,86 @@ window.advanceTimeStep = function(steps = 1) {
   _day_counter += (_time_steps - rem) / daySteps; // add to days how many full daySteps there are in time steps
 
   _time_steps = rem; // update time steps
+}
+
+:: StoryStylesheet [stylesheet]
+html {
+    background-image: linear-gradient(to bottom,  hsl(33, 39%, 30%), black);
+    background-image: -webkit-linear-gradient(top,  hsl(33, 39%, 30%), black);
+    background-attachment: fixed;
+    background-color: black;
+  }
+body {
+  background-color: transparent;
+  margin: 2% 0 0 0;
+  font-size: 100%;
+}
+
+#passages {
+  background-image: linear-gradient(-135deg, #f7ecd4, #e0bd8e);
+  background-image: -webkit-linear-gradient(-45deg, #f7ecd4, #e0bd8e);
+  background-color: beige;
+  width: 40%;
+  margin:auto;
+  margin-bottom: 5%;
+  padding: 2em;
+  box-shadow: inset 0 0 2em olive;
+}
+
+.passage {
+  margin: 0px;
+  padding: 2em;
+
+  /* Text formatting */
+  color: black;
+  font-family: "Times New Roman", serif;
+  text-align:justify;
+}
+.passage br + .char {
+  margin-left: 1.6em;
+}
+
+.char.e + .char, .char.t + .char, .char.a + .char, .char.o + .char, .char.i + .char, .char.n + .char, .char:nth-child(8n) {
+  text-shadow: 0em 3px 0.3em hsla(82, 39%, 20%, .25);
+  color: rgba(0,0,0,0.7);
+}
+
+/* No sidebar */
+#sidebar {
+  display:none;
+}
+
+hr {
+  border: 0;
+  height: 2px !important;
+  background-color: black;
+  box-shadow: 0 0 1em darkolivegreen;
+}
+
+/* Links */
+.passage a .char {
+  color: hsla(82, 39%, 20%, .75);
+  text-shadow: 0em 3px 0.2em hsla(82, 39%, 20%, .25), 0em 6px 0.4em hsla(82, 39%, 20%, .25);
+}
+.passage a:visited .char {
+  color: hsla(37, 39%, 20%, .75);
+  text-shadow: 0em 3px 0.2em hsla(37, 39%, 20%, .25), 0em 6px 0.4em hsla(37, 39%, 20%, .25);
+}
+.passage a:hover {
+  text-decoration: none;
+}
+.passage a:hover .char {
+  color: darkgreen !important;
+}
+.passage a:visited:hover .char {
+  color: darkred !important;
+}
+
+.img-blur {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Fisherman.png");
+    background-size:     cover;                      
+    background-repeat:   no-repeat;
+    background-position: center center;   
+    height: 20vw;
+    box-shadow: #f4f4f380 0px 0px 8px 8px inset;
 }
