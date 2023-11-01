@@ -87,8 +87,11 @@ Datetime: Day $day, $time
 
 :: Simple Customer {"position":"300,175","size":"100,100"}
 //A new customer approaches. Time to put on my best smile.//
-
-<div class="img-blur"></div>
+<<set $_img to either("fisherman", "man1", "man2", "man3", "man4", "man5")>>
+<div class="box">
+<div id="person-img" class="img-blur"></div>
+</div>
+<<done>><<addclass '#person-img' $_img>><</done>>
 
 "Mornin'.
 I want the Tribune Times."
@@ -365,11 +368,53 @@ hr {
   color: darkred !important;
 }
 
+.box {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .img-blur {
-    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Fisherman.png");
     background-size:     cover;                      
     background-repeat:   no-repeat;
     background-position: center center;   
     height: 20vw;
-    box-shadow: #f4f4f380 0px 0px 8px 8px inset;
+    width: 85%;
+    box-shadow: 0px 0px 20px 12px #be771738;
+    border-radius: 7%;
 }
+
+a.link-internal {
+    color: #92402e;
+}
+
+a.link-internal:hover {
+    color: #d1a051;
+}
+
+/* Characters Images */
+
+.fisherman {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Fisherman.png");
+}
+
+.man1 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%201.png");
+}
+
+.man2 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%202.png");
+}
+
+.man3 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%203.png");
+}
+
+.man4 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%204.png");
+}
+
+.man5 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%205.png");
+}
+
