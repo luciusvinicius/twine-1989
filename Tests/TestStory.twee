@@ -87,6 +87,11 @@ Datetime: Day $day, $time
 [[Leave|Start Point]]
 
 
+:: No Talk 1 {"position":"725,425","size":"100,100"}
+<<include "Random Image">>
+"Thanks. Bye."
+
+
 :: Offer Help 1 {"position":"950,250","size":"100,100"}
 <<include "Random Image">>
 ''Across the border, things seem to be much easier, I hear''
