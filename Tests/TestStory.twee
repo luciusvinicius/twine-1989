@@ -13,6 +13,7 @@ TestStory
 
 
 :: Cancel Help 1 {"position":"475,425","size":"100,100"}
+<<include "Random Image">>
 ''Well, that's just how it is, I guess. See you again, then.''
 
 "Y-Yes, so long.""
@@ -20,7 +21,23 @@ TestStory
 [[Back|$last_location]]
 
 
+:: Customer Hello 1 {"position":"300,175","size":"100,100"}
+//A new customer approaches. Time to put on my best smile.//
+<<nobr>>
+<<set $_img to either("fisherman", "man1", "man2", "man3", "man4", "man5", "woman1", "woman2", "woman3", "woman4", "woman5")>>
+<</nobr>>
+<<include "Random Image">>
+
+"Mornin'.
+I want the Tribune Times."
+
+<<set _choice to getRandomCustomerPassageFromArray([DialogStages.ENTRY_TALK, DialogStages.NO_TALK])>>
+[[Give them what they ordered|_choice]]
+[[Refuse|Player Refuse 1]]
+
+
 :: Entry Talk 1 {"position":"250,425","size":"100,100"}
+<<include "Random Image">>
 "Thanks. Hope your day is better than mine."
 
 //Seems like they're in a chatty mood.//
@@ -31,33 +48,38 @@ TestStory
 
 
 :: MainLocationHUD {"position":"825,75","size":"100,100"}
+<<silently>>
 <<script>>advanceTimeStep();<</script>>
-
 <<set $money to getMoney()>>
 <<set $susmeter to getSusmeter()>>
 <<set $day to getDay()>>
 <<set $time to getTime()>>
-
+<</silently>>
+<div class="cursed-margin">
 Money: $money
 Suspicion Level: $susmeter
 Datetime: Day $day, $time
-
+</div>
 <<link "Wait for 1 hour">>
+<<silently>>
 <<script>>advanceTimeStep(HOUR_DIVIDER - 1);<</script>>
 <<set _day to getDay()>>
 <<set _time to getTime()>>
 
 <<set _this_passage to passage()>>
 <<goto _this_passage>>
+<</silently>>
 <</link>>
-
-----
-----
 
 
 :: Newspaper Stand {"position":"150,150","size":"100,100"}
+<<silently>>
 <<set $last_location to "Newspaper Stand">>
+<</silently>>
 <<include "MainLocationHUD">>
+<div class="box">
+<div id="place-img" class="img-blur newspaper"></div>
+</div>
 //My humble newspaper stand. Selling newspapers is not the most profitable or even successful career path, but it's all I have.//
 
 <<set _choice to getRandomCustomerPassage(DialogStages.CUSTOMER_HELLO)>>
@@ -66,12 +88,25 @@ Datetime: Day $day, $time
 
 
 :: No Talk 1 {"position":"725,425","size":"100,100"}
+<<include "Random Image">>
 "Thanks. Bye."
 
-[[Back|$last_location]]
+
+:: Offer Help 1 {"position":"950,250","size":"100,100"}
+<<include "Random Image">>
+''Across the border, things seem to be much easier, I hear''
+
+"But." //They look skeptical, yet somewhat hopeful.// "Crossing the border is strictly forbidden by our government... It's impossible."
+
+''Well, yes... And no.''
+
+"How so?"
+
+TODO
 
 
 :: Player Refuse 1 {"position":"525,225","size":"100,100"}
+<<include "Random Image">>
 ''Go to hell''
 
 "What the fuck?!"
@@ -81,6 +116,13 @@ Datetime: Day $day, $time
 //I guess that's to be expected.//
 
 [[Back|$last_location]]
+
+
+:: Random Image {"position":"975,450","size":"100,100"}
+<div class="box">
+<div id="person-img" class="img-blur"></div>
+</div>
+<<done>><<addclass '#person-img' $_img>><</done>>
 
 
 :: Scare Off 1 {"position":"700,175","size":"100,100"}
@@ -97,20 +139,8 @@ Datetime: Day $day, $time
 [[Back|$last_location]]
 
 
-:: Customer Hello 1 {"position":"300,175","size":"100,100"}
-//A new customer approaches. Time to put on my best smile.//
-
-<div class="img-blur"></div>
-
-"Mornin'.
-I want the Tribune Times."
-
-<<set _choice to getRandomCustomerPassageFromArray([DialogStages.ENTRY_TALK, DialogStages.NO_TALK])>>
-[[Give them what they ordered|_choice]]
-[[Refuse|Player Refuse 1]]	
-
-
 :: Small Talk 1 {"position":"100,525","size":"100,100"}
+<<include "Random Image">>
 "O-Oh, uh, same as what's troubling everyone else, I'spose."
 
 //They seem to have realised they were about to imply their life wasn't good.//
@@ -130,21 +160,10 @@ I want the Tribune Times."
 
 
 :: Start Point {"position":"50,0","size":"100,100"}
+<<nobr>>
 <<set $last_location to "Newspaper Stand">>
-
+<</nobr>>
 [[Start Game|Newspaper Stand]]
-
-
-:: Offer Help 1 {"position":"950,250","size":"100,100"}
-''Across the border, things seem to be much easier, I hear''
-
-"But." //They look skeptical, yet somewhat hopeful.// "Crossing the border is strictly forbidden by our government... It's impossible."
-
-''Well, yes... And no.''
-
-"How so?"
-
-TODO
 
 
 :: StoryScript [script]
@@ -384,7 +403,6 @@ window.randint = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-
 :: StoryStylesheet [stylesheet]
 html {
     background-image: linear-gradient(to bottom,  hsl(33, 39%, 30%), black);
@@ -458,11 +476,81 @@ hr {
   color: darkred !important;
 }
 
+.box {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .img-blur {
-    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Fisherman.png");
     background-size:     cover;                      
     background-repeat:   no-repeat;
     background-position: center center;   
     height: 20vw;
-    box-shadow: #f4f4f380 0px 0px 8px 8px inset;
+    width: 85%;
+    box-shadow: 0px 0px 20px 12px #be771738;
+    border-radius: 7%;
+}
+
+.cursed-margin {
+    margin-top: -5.25em;
+}
+
+a.link-internal {
+    color: #92402e;
+}
+
+a.link-internal:hover {
+    color: #d1a051;
+}
+
+/* Place Images */
+.newspaper {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/style/base-css/images/Sketchs/Places/Newspaper%206.png");
+}
+
+/* Characters Images */
+
+.fisherman {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Fisherman.png");
+}
+
+.man1 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%201.png");
+}
+
+.man2 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%202.png");
+}
+
+.man3 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%203.png");
+}
+
+.man4 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%204.png");
+}
+
+.man5 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Man%205.png");
+}
+
+.woman1 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Woman%201.png");
+}
+
+.woman2 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Woman%202.png");
+}
+
+.woman3 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Woman%203.png");
+}
+
+.woman4 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Woman%204.png");
+}
+
+.woman5 {
+    background-image: url("https://raw.githubusercontent.com/luciusvinicius/twine-1989/main/images/Sketchs/People/Woman%205.png");
 }
