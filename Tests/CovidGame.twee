@@ -12,7 +12,19 @@ CovidGame
 }
 
 
-:: Morning {"position":"525,275","size":"100,100"}
+:: DebugStats
+<<set _health to getHealth()>>
+<<set _carefulness to getWariness()>>
+<<set _social_dist to getSocialDist()>>
+<<set _money to getMoney()>>
+Health: _health
+Carefulness: _carefulness
+Social Distance: _social_dist
+Money: _money
+
+
+:: Morning {"position":"475,250","size":"100,100"}
+<<include "DebugStats">>
 <<set $stable_passage to "Morning">>
 
 Good morning Steve, get ready for another day!
@@ -23,19 +35,39 @@ Good morning Steve, get ready for another day!
   [[Put a mask on|TryMask]]
 <</if>>
 [[Take a COVID test|TryTest]]
-[[Go to work]]
+[[Go to work|MorningEventPool]]
 
 
-:: RemoveMask
+:: RemoveMask {"position":"150,100","size":"100,100"}
+<<include "DebugStats">>
 <<script>>setMask(false)<</script>>
 Steve looks sort of troubled by the mask. Maybe taking it off a bit would be good.
 
 [[Back|$stable_passage]]
 
 
-:: TryMask
+:: ResultTest {"position":"1050,175","size":"100,100"}
+<<include "DebugStats">>
+/* determine whether Health is below COVID threshold */
+<<if getHealth() < COVID_THRESHOLD>>
+  It came back positive....
+
+  It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
+<<else>>
+  /* Steve is an idiot, so taking a negative test boosts his confidence */
+  <<script>>addWariness(-5)<</script>>
+  It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
+
+  Steve, you look way more relieved than you should be...
+<</if>>
+
+[[Back|$stable_passage]]
+
+
+:: TryMask {"position":"775,325","size":"100,100"}
+<<include "DebugStats">>
 /* this passage determines whether Steve puts on mask and shows the correct message */
-<<if getWariness() < CARELESS_THRESHOLD>>
+<<if isCareless()>>
   <<set _result to arrayChoice([
     "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
     "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
@@ -49,11 +81,12 @@ Steve looks sort of troubled by the mask. Maybe taking it off a bit would be goo
   <<script>>setMask(true)<</script>>
   Steve puts his mask on. Feeling protected already!
 
-  [[Well done Steve!|$stable_passage]]
+  [[Well done, Steve!|$stable_passage]]
 <</if>>
 
 
-:: TryTest
+:: TryTest {"position":"475,25","size":"100,100"}
+<<include "DebugStats">>
 /* this passage will have Steve try to take a test */
 <<if getWariness() < CARELESS_THRESHOLD>>
   <<set _result to arrayChoice([
@@ -73,28 +106,117 @@ Steve looks sort of troubled by the mask. Maybe taking it off a bit would be goo
 <</if>>
 
 
-:: WaitTest
+:: WaitTest {"position":"725,50","size":"100,100"}
+<<include "DebugStats">>
 The suspense is killing Steve. He feels fine, sort of.
 So it should most definitely be fine....right?
 
 [[See the results|ResultTest]]
 
 
-:: ResultTest
-/* determine whether Health is below COVID threshold */
-<<if getHealth() < COVID_THRESHOLD>>
-  It came back positive....
+:: MorningEventPool {"position":"725,50","size":"100,100"}
+<<include "DebugStats">>
+/* this passage will have the random events that Steve might do while going to work */
+<<nobr>>
+<<set $morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
+<</nobr>>
+<<include $morning_event>>
 
-  It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
+
+:: MorningWalk {"position":"725,50","size":"100,100"}
+Steve decided to exercise a little and take a walk to the work. 
+<<set _greet to randomChance(60)>> /* Probability of greeting someone */
+<<if _greet>>
+  He sometimes stop to greeting people tho.
+  <<script>>addSocialDist(-2)<</script>>
+  [[At least he's exercising, right...?|Work]]
 <<else>>
-  /* Steve is an idiot, so taking a negative test boosts his confidence */
-  <<script>>addWariness(-5)<</script>>
-  It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
-
-  Steve, you look way more relieved than you should be...
+  Steve feels good after doing some exercise!
+  <<script>>addHealth(2)<</script>>
+  [[Nicely done, Steve!|Work]]
 <</if>>
 
-[[Back|$stable_passage]]
+
+:: MorningBus
+Steve got it's usual bus to go to work.
+<<if isCareless()>> /* doesn't believe in vaccine */
+  He straight up sat on the middle of a music gang playing some cool songs to listen to it.
+
+  [[I mean, it is indeed a cool song.|Work]]
+<<elseif isParanoid()>>
+  Steve started to shout to anyone that tried to sit down close to him. 
+  He looks really afraid and clearly he is not okay.
+  <<script>>addSocialDist(6)<</script>>
+
+  [[Steve...?|Work]]
+<<else>>
+  Steve tried to avoid uneeded talk and went to work.
+  <<script>>addSocialDist(3)<</script>>
+
+  [[Let's go to work!|Work]]
+<</if>>
+
+
+:: TeleworkAnnounce
+<<include "DebugStats">>
+Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
+Isn't that amazing Steve?
+<<if isIsolated()>>
+  For some reason, Steve doesn't look so happy about this news... What could be wrong?
+<</if>>
+
+[[Work at Home|Telework]]
+[[Go work|RainWalk]]
+
+
+:: Telework
+<<include "DebugStats">>
+/* If steve feels alone, he can just ignore the telework */
+<<if isIsolated() && randomChance(80)>>
+  <<set _result to arrayChoice([
+    "Steve just picked up his umbrella and went work anyways.",
+    "Wait, where are you going Steve?"
+  ])>>
+
+  _result
+
+  Steve just picked up his umbrella and went work anyways...
+
+  [[Did he just ignored me?|Work]]
+
+<<else>>
+  /* Everything is fine, Steve will telework */
+  <<set _result to arrayChoice([
+    "Yeah, remote work is awesome!",
+    "Working in pijamas is a really good feeling, I know how it feels, Steve."
+  ])>>
+
+  _result
+
+  <<script>>addSocialDist(5)<</script>>
+<</if>>
+
+
+:: RainWalk
+<<include "DebugStats">>
+/* probability of getting sick because of the rain /*
+<<if randomChance(80)>> 
+  Oh no! It looks like steve got a wash from the rain!
+  I hope he is still okay.
+
+<<else>>
+  The travel worked perfectly, Steve somehow dodged the rain!
+<</if>>
+
+[[Continue to Work|Work]]
+
+
+:: Work {"position":"725,50","size":"100,100"}
+<<include "DebugStats">>
+<<script>>addSocialDist(-2)<</script>>
+Nobody likes working...
+
+
 
 
 :: StoryScript [script]
@@ -111,6 +233,10 @@ window.logVariableError = function(variable) {
 if (!window.CARELESS_THRESHOLD) window.CARELESS_THRESHOLD = 30;
 else logVariableError("CARELESS_THRESHOLD")
 
+// if wariness is above this value, Steve might get too paranoid to interact with people
+if (!window.PARANOID_THRESHOLD) window.PARANOID_THRESHOLD = 70;
+else logVariableError("PARANOID_THRESHOLD")
+
 // if health is below this limit, Steve has COVID
 if (!window.COVID_THRESHOLD) window.COVID_THRESHOLD = 30;
 else logVariableError("COVID_THRESHOLD")
@@ -119,6 +245,9 @@ else logVariableError("COVID_THRESHOLD")
 if (!window.SICK_THRESHOLD) window.SICK_THRESHOLD = 10;
 else logVariableError("SICK_THRESHOLD")
 
+// if social dist is above this value, Steve starts to feeling alone
+if (!window.ISOLATED_THRESHOLD) window.ISOLATED_THRESHOLD = 70;
+else logVariableError("ISOLATED_THRESHOLD")
 
 // -------------------
 // || --- Stats --- ||
@@ -133,6 +262,12 @@ window.getWariness = function() {
 window.addWariness = function(toAdd) {
   _wariness += toAdd;
 }
+window.isCareless = function() {
+  return _wariness < CARELESS_THRESHOLD
+}
+window.isParanoid = function() {
+  return _wariness > PARANOID_THRESHOLD
+}
 
 // social_dist
 if (!window._social_dist) window._social_dist = 50;
@@ -142,6 +277,9 @@ window.getSocialDist = function() {
 }
 window.addSocialDist = function(toAdd) {
   _social_dist += toAdd;
+}
+window.isIsolated = function() {
+  return _social_dist > ISOLATED_THRESHOLD
 }
 
 // health
@@ -190,4 +328,9 @@ window.randint = function(min, max) {
 window.arrayChoice = function(array) {
   let ix = randint(0, array.length - 1); // choose random index
   return array[ix];
+}
+
+// return boolean for random probability chance (in %)
+window.randomChance = function(probability) {
+  return Math.random() < probability/100
 }
