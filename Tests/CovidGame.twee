@@ -158,7 +158,6 @@ Steve got it's usual bus to go to work.
 
 
 :: TeleworkAnnounce
-<<include "DebugStats">>
 Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
 Isn't that amazing Steve?
 <<if isIsolated()>>
@@ -201,7 +200,8 @@ Isn't that amazing Steve?
 <<include "DebugStats">>
 /* probability of getting sick because of the rain /*
 <<if randomChance(80)>> 
-  Oh no! It looks like steve got a wash from the rain!
+  <<script>>addHealth(-5)<</script>>
+  Oh no! It looks like Steve got a wash from the rain!
   I hope he is still okay.
 
 <<else>>
@@ -213,10 +213,115 @@ Isn't that amazing Steve?
 
 :: Work {"position":"725,50","size":"100,100"}
 <<include "DebugStats">>
-<<script>>addSocialDist(-2)<</script>>
-Nobody likes working...
+<<script>>addSocialDist(-1)<</script>>
+<<set _result to arrayChoice([
+  "Steve is a regular person, nobody likes working. Oh god, it is already 12:00?",
+  "Damn, that was though! At least is lunch time, you can relax a little bit, Steve."
+])>>
+
+_result
+
+[[Eat with friends|EatFriends]]
+[[Eat alone|EatAlone]]
 
 
+:: EatAlone
+<<include "DebugStats">>
+
+<<if isIsolated && randomChance(80)>>
+  Wait, are you going to eat with them? Steve, you know that you need to isolate yourself a little bit, right?
+
+  [[Fine, you can eat with them this time|EatFriends]]
+
+<<else>>
+  <<script>>addSocialDist(5)<</script>>
+  <<script>>addWariness(3)<</script>>
+  <<set _result to arrayChoice([
+    "Yeah, who need to eat with real people, you can eat alone perfectly fine.",
+    "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
+  ])>>
+  _result
+
+  [[Back to Work|Work2]]
+<</if>>
+
+
+:: EatFriends
+<<include "DebugStats">>
+/* Happens when Steve is eating together with people at the work */
+<<script>>addSocialDist(-3)<</script>>
+<<script>>addHealth(-1)<</script>>
+<<script>>addWariness(-1)<</script>>
+
+<<set _result to arrayChoice([
+  "Eating with friends is good, I guess. I hope you are following the hygienic protocols, right, Steve?",
+  "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
+])>>
+
+_result
+
+/* Total chance of an event happening is 27.75%*/
+<<if randomChance(15)>>
+  /* Chance of friends spreading missinformation */
+  <<script>>addWariness(-4)<</script>>
+
+  <<set _result to arrayChoice([
+    "Wait, your colleague just told you that his friend's wife's neighbour took a vaccine that gave him cancer? Please do not believe in that, Steve.",
+    "Don't listen to this Joe guy that vaccines will turn you into an aligator, his source is twitter! T-W-I-T-T-E-R"
+  ])>>
+  _result
+
+  [[Oh no, look at the time, back to work!|Work2]]
+
+<<elseif randomChance(15)>>
+/* Chance of they being reckless */
+  <<set _result to arrayChoice([
+    "Okay, they are not using masks and too much close to each other! Steve, do something!",
+    "Steve, your friends are not even using masks..."
+  ])>>
+  _result
+
+  [[Join them|JoinMaskFriends]]
+  [[Stay Away|StayAwayFromFriends]]
+
+<<else>>
+  [[Back to Work|Work2]]
+<</if>>
+
+
+:: StayAwayFromFriends
+<<include "DebugStats">>
+<<if isIsolated && randomChance(80)>>
+  No, Steve! You should stay away from them, not taking off your mask!
+  [[Proceed|JoinMaskFriends]]
+<<else>>
+  <<script>>addSocialDist(3)<</script>>
+  <<set _result to arrayChoice([
+    "Perfect, Steve! Let's enjoy our meal alone.",
+    "You love spaghetti, don't you? Eating alone will make you appreciate it even more."
+  ])>>
+  _result
+  [[Finish Eating|Work2]]
+<</if>>
+
+
+:: JoinMaskFriends
+<<include "DebugStats">>
+<<script>>setMask(false)<</script>>
+<<script>>addSocialDist(-5)<</script>>
+
+<<set _result to arrayChoice([
+  "There's no way to eat with mask, have it?",
+  "I hope you are enjoying this situation, Steve."
+])>>
+_result
+
+[[Finish Eating|Work2]]
+
+
+:: Work2
+<<include "DebugStats">>
+/* Here will have */
 
 
 :: StoryScript [script]
@@ -254,7 +359,7 @@ else logVariableError("ISOLATED_THRESHOLD")
 // -------------------
 
 // wariness (or carefulness)
-if (!window._wariness) window._wariness = 50;
+if (!window._wariness) window._wariness = 71;
 else logVariableError("_wariness")
 window.getWariness = function() {
   return _wariness;
@@ -270,7 +375,7 @@ window.isParanoid = function() {
 }
 
 // social_dist
-if (!window._social_dist) window._social_dist = 50;
+if (!window._social_dist) window._social_dist = 71;
 else logVariableError("_social_dist")
 window.getSocialDist = function() {
   return _social_dist;
