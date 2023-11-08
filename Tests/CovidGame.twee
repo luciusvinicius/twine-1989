@@ -12,316 +12,453 @@ CovidGame
 }
 
 
-:: DebugStats
+:: DebugStats {"position":"475,250","size":"300,100"}
 <<set _health to getHealth()>>
 <<set _carefulness to getWariness()>>
 <<set _social_dist to getSocialDist()>>
 <<set _money to getMoney()>>
-Health: _health
-Carefulness: _carefulness
-Social Distance: _social_dist
-Money: _money
+<<set _day to getDay()>>
+Health: <div class="hud-bar"><div id="health" class="w3-red w3-center">_health</div></div>
+Carefulness: <div class="hud-bar"><div id="wariness" class="w3-green w3-center">_carefulness</div></div>
+Social Distance: <div class="hud-bar"><div id="social-dist" class="w3-blue w3-center">_social_dist</div></div>
+Money: <div class="hud-bar"><div id="money" class="w3-yellow w3-center">_money</div></div>
+Day: _day
+<<done>>
+  <<set document.getElementById("health").style.width = `${_health}%`>>
+  <<set document.getElementById("wariness").style.width = `${_carefulness}%`>>
+  <<set document.getElementById("social-dist").style.width = `${_social_dist}%`>>
+  <<set document.getElementById("money").style.width = `${_money}%`>>
+<</done>>
 
 
 :: Morning {"position":"475,250","size":"100,100"}
-<<include "DebugStats">>
-<<set $stable_passage to "Morning">>
+  <<include "DebugStats">>
+  <<set $stable_passage to "Morning">>
 
-Good morning Steve, get ready for another day!
+  Good morning Steve, get ready for another day!
 
-<<if getMask()>>
-  [[Remove Mask|RemoveMask]]
-<<else>>
-  [[Put a mask on|TryMask]]
-<</if>>
-[[Take a COVID test|TryTest]]
-[[Go to work|MorningEventPool]]
+  <<if getMask()>>
+    [[Remove Mask|RemoveMask]]
+  <<else>>
+    [[Put a mask on|TryMask]]
+  <</if>>
+  [[Take a COVID test|TryTest]]
+  [[Go to work|MorningEventPool]]
 
 
 :: RemoveMask {"position":"150,100","size":"100,100"}
-<<include "DebugStats">>
-<<script>>setMask(false)<</script>>
-Steve looks sort of troubled by the mask. Maybe taking it off a bit would be good.
+  <<include "DebugStats">>
+  <<script>>setMask(false)<</script>>
+  Steve looks sort of troubled by the mask. Maybe taking it off a bit would be good.
 
-[[Back|$stable_passage]]
+  [[Back|$stable_passage]]
 
 
 :: ResultTest {"position":"1050,175","size":"100,100"}
-<<include "DebugStats">>
-/* determine whether Health is below COVID threshold */
-<<if getHealth() < COVID_THRESHOLD>>
-  It came back positive....
+  <<include "DebugStats">>
+  /* determine whether Health is below COVID threshold */
+  <<if getHealth() < COVID_THRESHOLD>>
+    It came back positive....
 
-  It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
-<<else>>
-  /* Steve is an idiot, so taking a negative test boosts his confidence */
-  <<script>>addWariness(-5)<</script>>
-  It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
+    It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
+  <<else>>
+    /* Steve is an idiot, so taking a negative test boosts his confidence */
+    <<script>>addWariness(-5)<</script>>
+    It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
 
-  Steve, you look way more relieved than you should be...
-<</if>>
+    Steve, you look way more relieved than you should be...
+  <</if>>
 
-[[Back|$stable_passage]]
+  [[Back|$stable_passage]]
 
 
 :: TryMask {"position":"775,325","size":"100,100"}
-<<include "DebugStats">>
-/* this passage determines whether Steve puts on mask and shows the correct message */
-<<if isCareless()>>
-  <<set _result to arrayChoice([
-    "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
-    "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
-  ])>> /* add more variations inside the array */
+  <<include "DebugStats">>
+  /* this passage determines whether Steve puts on mask and shows the correct message */
+  <<if isCareless()>>
+    <<set _result to arrayChoice([
+      "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
+      "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
+    ])>> /* add more variations inside the array */
 
-  _result /* Display the resulting message */
+    _result /* Display the resulting message */
 
-  [[What the hell, Steve...|$stable_passage]]
-<<else>>
-  <<script>>addHealth(2)<</script>>
-  <<script>>setMask(true)<</script>>
-  Steve puts his mask on. Feeling protected already!
+    [[What the hell, Steve...|$stable_passage]]
+  <<else>>
+    <<script>>addHealth(2)<</script>>
+    <<script>>setMask(true)<</script>>
+    Steve puts his mask on. Feeling protected already!
 
-  [[Well done, Steve!|$stable_passage]]
-<</if>>
+    [[Well done, Steve!|$stable_passage]]
+  <</if>>
 
 
 :: TryTest {"position":"475,25","size":"100,100"}
-<<include "DebugStats">>
-/* this passage will have Steve try to take a test */
-<<if getWariness() < CARELESS_THRESHOLD>>
-  <<set _result to arrayChoice([
-    "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
-    "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
-  ])>>
+  <<include "DebugStats">>
+  /* this passage will have Steve try to take a test */
+  <<if getWariness() < CARELESS_THRESHOLD>>
+    <<set _result to arrayChoice([
+      "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
+      "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
+    ])>>
 
-  _result /* Display the resulting message */
+    _result /* Display the resulting message */
 
-  [[What the hell, Steve...|$stable_passage]]
-<<else>>
-  Steve reluctanly stabs his nostril with the swab and rummages around before he finally stops torturing his nose.
+    [[What the hell, Steve...|$stable_passage]]
+  <<else>>
+    Steve reluctanly stabs his nostril with the swab and rummages around before he finally stops torturing his nose.
 
-  And now, we wait...
+    And now, we wait...
 
-  [[Wait for the result|WaitTest]]
-<</if>>
+    [[Wait for the result|WaitTest]]
+  <</if>>
 
 
 :: WaitTest {"position":"725,50","size":"100,100"}
-<<include "DebugStats">>
-The suspense is killing Steve. He feels fine, sort of.
-So it should most definitely be fine....right?
+  <<include "DebugStats">>
+  The suspense is killing Steve. He feels fine, sort of.
+  So it should most definitely be fine....right?
 
-[[See the results|ResultTest]]
+  [[See the results|ResultTest]]
 
 
 :: MorningEventPool {"position":"725,50","size":"100,100"}
-<<include "DebugStats">>
-/* this passage will have the random events that Steve might do while going to work */
-<<nobr>>
-<<set $morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
-<</nobr>>
-<<include $morning_event>>
+  <<include "DebugStats">>
+  /* this passage will have the random events that Steve might do while going to work */
+  <<nobr>>
+  <<set $morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
+  <</nobr>>
+  <<include $morning_event>>
 
 
 :: MorningWalk {"position":"725,50","size":"100,100"}
-Steve decided to exercise a little and take a walk to the work. 
-<<set _greet to randomChance(60)>> /* Probability of greeting someone */
-<<if _greet>>
-  He sometimes stop to greeting people tho.
-  <<script>>addSocialDist(-2)<</script>>
-  [[At least he's exercising, right...?|Work]]
-<<else>>
-  Steve feels good after doing some exercise!
-  <<script>>addHealth(2)<</script>>
-  [[Nicely done, Steve!|Work]]
-<</if>>
+  Steve decided to exercise a little and take a walk to the work. 
+  <<set _greet to randomChance(60)>> /* Probability of greeting someone */
+  <<if _greet>>
+    He sometimes stop to greeting people tho.
+    <<script>>addSocialDist(-2)<</script>>
+    [[At least he's exercising, right...?|Work]]
+  <<else>>
+    Steve feels good after doing some exercise!
+    <<script>>addHealth(2)<</script>>
+    [[Nicely done, Steve!|Work]]
+  <</if>>
 
 
 :: MorningBus
-Steve got it's usual bus to go to work.
-<<if isCareless()>> /* doesn't believe in vaccine */
-  He straight up sat on the middle of a music gang playing some cool songs to listen to it.
+  Steve got it's usual bus to go to work.
+  <<if isCareless()>> /* doesn't believe in vaccine */
+    He straight up sat on the middle of a music gang playing some cool songs to listen to it.
 
-  [[I mean, it is indeed a cool song.|Work]]
-<<elseif isParanoid()>>
-  Steve started to shout to anyone that tried to sit down close to him. 
-  He looks really afraid and clearly he is not okay.
-  <<script>>addSocialDist(6)<</script>>
+    [[I mean, it is indeed a cool song.|Work]]
+  <<elseif isParanoid()>>
+    Steve started to shout to anyone that tried to sit down close to him. 
+    He looks really afraid and clearly he is not okay.
+    <<script>>addSocialDist(6)<</script>>
 
-  [[Steve...?|Work]]
-<<else>>
-  Steve tried to avoid uneeded talk and went to work.
-  <<script>>addSocialDist(3)<</script>>
+    [[Steve...?|Work]]
+  <<else>>
+    Steve tried to avoid uneeded talk and went to work.
+    <<script>>addSocialDist(3)<</script>>
 
-  [[Let's go to work!|Work]]
-<</if>>
+    [[Let's go to work!|Work]]
+  <</if>>
 
 
 :: TeleworkAnnounce
-Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
-Isn't that amazing Steve?
-<<if isIsolated()>>
-  For some reason, Steve doesn't look so happy about this news... What could be wrong?
-<</if>>
+  Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
+  Isn't that amazing Steve?
+  <<if isIsolated()>>
+    For some reason, Steve doesn't look so happy about this news... What could be wrong?
+  <</if>>
 
-[[Work at Home|Telework]]
-[[Go work|RainWalk]]
+  [[Work at Home|Telework]]
+  [[Go work|RainWalk]]
 
 
 :: Telework
-<<include "DebugStats">>
-/* If steve feels alone, he can just ignore the telework */
-<<if isIsolated() && randomChance(80)>>
-  <<set _result to arrayChoice([
-    "Steve just picked up his umbrella and went work anyways.",
-    "Wait, where are you going Steve?"
-  ])>>
+  <<include "DebugStats">>
+  /* If steve feels alone, he can just ignore the telework */
+  <<if isIsolated() && randomChance(80)>>
+    <<set _result to arrayChoice([
+      "Steve just picked up his umbrella and went work anyways.",
+      "Wait, where are you going Steve?"
+    ])>>
 
-  _result
+    _result
 
-  Steve just picked up his umbrella and went work anyways...
+    Steve just picked up his umbrella and went work anyways...
 
-  [[Did he just ignored me?|Work]]
+    [[Did he just ignored me?|Work]]
 
-<<else>>
-  /* Everything is fine, Steve will telework */
-  <<set _result to arrayChoice([
-    "Yeah, remote work is awesome!",
-    "Working in pijamas is a really good feeling, I know how it feels, Steve."
-  ])>>
+  <<else>>
+    /* Everything is fine, Steve will telework */
+    <<set _result to arrayChoice([
+      "Yeah, remote work is awesome!",
+      "Working in pijamas is a really good feeling, I know how it feels, Steve."
+    ])>>
 
-  _result
+    _result
 
-  <<script>>addSocialDist(5)<</script>>
-<</if>>
+    <<script>>addSocialDist(5)<</script>>
+  <</if>>
 
 
 :: RainWalk
-<<include "DebugStats">>
-/* probability of getting sick because of the rain /*
-<<if randomChance(80)>> 
-  <<script>>addHealth(-5)<</script>>
-  Oh no! It looks like Steve got a wash from the rain!
-  I hope he is still okay.
+  <<include "DebugStats">>
+  /* probability of getting sick because of the rain */
+  <<if randomChance(80)>> 
+    <<script>>addHealth(-5)<</script>>
+    Oh no! It looks like Steve got a wash from the rain!
+    I hope he is still okay.
 
-<<else>>
-  The travel worked perfectly, Steve somehow dodged the rain!
-<</if>>
+  <<else>>
+    The travel worked perfectly, Steve somehow dodged the rain!
+  <</if>>
 
-[[Continue to Work|Work]]
+  [[Continue to Work|Work]]
 
 
 :: Work {"position":"725,50","size":"100,100"}
-<<include "DebugStats">>
-<<script>>addSocialDist(-1)<</script>>
-<<set _result to arrayChoice([
-  "Steve is a regular person, nobody likes working. Oh god, it is already 12:00?",
-  "Damn, that was though! At least is lunch time, you can relax a little bit, Steve."
-])>>
+  <<include "DebugStats">>
+  <<script>>addSocialDist(-1)<</script>>
+  <<set _result to arrayChoice([
+    "Steve is a regular person, nobody likes working. Oh god, it is already 12:00?",
+    "Damn, that was a though work morning! At least is lunch time, you can relax a little bit, Steve."
+  ])>>
 
-_result
+  _result
 
-[[Eat with friends|EatFriends]]
-[[Eat alone|EatAlone]]
+  [[Eat with friends|EatFriends]]
+  [[Eat alone|EatAlone]]
 
 
 :: EatAlone
-<<include "DebugStats">>
+  <<include "DebugStats">>
 
-<<if isIsolated && randomChance(80)>>
-  Wait, are you going to eat with them? Steve, you know that you need to isolate yourself a little bit, right?
+  <<if isIsolated && randomChance(50)>>
+    Wait, are you going to eat with them? Steve, you know that you need to isolate yourself a little bit, right?
 
-  [[Fine, you can eat with them this time|EatFriends]]
+    [[Hey, Ste- Oh, there he goes...|EatFriends]]
 
-<<else>>
-  <<script>>addSocialDist(5)<</script>>
-  <<script>>addWariness(3)<</script>>
-  <<set _result to arrayChoice([
-    "Yeah, who need to eat with real people, you can eat alone perfectly fine.",
-    "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
-  ])>>
-  _result
+  <<else>>
+    <<script>>addSocialDist(5)<</script>>
+    <<script>>addWariness(3)<</script>>
+    <<set _result to arrayChoice([
+      "Yeah, who need to eat with real people, you can eat alone perfectly fine.",
+      "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
+    ])>>
+    _result
 
-  [[Back to Work|Work2]]
-<</if>>
+    <<if randomChance(10)>>
+    /* Receiving a message event */
+      <<set _result to arrayChoice([
+        "Hey, Steve! You just receive a message from your parents. They really love you, hum?",
+        "Yoooo, isn't this a message from the girl you like? Way to go, man!"
+      ])>>
+      _result
+      <<script>>addSocialDist(-2)<</script>>
+      <<script>>addHealth(1)<</script>>
+    <</if>>
+
+    [[Back to Work|Work2]]
+  <</if>>
 
 
 :: EatFriends
-<<include "DebugStats">>
-/* Happens when Steve is eating together with people at the work */
-<<script>>addSocialDist(-3)<</script>>
-<<script>>addHealth(-1)<</script>>
-<<script>>addWariness(-1)<</script>>
-
-<<set _result to arrayChoice([
-  "Eating with friends is good, I guess. I hope you are following the hygienic protocols, right, Steve?",
-  "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
-])>>
-
-_result
-
-/* Total chance of an event happening is 27.75%*/
-<<if randomChance(15)>>
-  /* Chance of friends spreading missinformation */
-  <<script>>addWariness(-4)<</script>>
+  <<include "DebugStats">>
+  /* Happens when Steve is eating together with people at the work */
+  <<script>>addSocialDist(-3)<</script>>
+  <<script>>addHealth(-1)<</script>>
+  <<script>>addWariness(-1)<</script>>
 
   <<set _result to arrayChoice([
-    "Wait, your colleague just told you that his friend's wife's neighbour took a vaccine that gave him cancer? Please do not believe in that, Steve.",
-    "Don't listen to this Joe guy that vaccines will turn you into an aligator, his source is twitter! T-W-I-T-T-E-R"
+    "Eating with friends is good, I guess. I hope you are following the hygienic protocols, right, Steve?",
+    "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
   ])>>
+
   _result
 
-  [[Oh no, look at the time, back to work!|Work2]]
+  /* Total chance of an event happening is 27.75%*/
+  <<if randomChance(15)>>
+    /* Chance of friends spreading missinformation */
+    <<script>>addWariness(-4)<</script>>
 
-<<elseif randomChance(15)>>
-/* Chance of they being reckless */
-  <<set _result to arrayChoice([
-    "Okay, they are not using masks and too much close to each other! Steve, do something!",
-    "Steve, your friends are not even using masks..."
-  ])>>
-  _result
+    <<set _result to arrayChoice([
+      "Wait, your colleague just told you that his friend's wife's neighbour took a vaccine that gave him cancer? Please do not believe in that, Steve.",
+      "Don't listen to this Joe guy that vaccines will turn you into an aligator, his source is twitter! T-W-I-T-T-E-R"
+    ])>>
+    _result
 
-  [[Join them|JoinMaskFriends]]
-  [[Stay Away|StayAwayFromFriends]]
+    [[Oh no, look at the time, back to work!|Work2]]
 
-<<else>>
-  [[Back to Work|Work2]]
-<</if>>
+  <<elseif randomChance(15)>>
+  /* Chance of they being reckless */
+    <<set _result to arrayChoice([
+      "Okay, they are not using masks and too much close to each other! Steve, do something!",
+      "Steve, your friends are not even using masks..."
+    ])>>
+    _result
+
+    [[Join them|JoinMaskFriends]]
+    [[Stay Away|StayAwayFromFriends]]
+
+  <<else>>
+    [[Back to Work|Work2]]
+  <</if>>
 
 
 :: StayAwayFromFriends
-<<include "DebugStats">>
-<<if isIsolated && randomChance(80)>>
-  No, Steve! You should stay away from them, not taking off your mask!
-  [[Proceed|JoinMaskFriends]]
-<<else>>
-  <<script>>addSocialDist(3)<</script>>
-  <<set _result to arrayChoice([
-    "Perfect, Steve! Let's enjoy our meal alone.",
-    "You love spaghetti, don't you? Eating alone will make you appreciate it even more."
-  ])>>
-  _result
-  [[Finish Eating|Work2]]
-<</if>>
+  <<include "DebugStats">>
+  /* Used when the player choose to stay away from friends without mask during lunch */
+  <<if isIsolated && randomChance(50)>>
+    No, Steve! You should stay away from them, not taking off your mask!
+    [[Proceed|JoinMaskFriends]]
+  <<else>>
+    <<script>>addSocialDist(3)<</script>>
+    <<script>>addWariness(2)<</script>>
+    <<set _result to arrayChoice([
+      "Perfect, Steve! Let's enjoy our meal alone.",
+      "You love spaghetti, don't you? Eating alone will make you appreciate it even more."
+    ])>>
+    _result
+    [[Finish Eating|Work2]]
+  <</if>>
 
 
 :: JoinMaskFriends
-<<include "DebugStats">>
-<<script>>setMask(false)<</script>>
-<<script>>addSocialDist(-5)<</script>>
+  <<include "DebugStats">>
+  /* Used when Steve is removes his mask to eat with friends */
+  <<script>>setMask(false)<</script>>
+  <<script>>addSocialDist(-5)<</script>>
+  <<script>>addHealth(-3)<</script>>
+  <<script>>addWariness(-2)<</script>>
 
-<<set _result to arrayChoice([
-  "There's no way to eat with mask, have it?",
-  "I hope you are enjoying this situation, Steve."
-])>>
-_result
+  <<set _result to arrayChoice([
+    "There's no way to eat with mask, have it?",
+    "I hope you are enjoying this situation, Steve."
+  ])>>
+  _result
 
-[[Finish Eating|Work2]]
+  [[Finish Eating|Work2]]
 
 
 :: Work2
-<<include "DebugStats">>
-/* Here will have */
+  <<include "DebugStats">>
+  /* Here will have */
+
+  <<set _result to arrayChoice([
+    "Okay, time to focus again, Steve! You need this work, remember?",
+    "The lunch was fun, now time to return to business."
+  ])>>
+  _result
+
+  /* Probability of an event: 27.75% */
+  <<if randomChance(15)>>
+    /* Probability of overwork */
+    <<set _result to arrayChoice([
+      "Oh no, this task has a deadline for today! You can try to finish it in time, but you will probably need to stay overtime."
+    ])>>
+    _result
+
+    [[Stay Overtime|OvertimeWork]]
+    [[Too much work, time to go home|IgnoreOvertime]]
+
+  <<elseif randomChance(15)>>
+    /* Probability of calling for a drink
+    <<set _result to arrayChoice([
+      "Steve, your friends are calling you to take a drink afterwork. Don't they have any dishes to wash?",
+      "Hey, Steve, they are doing a party to comemorate Joe's birthday after the job. What do you think?"
+    ])>>
+    _result
+
+    [[It might be good to socialize a little bit|GoParty]]
+    [[I can party at home alone|NoParty]]
+  <<else>>
+    <<set _result to arrayChoice([
+      "Finally, a day of work done, Steve! Time to go home now.",
+      "Today was hard, but it is finally over."
+    ])>>
+    _result
+
+    [[Go Home|HomeNight]]
+  <</if>>
+
+
+:: OvertimeWork
+  <<include "DebugStats">>
+  <<set _result to arrayChoice([
+    "Okay, Steve, you can swear quietly to your boss later, now we need to focus on this.",
+    "Argh, this work is exaustive. Don't worry, buddy, it's almost over for real now."
+  ])>>
+  <<script>>addMoney(5)<</script>>
+  <<script>>addHealth(-3)<</script>>
+  _result
+
+  [[Finally it's over|HomeNight]]
+
+
+:: IgnoreOvertime
+  /* Used when there was an overtime random event, but it was chosen to ignore */
+  <<include "DebugStats">>
+  <<set _result to arrayChoice([
+    "We need the money, but this is the XXI century, slavery is already over.",
+    "You need to rest a little bit, think of money later."
+  ])>>
+  <<script>>addMoney(-2)<</script>>
+
+  [[Time to go home for real now|HomeNight]]
+
+
+:: GoParty
+  <<include "DebugStats">>
+  /* Used when Steve goes out after work */
+  <<set _result to arrayChoice([
+    "Damn, that was indeed a nice party! Wait, how much did it cost?",
+    "I hope all people in here remembered to bring their masks, riiight?"
+  ])>>
+  _result
+  <<script>>addHealth(-3)<</script>>
+  <<script>>addMoney(-5)<</script>>
+  <<script>>addSocialDist(-10)<</script>>
+  <<script>>addWariness(-5)<</script>>
+
+  [[Go home|HomeNight]]
+
+
+:: NoParty
+  <<include "DebugStats">>
+  /* Used when the player rejects the party offer */
+  <<set _result to arrayChoice([
+    "That looked like a cool party, but you need to focus, Steve!",
+    "Are you sure that you want to go there after such a tiresome day of work? Your bed is calling you."
+  ])>>
+  _result
+
+  <<if isIsolated && randomChance(75)>>
+    <<set _result to arrayChoice([
+      "Wait, Steve, where are you going?!",
+      "C'mon, Steve, go back here! Are you really sure that you are going to just ignore your fluffy bed at home?"
+    ])>>
+    _result
+
+    [[Accompany Steve in the Party|GoParty]]
+  <<else>>
+    <<script>>addSocialDist(2)<</script>>
+    [[Go home|HomeNight]]
+  <</if>>
+
+
+:: HomeNight
+  <<include "DebugStats">>
+  /* Used when Steve goes out after work */
+  <<set _result to arrayChoice([
+    "Today was a tiresome day, but at least you are free now.",
+    "Finally at home, right? So, what do you want to do, Steve?"
+  ])>>
+  _result
+
+  [[Sleep|Morning]]
 
 
 :: StoryScript [script]
@@ -353,6 +490,10 @@ else logVariableError("SICK_THRESHOLD")
 // if social dist is above this value, Steve starts to feeling alone
 if (!window.ISOLATED_THRESHOLD) window.ISOLATED_THRESHOLD = 70;
 else logVariableError("ISOLATED_THRESHOLD")
+
+// if money is below this value, Steve is considered with low budget
+if (!window.POOR_THRESHOLD) window.POOR_THRESHOLD = 30;
+else logVariableError("POOR_THRESHOLD")
 
 // -------------------
 // || --- Stats --- ||
@@ -406,7 +547,19 @@ window.getMoney = function() {
 window.addMoney = function(toAdd) {
   _money += toAdd;
 }
+window.isPoor = function() {
+  return _money < POOR_THRESHOLD
+}
 
+// day
+if (!window._day) window._day = 1;
+else logVariableError("_day")
+window.getDay = function() {
+  return ("0" + _day).slice(-2); // returns "0 + day" if day < 10 or "day" otherwise
+}
+window.goToNextDay = function() {
+  _day += 1
+}
 // --- Non-Numeric ---
 
 // whether Steve has mask on, could be interesting
@@ -438,4 +591,202 @@ window.arrayChoice = function(array) {
 // return boolean for random probability chance (in %)
 window.randomChance = function(probability) {
   return Math.random() < probability/100
+}
+
+:: StoryStylesheet [stylesheet]
+html,body{font-family:Verdana,sans-serif;font-size:15px;line-height:1.5}html{overflow-x:hidden}
+h1{font-size:36px}h2{font-size:30px}h3{font-size:24px}h4{font-size:20px}h5{font-size:18px}h6{font-size:16px}
+.w3-serif{font-family:serif}.w3-sans-serif{font-family:sans-serif}.w3-cursive{font-family:cursive}.w3-monospace{font-family:monospace}
+h1,h2,h3,h4,h5,h6{font-family:"Segoe UI",Arial,sans-serif;font-weight:400;margin:10px 0}.w3-wide{letter-spacing:4px}
+hr{border:0;border-top:1px solid #eee;margin:20px 0}
+.w3-image{max-width:100%;height:auto}img{vertical-align:middle}
+.w3-table,.w3-table-all{border-collapse:collapse;border-spacing:0;width:100%;display:table}.w3-table-all{border:1px solid #ccc}
+.w3-bordered tr,.w3-table-all tr{border-bottom:1px solid #ddd}.w3-striped tbody tr:nth-child(even){background-color:#f1f1f1}
+.w3-table-all tr:nth-child(odd){background-color:#fff}.w3-table-all tr:nth-child(even){background-color:#f1f1f1}
+.w3-hoverable tbody tr:hover,.w3-ul.w3-hoverable li:hover{background-color:#ccc}.w3-centered tr th,.w3-centered tr td{text-align:center}
+.w3-table td,.w3-table th,.w3-table-all td,.w3-table-all th{padding:8px 8px;display:table-cell;text-align:left;vertical-align:top}
+.w3-table th:first-child,.w3-table td:first-child,.w3-table-all th:first-child,.w3-table-all td:first-child{padding-left:16px}
+.w3-btn,.w3-button{border:none;display:inline-block;padding:8px 16px;vertical-align:middle;overflow:hidden;text-decoration:none;color:inherit;background-color:inherit;text-align:center;cursor:pointer;white-space:nowrap}
+.w3-btn:hover{box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19)}
+.w3-btn,.w3-button{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}   
+.w3-disabled,.w3-btn:disabled,.w3-button:disabled{cursor:not-allowed;opacity:0.3}.w3-disabled *,:disabled *{pointer-events:none}
+.w3-btn.w3-disabled:hover,.w3-btn:disabled:hover{box-shadow:none}
+.w3-badge,.w3-tag{background-color:#000;color:#fff;display:inline-block;padding-left:8px;padding-right:8px;text-align:center}.w3-badge{border-radius:50%}
+.w3-ul{list-style-type:none;padding:0;margin:0}.w3-ul li{padding:8px 16px;border-bottom:1px solid #ddd}.w3-ul li:last-child{border-bottom:none}
+.w3-tooltip,.w3-display-container{position:relative}.w3-tooltip .w3-text{display:none}.w3-tooltip:hover .w3-text{display:inline-block}
+.w3-ripple:active{opacity:0.5}.w3-ripple{transition:opacity 0s}
+.w3-input{padding:8px;display:block;border:none;border-bottom:1px solid #ccc;width:100%}
+.w3-select{padding:9px 0;width:100%;border:none;border-bottom:1px solid #ccc}
+.w3-dropdown-click,.w3-dropdown-hover{position:relative;display:inline-block;cursor:pointer}
+.w3-dropdown-hover:hover .w3-dropdown-content{display:block}
+.w3-dropdown-hover:first-child,.w3-dropdown-click:hover{background-color:#ccc;color:#000}
+.w3-dropdown-hover:hover > .w3-button:first-child,.w3-dropdown-click:hover > .w3-button:first-child{background-color:#ccc;color:#000}
+.w3-dropdown-content{cursor:auto;color:#000;background-color:#fff;display:none;position:absolute;min-width:160px;margin:0;padding:0;z-index:1}
+.w3-check,.w3-radio{width:24px;height:24px;position:relative;top:6px}
+.w3-sidebar{height:100%;width:200px;background-color:#fff;position:fixed!important;z-index:1;overflow:auto}
+.w3-bar-block .w3-dropdown-hover,.w3-bar-block .w3-dropdown-click{width:100%}
+.w3-bar-block .w3-dropdown-hover .w3-dropdown-content,.w3-bar-block .w3-dropdown-click .w3-dropdown-content{min-width:100%}
+.w3-bar-block .w3-dropdown-hover .w3-button,.w3-bar-block .w3-dropdown-click .w3-button{width:100%;text-align:left;padding:8px 16px}
+.w3-main,#main{transition:margin-left .4s}
+.w3-modal{z-index:3;display:none;padding-top:100px;position:fixed;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4)}
+.w3-modal-content{margin:auto;background-color:#fff;position:relative;padding:0;outline:0;width:600px}
+.w3-bar{width:100%;overflow:hidden}.w3-center .w3-bar{display:inline-block;width:auto}
+.w3-bar .w3-bar-item{padding:8px 16px;float:left;width:auto;border:none;display:block;outline:0}
+.w3-bar .w3-dropdown-hover,.w3-bar .w3-dropdown-click{position:static;float:left}
+.w3-bar .w3-button{white-space:normal}
+.w3-bar-block .w3-bar-item{width:100%;display:block;padding:8px 16px;text-align:left;border:none;white-space:normal;float:none;outline:0}
+.w3-bar-block.w3-center .w3-bar-item{text-align:center}.w3-block{display:block;width:100%}
+.w3-responsive{display:block;overflow-x:auto}
+.w3-container:after,.w3-container:before,.w3-panel:after,.w3-panel:before,.w3-row:after,.w3-row:before,.w3-row-padding:after,.w3-row-padding:before,
+.w3-cell-row:before,.w3-cell-row:after,.w3-clear:after,.w3-clear:before,.w3-bar:before,.w3-bar:after{content:"";display:table;clear:both}
+.w3-col,.w3-half,.w3-third,.w3-twothird,.w3-threequarter,.w3-quarter{float:left;width:100%}
+.w3-col.s1{width:8.33333%}.w3-col.s2{width:16.66666%}.w3-col.s3{width:24.99999%}.w3-col.s4{width:33.33333%}
+.w3-col.s5{width:41.66666%}.w3-col.s6{width:49.99999%}.w3-col.s7{width:58.33333%}.w3-col.s8{width:66.66666%}
+.w3-col.s9{width:74.99999%}.w3-col.s10{width:83.33333%}.w3-col.s11{width:91.66666%}.w3-col.s12{width:99.99999%}
+@media (min-width:601px){.w3-col.m1{width:8.33333%}.w3-col.m2{width:16.66666%}.w3-col.m3,.w3-quarter{width:24.99999%}.w3-col.m4,.w3-third{width:33.33333%}
+.w3-col.m5{width:41.66666%}.w3-col.m6,.w3-half{width:49.99999%}.w3-col.m7{width:58.33333%}.w3-col.m8,.w3-twothird{width:66.66666%}
+.w3-col.m9,.w3-threequarter{width:74.99999%}.w3-col.m10{width:83.33333%}.w3-col.m11{width:91.66666%}.w3-col.m12{width:99.99999%}}
+@media (min-width:993px){.w3-col.l1{width:8.33333%}.w3-col.l2{width:16.66666%}.w3-col.l3{width:24.99999%}.w3-col.l4{width:33.33333%}
+.w3-col.l5{width:41.66666%}.w3-col.l6{width:49.99999%}.w3-col.l7{width:58.33333%}.w3-col.l8{width:66.66666%}
+.w3-col.l9{width:74.99999%}.w3-col.l10{width:83.33333%}.w3-col.l11{width:91.66666%}.w3-col.l12{width:99.99999%}}
+.w3-rest{overflow:hidden}.w3-stretch{margin-left:-16px;margin-right:-16px}
+.w3-content,.w3-auto{margin-left:auto;margin-right:auto}.w3-content{max-width:980px}.w3-auto{max-width:1140px}
+.w3-cell-row{display:table;width:100%}.w3-cell{display:table-cell}
+.w3-cell-top{vertical-align:top}.w3-cell-middle{vertical-align:middle}.w3-cell-bottom{vertical-align:bottom}
+.w3-hide{display:none!important}.w3-show-block,.w3-show{display:block!important}.w3-show-inline-block{display:inline-block!important}
+@media (max-width:1205px){.w3-auto{max-width:95%}}
+@media (max-width:600px){.w3-modal-content{margin:0 10px;width:auto!important}.w3-modal{padding-top:30px}
+.w3-dropdown-hover.w3-mobile .w3-dropdown-content,.w3-dropdown-click.w3-mobile .w3-dropdown-content{position:relative}	
+.w3-hide-small{display:none!important}.w3-mobile{display:block;width:100%!important}.w3-bar-item.w3-mobile,.w3-dropdown-hover.w3-mobile,.w3-dropdown-click.w3-mobile{text-align:center}
+.w3-dropdown-hover.w3-mobile,.w3-dropdown-hover.w3-mobile .w3-btn,.w3-dropdown-hover.w3-mobile .w3-button,.w3-dropdown-click.w3-mobile,.w3-dropdown-click.w3-mobile .w3-btn,.w3-dropdown-click.w3-mobile .w3-button{width:100%}}
+@media (max-width:768px){.w3-modal-content{width:500px}.w3-modal{padding-top:50px}}
+@media (min-width:993px){.w3-modal-content{width:900px}.w3-hide-large{display:none!important}.w3-sidebar.w3-collapse{display:block!important}}
+@media (max-width:992px) and (min-width:601px){.w3-hide-medium{display:none!important}}
+@media (max-width:992px){.w3-sidebar.w3-collapse{display:none}.w3-main{margin-left:0!important;margin-right:0!important}.w3-auto{max-width:100%}}
+.w3-top,.w3-bottom{position:fixed;width:100%;z-index:1}.w3-top{top:0}.w3-bottom{bottom:0}
+.w3-overlay{position:fixed;display:none;width:100%;height:100%;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.5);z-index:2}
+.w3-display-topleft{position:absolute;left:0;top:0}.w3-display-topright{position:absolute;right:0;top:0}
+.w3-display-bottomleft{position:absolute;left:0;bottom:0}.w3-display-bottomright{position:absolute;right:0;bottom:0}
+.w3-display-middle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%)}
+.w3-display-left{position:absolute;top:50%;left:0%;transform:translate(0%,-50%);-ms-transform:translate(-0%,-50%)}
+.w3-display-right{position:absolute;top:50%;right:0%;transform:translate(0%,-50%);-ms-transform:translate(0%,-50%)}
+.w3-display-topmiddle{position:absolute;left:50%;top:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
+.w3-display-bottommiddle{position:absolute;left:50%;bottom:0;transform:translate(-50%,0%);-ms-transform:translate(-50%,0%)}
+.w3-display-container:hover .w3-display-hover{display:block}.w3-display-container:hover span.w3-display-hover{display:inline-block}.w3-display-hover{display:none}
+.w3-display-position{position:absolute}
+.w3-circle{border-radius:50%}
+.w3-round-small{border-radius:2px}.w3-round,.w3-round-medium{border-radius:4px}.w3-round-large{border-radius:8px}.w3-round-xlarge{border-radius:16px}.w3-round-xxlarge{border-radius:32px}
+.w3-row-padding,.w3-row-padding>.w3-half,.w3-row-padding>.w3-third,.w3-row-padding>.w3-twothird,.w3-row-padding>.w3-threequarter,.w3-row-padding>.w3-quarter,.w3-row-padding>.w3-col{padding:0 8px}
+.w3-container,.w3-panel{padding:0.01em 16px}.w3-panel{margin-top:16px;margin-bottom:16px}
+.w3-code,.w3-codespan{font-family:Consolas,"courier new";font-size:16px}
+.w3-code{width:auto;background-color:#fff;padding:8px 12px;border-left:4px solid #4CAF50;word-wrap:break-word}
+.w3-codespan{color:crimson;background-color:#f1f1f1;padding-left:4px;padding-right:4px;font-size:110%}
+.w3-card,.w3-card-2{box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)}
+.w3-card-4,.w3-hover-shadow:hover{box-shadow:0 4px 10px 0 rgba(0,0,0,0.2),0 4px 20px 0 rgba(0,0,0,0.19)}
+.w3-spin{animation:w3-spin 2s infinite linear}@keyframes w3-spin{0%{transform:rotate(0deg)}100%{transform:rotate(359deg)}}
+.w3-animate-fading{animation:fading 10s infinite}@keyframes fading{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+.w3-animate-opacity{animation:opac 0.8s}@keyframes opac{from{opacity:0} to{opacity:1}}
+.w3-animate-top{position:relative;animation:animatetop 0.4s}@keyframes animatetop{from{top:-300px;opacity:0} to{top:0;opacity:1}}
+.w3-animate-left{position:relative;animation:animateleft 0.4s}@keyframes animateleft{from{left:-300px;opacity:0} to{left:0;opacity:1}}
+.w3-animate-right{position:relative;animation:animateright 0.4s}@keyframes animateright{from{right:-300px;opacity:0} to{right:0;opacity:1}}
+.w3-animate-bottom{position:relative;animation:animatebottom 0.4s}@keyframes animatebottom{from{bottom:-300px;opacity:0} to{bottom:0;opacity:1}}
+.w3-animate-zoom {animation:animatezoom 0.6s}@keyframes animatezoom{from{transform:scale(0)} to{transform:scale(1)}}
+.w3-animate-input{transition:width 0.4s ease-in-out}.w3-animate-input:focus{width:100%!important}
+.w3-opacity,.w3-hover-opacity:hover{opacity:0.60}.w3-opacity-off,.w3-hover-opacity-off:hover{opacity:1}
+.w3-opacity-max{opacity:0.25}.w3-opacity-min{opacity:0.75}
+.w3-greyscale-max,.w3-grayscale-max,.w3-hover-greyscale:hover,.w3-hover-grayscale:hover{filter:grayscale(100%)}
+.w3-greyscale,.w3-grayscale{filter:grayscale(75%)}.w3-greyscale-min,.w3-grayscale-min{filter:grayscale(50%)}
+.w3-sepia{filter:sepia(75%)}.w3-sepia-max,.w3-hover-sepia:hover{filter:sepia(100%)}.w3-sepia-min{filter:sepia(50%)}
+.w3-tiny{font-size:10px!important}.w3-small{font-size:12px!important}.w3-medium{font-size:15px!important}.w3-large{font-size:18px!important}
+.w3-xlarge{font-size:24px!important}.w3-xxlarge{font-size:36px!important}.w3-xxxlarge{font-size:48px!important}.w3-jumbo{font-size:64px!important}
+.w3-left-align{text-align:left!important}.w3-right-align{text-align:right!important}.w3-justify{text-align:justify!important}.w3-center{text-align:center!important}
+.w3-border{border:1px solid #ccc!important}
+/* Colors */
+.w3-amber,.w3-hover-amber:hover{color:#000!important;background-color:#ffc107!important}
+.w3-aqua,.w3-hover-aqua:hover{color:#000!important;background-color:#00ffff!important}
+.w3-blue,.w3-hover-blue:hover{color:#fff!important;background-color:#2196F3!important}
+.w3-light-blue,.w3-hover-light-blue:hover{color:#000!important;background-color:#87CEEB!important}
+.w3-brown,.w3-hover-brown:hover{color:#fff!important;background-color:#795548!important}
+.w3-cyan,.w3-hover-cyan:hover{color:#000!important;background-color:#00bcd4!important}
+.w3-blue-grey,.w3-hover-blue-grey:hover,.w3-blue-gray,.w3-hover-blue-gray:hover{color:#fff!important;background-color:#607d8b!important}
+.w3-green,.w3-hover-green:hover{color:#fff!important;background-color:#4CAF50!important}
+.w3-light-green,.w3-hover-light-green:hover{color:#000!important;background-color:#8bc34a!important}
+.w3-indigo,.w3-hover-indigo:hover{color:#fff!important;background-color:#3f51b5!important}
+.w3-khaki,.w3-hover-khaki:hover{color:#000!important;background-color:#f0e68c!important}
+.w3-lime,.w3-hover-lime:hover{color:#000!important;background-color:#cddc39!important}
+.w3-orange,.w3-hover-orange:hover{color:#000!important;background-color:#ff9800!important}
+.w3-deep-orange,.w3-hover-deep-orange:hover{color:#fff!important;background-color:#ff5722!important}
+.w3-pink,.w3-hover-pink:hover{color:#fff!important;background-color:#e91e63!important}
+.w3-purple,.w3-hover-purple:hover{color:#fff!important;background-color:#9c27b0!important}
+.w3-deep-purple,.w3-hover-deep-purple:hover{color:#fff!important;background-color:#673ab7!important}
+.w3-red,.w3-hover-red:hover{color:#fff!important;background-color:#f44336!important}
+.w3-sand,.w3-hover-sand:hover{color:#000!important;background-color:#fdf5e6!important}
+.w3-teal,.w3-hover-teal:hover{color:#fff!important;background-color:#009688!important}
+.w3-yellow,.w3-hover-yellow:hover{color:#000!important;background-color:#ffeb3b!important}
+.w3-white,.w3-hover-white:hover{color:#000!important;background-color:#fff!important}
+.w3-black,.w3-hover-black:hover{color:#fff!important;background-color:#000!important}
+.w3-grey,.w3-hover-grey:hover,.w3-gray,.w3-hover-gray:hover{color:#000!important;background-color:#9e9e9e!important}
+.w3-light-grey,.w3-hover-light-grey:hover,.w3-light-gray,.w3-hover-light-gray:hover{color:#000!important;background-color:#f1f1f1!important}
+.w3-dark-grey,.w3-hover-dark-grey:hover,.w3-dark-gray,.w3-hover-dark-gray:hover{color:#fff!important;background-color:#616161!important}
+.w3-pale-red,.w3-hover-pale-red:hover{color:#000!important;background-color:#ffdddd!important}
+.w3-pale-green,.w3-hover-pale-green:hover{color:#000!important;background-color:#ddffdd!important}
+.w3-pale-yellow,.w3-hover-pale-yellow:hover{color:#000!important;background-color:#ffffcc!important}
+.w3-pale-blue,.w3-hover-pale-blue:hover{color:#000!important;background-color:#ddffff!important}
+.w3-text-amber,.w3-hover-text-amber:hover{color:#ffc107!important}
+.w3-text-aqua,.w3-hover-text-aqua:hover{color:#00ffff!important}
+.w3-text-blue,.w3-hover-text-blue:hover{color:#2196F3!important}
+.w3-text-light-blue,.w3-hover-text-light-blue:hover{color:#87CEEB!important}
+.w3-text-brown,.w3-hover-text-brown:hover{color:#795548!important}
+.w3-text-cyan,.w3-hover-text-cyan:hover{color:#00bcd4!important}
+.w3-text-blue-grey,.w3-hover-text-blue-grey:hover,.w3-text-blue-gray,.w3-hover-text-blue-gray:hover{color:#607d8b!important}
+.w3-text-green,.w3-hover-text-green:hover{color:#4CAF50!important}
+.w3-text-light-green,.w3-hover-text-light-green:hover{color:#8bc34a!important}
+.w3-text-indigo,.w3-hover-text-indigo:hover{color:#3f51b5!important}
+.w3-text-khaki,.w3-hover-text-khaki:hover{color:#b4aa50!important}
+.w3-text-lime,.w3-hover-text-lime:hover{color:#cddc39!important}
+.w3-text-orange,.w3-hover-text-orange:hover{color:#ff9800!important}
+.w3-text-deep-orange,.w3-hover-text-deep-orange:hover{color:#ff5722!important}
+.w3-text-pink,.w3-hover-text-pink:hover{color:#e91e63!important}
+.w3-text-purple,.w3-hover-text-purple:hover{color:#9c27b0!important}
+.w3-text-deep-purple,.w3-hover-text-deep-purple:hover{color:#673ab7!important}
+.w3-text-red,.w3-hover-text-red:hover{color:#f44336!important}
+.w3-text-sand,.w3-hover-text-sand:hover{color:#fdf5e6!important}
+.w3-text-teal,.w3-hover-text-teal:hover{color:#009688!important}
+.w3-text-yellow,.w3-hover-text-yellow:hover{color:#d2be0e!important}
+.w3-text-white,.w3-hover-text-white:hover{color:#fff!important}
+.w3-text-black,.w3-hover-text-black:hover{color:#000!important}
+.w3-text-grey,.w3-hover-text-grey:hover,.w3-text-gray,.w3-hover-text-gray:hover{color:#757575!important}
+.w3-text-light-grey,.w3-hover-text-light-grey:hover,.w3-text-light-gray,.w3-hover-text-light-gray:hover{color:#f1f1f1!important}
+.w3-text-dark-grey,.w3-hover-text-dark-grey:hover,.w3-text-dark-gray,.w3-hover-text-dark-gray:hover{color:#3a3a3a!important}
+.w3-border-amber,.w3-hover-border-amber:hover{border-color:#ffc107!important}
+.w3-border-aqua,.w3-hover-border-aqua:hover{border-color:#00ffff!important}
+.w3-border-blue,.w3-hover-border-blue:hover{border-color:#2196F3!important}
+.w3-border-light-blue,.w3-hover-border-light-blue:hover{border-color:#87CEEB!important}
+.w3-border-brown,.w3-hover-border-brown:hover{border-color:#795548!important}
+.w3-border-cyan,.w3-hover-border-cyan:hover{border-color:#00bcd4!important}
+.w3-border-blue-grey,.w3-hover-border-blue-grey:hover,.w3-border-blue-gray,.w3-hover-border-blue-gray:hover{border-color:#607d8b!important}
+.w3-border-green,.w3-hover-border-green:hover{border-color:#4CAF50!important}
+.w3-border-light-green,.w3-hover-border-light-green:hover{border-color:#8bc34a!important}
+.w3-border-indigo,.w3-hover-border-indigo:hover{border-color:#3f51b5!important}
+.w3-border-khaki,.w3-hover-border-khaki:hover{border-color:#f0e68c!important}
+.w3-border-lime,.w3-hover-border-lime:hover{border-color:#cddc39!important}
+.w3-border-orange,.w3-hover-border-orange:hover{border-color:#ff9800!important}
+.w3-border-deep-orange,.w3-hover-border-deep-orange:hover{border-color:#ff5722!important}
+.w3-border-pink,.w3-hover-border-pink:hover{border-color:#e91e63!important}
+.w3-border-purple,.w3-hover-border-purple:hover{border-color:#9c27b0!important}
+.w3-border-deep-purple,.w3-hover-border-deep-purple:hover{border-color:#673ab7!important}
+.w3-border-red,.w3-hover-border-red:hover{border-color:#f44336!important}
+.w3-border-sand,.w3-hover-border-sand:hover{border-color:#fdf5e6!important}
+.w3-border-teal,.w3-hover-border-teal:hover{border-color:#009688!important}
+.w3-border-yellow,.w3-hover-border-yellow:hover{border-color:#ffeb3b!important}
+.w3-border-white,.w3-hover-border-white:hover{border-color:#fff!important}
+.w3-border-black,.w3-hover-border-black:hover{border-color:#000!important}
+.w3-border-grey,.w3-hover-border-grey:hover,.w3-border-gray,.w3-hover-border-gray:hover{border-color:#9e9e9e!important}
+.w3-border-light-grey,.w3-hover-border-light-grey:hover,.w3-border-light-gray,.w3-hover-border-light-gray:hover{border-color:#f1f1f1!important}
+.w3-border-dark-grey,.w3-hover-border-dark-grey:hover,.w3-border-dark-gray,.w3-hover-border-dark-gray:hover{border-color:#616161!important}
+.w3-border-pale-red,.w3-hover-border-pale-red:hover{border-color:#ffe7e7!important}.w3-border-pale-green,.w3-hover-border-pale-green:hover{border-color:#e7ffe7!important}
+.w3-border-pale-yellow,.w3-hover-border-pale-yellow:hover{border-color:#ffffcc!important}.w3-border-pale-blue,.w3-hover-border-pale-blue:hover{border-color:#e7ffff!important}
+.hud-bar {
+  width: 25%;
+  background-color: #202324;
 }
