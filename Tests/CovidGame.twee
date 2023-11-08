@@ -1,0 +1,193 @@
+:: StoryTitle
+CovidGame
+
+
+:: StoryData
+{
+  "ifid": "9CCC0412-E473-4DBA-AECD-4819C661C54A",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Morning",
+  "zoom": 1
+}
+
+
+:: Morning {"position":"525,275","size":"100,100"}
+<<set $stable_passage to "Morning">>
+
+Good morning Steve, get ready for another day!
+
+<<if getMask()>>
+  [[Remove Mask|RemoveMask]]
+<<else>>
+  [[Put a mask on|TryMask]]
+<</if>>
+[[Take a COVID test|TryTest]]
+[[Go to work]]
+
+
+:: RemoveMask
+<<script>>setMask(false)<</script>>
+Steve looks sort of troubled by the mask. Maybe taking it off a bit would be good.
+
+[[Back|$stable_passage]]
+
+
+:: TryMask
+/* this passage determines whether Steve puts on mask and shows the correct message */
+<<if getWariness() < CARELESS_THRESHOLD>>
+  <<set _result to arrayChoice([
+    "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
+    "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
+  ])>> /* add more variations inside the array */
+
+  _result /* Display the resulting message */
+
+  [[What the hell, Steve...|$stable_passage]]
+<<else>>
+  <<script>>addHealth(2)<</script>>
+  <<script>>setMask(true)<</script>>
+  Steve puts his mask on. Feeling protected already!
+
+  [[Well done Steve!|$stable_passage]]
+<</if>>
+
+
+:: TryTest
+/* this passage will have Steve try to take a test */
+<<if getWariness() < CARELESS_THRESHOLD>>
+  <<set _result to arrayChoice([
+    "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
+    "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
+  ])>>
+
+  _result /* Display the resulting message */
+
+  [[What the hell, Steve...|$stable_passage]]
+<<else>>
+  Steve reluctanly stabs his nostril with the swab and rummages around before he finally stops torturing his nose.
+
+  And now, we wait...
+
+  [[Wait for the result|WaitTest]]
+<</if>>
+
+
+:: WaitTest
+The suspense is killing Steve. He feels fine, sort of.
+So it should most definitely be fine....right?
+
+[[See the results|ResultTest]]
+
+
+:: ResultTest
+/* determine whether Health is below COVID threshold */
+<<if getHealth() < COVID_THRESHOLD>>
+  It came back positive....
+
+  It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
+<<else>>
+  /* Steve is an idiot, so taking a negative test boosts his confidence */
+  <<script>>addWariness(-5)<</script>>
+  It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
+
+  Steve, you look way more relieved than you should be...
+<</if>>
+
+[[Back|$stable_passage]]
+
+
+:: StoryScript [script]
+// --------------------
+// || --- Config --- ||
+// --------------------
+
+// failsafe error message
+window.logVariableError = function(variable) {
+  console.error("Could not declare "+variable+" in this namespace");
+}
+
+// if wariness is below this value, Steve might not do some of the things you tell him
+if (!window.CARELESS_THRESHOLD) window.CARELESS_THRESHOLD = 30;
+else logVariableError("CARELESS_THRESHOLD")
+
+// if health is below this limit, Steve has COVID
+if (!window.COVID_THRESHOLD) window.COVID_THRESHOLD = 30;
+else logVariableError("COVID_THRESHOLD")
+
+// if health is below this limit, Steve has COVID AND is very sick
+if (!window.SICK_THRESHOLD) window.SICK_THRESHOLD = 10;
+else logVariableError("SICK_THRESHOLD")
+
+
+// -------------------
+// || --- Stats --- ||
+// -------------------
+
+// wariness (or carefulness)
+if (!window._wariness) window._wariness = 50;
+else logVariableError("_wariness")
+window.getWariness = function() {
+  return _wariness;
+}
+window.addWariness = function(toAdd) {
+  _wariness += toAdd;
+}
+
+// social_dist
+if (!window._social_dist) window._social_dist = 50;
+else logVariableError("_social_dist")
+window.getSocialDist = function() {
+  return _social_dist;
+}
+window.addSocialDist = function(toAdd) {
+  _social_dist += toAdd;
+}
+
+// health
+if (!window._health) window._health = 50;
+else logVariableError("_health")
+window.getHealth = function() {
+  return _health;
+}
+window.addHealth = function(toAdd) {
+  _health += toAdd;
+}
+
+// money
+if (!window._money) window._money = 50;
+else logVariableError("_money")
+window.getMoney = function() {
+  return _money;
+}
+window.addMoney = function(toAdd) {
+  _money += toAdd;
+}
+
+// --- Non-Numeric ---
+
+// whether Steve has mask on, could be interesting
+if (!window._has_mask) window._has_mask = false;
+else logVariableError("_has_mask")
+window.getMask = function() {
+  return _has_mask;
+}
+window.setMask = function(onoff) {
+  _has_mask = onoff;
+}
+
+
+// -------------------
+// || --- Utils --- ||
+// -------------------
+
+// return a random int between min (inclusive) and max (inclusive)
+window.randint = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+// return a random element from an array
+window.arrayChoice = function(array) {
+  let ix = randint(0, array.length - 1); // choose random index
+  return array[ix];
+}
