@@ -7,7 +7,7 @@ CovidGame2
   "ifid": "B23132D3-91BF-4158-99DA-9C128303991B",
   "format": "SugarCube",
   "format-version": "2.36.1",
-  "start": "Morning",
+  "start": "MorningPhase",
   "tag-colors": {
     "autosave": "green",
     "noreturn": "red"
@@ -42,48 +42,40 @@ Day: _day
 <</silently>>
 
 
-:: Morning {"position":"475,250","size":"100,100"}
+:: StablePhaseCommon
+  /* Common procedures when game enters any of the stable phases */
+  <<script>>setTest(false)<</script>>
+  <<script>>setWashed(false)<</script>>
+  /* mask is reset the start of each day */
+
+
+:: MorningPhase {"position":"475,250","size":"100,100"}
   <<include "DebugStats">>
-  <<set $stable_passage to "Morning">>
+  <<include "StablePhaseCommon">>
+  <<set $stable_passage to "MorningPhase">>
+  <<script>>setMask(false)<</script>>
 
   Good morning Steve, get ready for another day!
 
+  /* --- Steve's Morning Actions --- */
   <<if getMask()>>
-    [[Remove Mask|RemoveMask]]
+    [[Remove Mask|MorningMaskOff]]
   <<else>>
-    [[Put a mask on|TryMask]]
+    [[Put a mask on|MorningMaskOn]]
   <</if>>
-  [[Take a COVID test|TryTest]]
-  [[Go to work|MorningEventPool]]
+  [[Take a COVID test|MorningTest]]
+  [[Wash Hands|MorningWash]]
+
+  After he is ready, Steve must work. His company does have the option to work from home... though they don't really support it much...
+  What to do...
+
+  [[Go to work in person|MorningChooseOfficework]]
+  [[Call his boss to request working from home|MorningChooseTelework]]
+  /* ----- */
 
 
-:: RemoveMask {"position":"150,100","size":"100,100"}
-  <<include "DebugStats">>
-  <<script>>setMask(false)<</script>>
-  Steve looks sort of troubled by the mask. Maybe taking it off a bit would be good.
-
-  [[Back|$stable_passage]]
-
-
-:: ResultTest {"position":"1050,175","size":"100,100"}
-  <<include "DebugStats">>
-  /* determine whether Health is below COVID threshold */
-  <<if getHealth() < COVID_THRESHOLD>>
-    It came back positive....
-
-    It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
-  <<else>>
-    /* Steve is an idiot, so taking a negative test boosts his confidence */
-    <<script>>addWariness(-5)<</script>>
-    It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
-
-    Steve, you look way more relieved than you should be...
-  <</if>>
-
-  [[Back|$stable_passage]]
-
-
-:: TryMask {"position":"775,325","size":"100,100"}
+:: MorningMaskOn {"position":"775,325","size":"100,100"}
+/* Morning mask on test. In the morning, Steve should put on a mask, since he's is going outside. Putting a mask on increases health. Does NOT increase wariness because that's what he should do. */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
   <<if isCareless()>>
@@ -104,10 +96,37 @@ Day: _day
   <</if>>
 
 
-:: TryTest {"position":"475,25","size":"100,100"}
+:: MorningMaskOff {"position":"150,100","size":"100,100"}
+  /* Morning mask off test. In the morning, Steve should put on a mask, since he's is going outside. Taking off the mask, results in minus health and minus wariness */
+  <<include "DebugStats">>
+  <<script>>setMask(false)<</script>>
+  /* this passage determines whether Steve takes mask off and shows the correct message */
+  <<if isParanoid()>>
+    <<set _result to arrayChoice([
+      /*"Steve is trembling just thinking about taking the mask off. In the end, he leaves it on.",
+      "Not only does Steve NOT take the mask off, he puts on ANOTHER mask over the previous one. That might be overdoing it a bit.",*/
+      "Steve looks at the scary, germ-infected cruel world out the window and promptly decides to ignore the idea of taking the mask off.",
+      "Steve actually ponders taking the mask off just for a split-second, before recalling all the different theories and studies on virus spread rate and risks. He puts his mask on tighter."
+    ])>> /* add more variations inside the array */
+
+    _result /* Display the resulting message */
+
+    [[Well, yeah, maybe that's for the best, Steve|$stable_passage]]
+    /*[[What the hell, Steve...|$stable_passage]]*/
+  <<else>>
+    <<script>>addHealth(-2)<</script>>
+    <<script>>addWariness(-5)<</script>>
+    <<script>>setMask(false)<</script>>
+    Well.... Steve is supposed to go outside right now, but he looks sort of troubled by the mask. Maybe taking it off a bit would be good....
+
+    [[Hopefully, nothing bad will come of it|$stable_passage]]
+  <</if>>
+
+
+:: MorningTest {"position":"475,25","size":"100,100"}
   <<include "DebugStats">>
   /* this passage will have Steve try to take a test */
-  <<if getWariness() < CARELESS_THRESHOLD>>
+  <<if isCareless()>>
     <<set _result to arrayChoice([
       "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
       "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
@@ -133,41 +152,142 @@ Day: _day
   [[See the results|ResultTest]]
 
 
-:: MorningEventPool {"position":"725,50","size":"100,100"}
+:: ResultTest {"position":"1050,175","size":"100,100"}
   <<include "DebugStats">>
-  /* this passage will have the random events that Steve might do while going to work */
-  <<nobr>>
-  <<set $morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
-  <</nobr>>
-  <<include $morning_event>>
+  /* determine whether Health is below COVID threshold */
+  <<if getHealth() < COVID_THRESHOLD>>
+    It came back positive....
 
-
-:: MorningWalk {"position":"725,50","size":"100,100"}
-  Steve decided to exercise a little and take a walk to the work. 
-  <<set _greet to randomChance(60)>> /* Probability of greeting someone */
-  <<if _greet>>
-    He sometimes stop to greeting people tho.
-    <<script>>addSocialDist(-2)<</script>>
-    [[At least he's exercising, right...?|Work]]
+    It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
   <<else>>
-    Steve feels good after doing some exercise!
-    <<script>>addHealth(2)<</script>>
-    [[Nicely done, Steve!|Work]]
+    /* Steve is an idiot, so taking a negative test boosts his confidence */
+    <<script>>addWariness(-5)<</script>>
+    It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
+
+    Steve, you look way more relieved than you should be...
+  <</if>>
+
+  [[Back|$stable_passage]]
+
+
+:: MorningWash
+  <<include "DebugStats">>
+  /* Morning hand wash. Since it's morning, it's not as important and overdoing it increases wariness. */
+
+  Steve just woke up, but you never know right. Virus could be anywhere. He should wash his hands, just to be safe... Right?
+
+  <<if isCareless()>>
+    Steve doesn't seem to think so. Well, it is morning, but you shouldn't be so dismissive about it either way Steve...
+  <<elseif isParanoid()>>
+    Steve seems a little too eager to wash his hands. He's even doing the whole birthday song thing. It's only morning Steve, maybe you don't need that much.
+  <<else>>
+    Indeed, Steve starts thinking that maybe he hasn't been washing ENOUGH... Uh oh...
+    <<script>>addWariness(5)<</script>>
+  <</if>>
+
+  [[Back|$stable_passage]]
+
+
+:: MorningChooseOfficework
+  /* choosing to go to work in person */
+  <<include "DebugStats">>
+  <<if isParanoid()>>
+    <<set _result to arrayChoice([
+      "Steve refuses to even think about leaving the house. There's people out there, mindlessly spitting germs and deadly viruses into each others faces!",
+      "Apparently Steve never even got out of his pajamas and has already sat down at his desk, surounded by toilet paper and hand sanitiser bottles. Seems someone isn't getting out anytime soon...\n"
+    ])>>
+
+    _result
+
+    [[Aaaaah.... If you say so, Steve...|Telework1Pool]]
+  <<else>>
+    <<script>>addSocialDist(-10)<</script>>
+    Steve should probably go to work. His boss wouldn't be very happy if he skipped anyway.
+
+    [[To work we go!|Officework1Pool]]
   <</if>>
 
 
+:: MorningChooseTelework
+  /* choosing to work from home */
+  <<include "DebugStats">>
+  <<if isIsolated()>>
+    <<set _result to arrayChoice([
+      "Steve couldn't give a rat's ass about safety right now. HE NEEDS TO SEE ANOTHER HUMAN BEING.",
+      "Being away from people for so long, the thought of staying home never even crossed Steve's mind as he is already opening the front door to go out."
+    ])>>
+
+    _result
+
+    [[Just try to be careful, Steve...|Officework1Pool]]
+  <<else>>
+    <<script>>addSocialDist(10)<</script>>
+    <<script>>addMoney(-5)<</script>>
+    Staying home is good from time to time. And much safer too.
+    Of course, his boss might remember this at his next salary evaluation...
+
+    [[Time to "work"|Telework1Pool]]
+  <</if>>
+
+
+:: Officework1Pool {"position":"725,50","size":"100,100"}
+  <<include "DebugStats">>
+  /* this passage will have the random events that Steve might do while going to work */
+  <<nobr>>
+  <<set _morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
+  <</nobr>>
+  <<include _morning_event>>
+
+
+:: MorningWalk {"position":"725,50","size":"100,100"}
+  Steve decided to exercise a little and take a walk to the work.
+
+  @@#links;
+  <<link "Walk normally on the street">>
+      <<replace "#links">>\
+        <<set _chance to arrayChoice([0,1])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(-4)<</script>>
+          Steve meets a friend on the street.
+          He greets his friend, but forgets to keep his distance. Dammit Steve!
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          <<script>>addSocialDist(-4)<</script>>
+          Walking on the street, Steve has a chance to greet his neighbours. Safely, of course.
+          It's a good chance to keep in touch with people. Good for you Steve.
+        <</if>>
+      <</replace>>
+  <</link>>
+  <<link "Expertly avoid any and all living soul on sight">>
+      <<replace "#links">>\
+        <<set _chance to arrayChoice([0,1])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(2)<</script>>
+          What a nice day it is today. Steve feels good after doing some exercise!
+          Nicely done, Steve!
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          <<script>>addMoney(-10)<</script>>
+          Steve was so caught up in avoiding people that he forgot where he was going. He should be in the office already!
+          His boss won't be happy...
+        <</if>>
+      <</replace>>
+  <</link>>
+  @@
+
+  [[Work begins!|WorkPhase1]]
+
+
 :: MorningBus
-  Steve got it's usual bus to go to work.
+  Steve decided he'd take his usual bus to work. Doesn't feel like walking it seems.
   <<if isCareless()>> /* doesn't believe in vaccine */
     He straight up sat on the middle of a music gang playing some cool songs to listen to it.
 
     [[I mean, it is indeed a cool song.|Work]]
   <<elseif isParanoid()>>
+    There was a vacant spot next to Steve, so an elderly passaneger moved to take that seat.
     Steve started to shout to anyone that tried to sit down close to him. 
-    He looks really afraid and clearly he is not okay.
-    <<script>>addSocialDist(6)<</script>>
+    <<script>>addSocialDist(10)<</script>>
 
-    [[Steve...?|Work]]
+    [[That's... a bit of an overreaction, Steve|Work]]
   <<else>>
     Steve tried to avoid uneeded talk and went to work.
     <<script>>addSocialDist(3)<</script>>
@@ -179,6 +299,7 @@ Day: _day
 :: TeleworkAnnounce
   Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
   Isn't that amazing Steve?
+
   <<if isIsolated()>>
     For some reason, Steve doesn't look so happy about this news... What could be wrong?
   <</if>>
@@ -221,24 +342,27 @@ Day: _day
   <<if randomChance(80)>> 
     <<script>>addHealth(-5)<</script>>
     Oh no! It looks like Steve got a wash from the rain!
-    I hope he is still okay.
-
+    Hope he's still okay.
   <<else>>
-    The travel worked perfectly, Steve somehow dodged the rain!
+    Somehow, Steve managed to avoid the rain. That's good.
   <</if>>
 
-  [[Continue to Work|Work]]
+  [[Continue to Work|WorkPhase1]]
 
 
-:: Work {"position":"725,50","size":"100,100"}
+:: WorkPhase1 {"position":"725,50","size":"100,100"}
   <<include "DebugStats">>
-  <<script>>addSocialDist(-1)<</script>>
+  <<include "StablePhaseCommon">>
+  <<set $stable_passage to "WorkPhase1">>
+  <<script>>addSocialDist(-2)<</script>>
   <<set _result to arrayChoice([
-    "Steve is a regular person, nobody likes working. Oh god, it is already 12:00?",
-    "Damn, that was a though work morning! At least is lunch time, you can relax a little bit, Steve."
+    "Well that was a stressful morning. Steve is a regular person, so of course he's not too keen on working. Oh god, it's already 12:00?!",
+    "Damn, that was a though work morning! At least it's lunch time, you can relax a little bit, Steve."
   ])>>
 
   _result
+
+  
 
   [[Eat with friends|EatFriends]]
   [[Eat alone|EatAlone]]
@@ -392,7 +516,7 @@ Day: _day
     ])>>
     _result
 
-    [[Go Home|HomeNight]]
+    [[Go Home|NightPhase]]
   <</if>>
 
 
@@ -406,7 +530,7 @@ Day: _day
   <<script>>addHealth(-3)<</script>>
   _result
 
-  [[Finally it's over|HomeNight]]
+  [[Finally it's over|NightPhase]]
 
 
 :: IgnoreOvertime
@@ -418,7 +542,7 @@ Day: _day
   ])>>
   <<script>>addMoney(-2)<</script>>
 
-  [[Time to go home for real now|HomeNight]]
+  [[Time to go home for real now|NightPhase]]
 
 
 :: GoParty
@@ -434,7 +558,7 @@ Day: _day
   <<script>>addSocialDist(-10)<</script>>
   <<script>>addWariness(-5)<</script>>
 
-  [[Go home|HomeNight]]
+  [[Go home|NightPhase]]
 
 
 :: NoParty
@@ -456,11 +580,11 @@ Day: _day
     [[Accompany Steve in the Party|GoParty]]
   <<else>>
     <<script>>addSocialDist(2)<</script>>
-    [[Go home|HomeNight]]
+    [[Go home|NightPhase]]
   <</if>>
 
 
-:: HomeNight
+:: NightPhase
   <<include "DebugStats">>
   /* Used when Steve goes out after work */
   <<set _result to arrayChoice([
@@ -469,7 +593,7 @@ Day: _day
   ])>>
   _result
 
-  [[Sleep|Morning]]
+  [[Sleep|MorningPhase]]
 
 
 :: 1 {"position":"600,100","size":"100,100"}
@@ -723,7 +847,7 @@ window.goToNextDay = function() {
 }
 // --- Non-Numeric ---
 
-// whether Steve has mask on, could be interesting
+// whether Steve has mask on
 if (!window._has_mask) window._has_mask = false;
 else logVariableError("_has_mask")
 window.getMask = function() {
@@ -731,6 +855,26 @@ window.getMask = function() {
 }
 window.setMask = function(onoff) {
   _has_mask = onoff;
+}
+
+// whether Steve taken test in the current stable phase
+if (!window._has_test) window._has_test = false;
+else logVariableError("_has_test")
+window.getTest = function() {
+  return _has_test;
+}
+window.setTest = function(onoff) {
+  _has_test = onoff;
+}
+
+// whether Steve has washed hands in the current stable phase
+if (!window._has_washed) window._has_washed = false;
+else logVariableError("_has_washed")
+window.getWashed = function() {
+  return _has_washed;
+}
+window.setWashed = function(onoff) {
+  _has_washed = onoff;
 }
 
 
