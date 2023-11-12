@@ -1,0 +1,2041 @@
+:: StoryTitle
+CovidGame2
+
+
+:: StoryData
+{
+  "ifid": "B23132D3-91BF-4158-99DA-9C128303991B",
+  "format": "SugarCube",
+  "format-version": "2.36.1",
+  "start": "Morning",
+  "tag-colors": {
+    "autosave": "green",
+    "noreturn": "red"
+  },
+  "zoom": 1
+}
+
+:: DebugStats {"position":"475,250","size":"300,100"}
+<<silently>>
+<<set _health to getHealth()>>
+<<set _carefulness to getWariness()>>
+<<set _social_dist to getSocialDist()>>
+<<set _money to getMoney()>>
+<<set _day to getDay()>>
+<</silently>>
+Day: _day
+<div class="hud-flex-box">
+<div class="hud-box">Health: <div class="hud-bar"><div id="health" class="w3-red w3-center">_health</div></div></div>
+<div class="hud-box">Carefulness: <div class="hud-bar"><div id="wariness" class="w3-green w3-center">_carefulness</div></div></div>
+</div>
+<div class="hud-flex-box">
+<div class="hud-box">Social Distance: <div class="hud-bar"><div id="social-dist" class="w3-blue w3-center">_social_dist</div></div></div>
+<div class="hud-box">Money: <div class="hud-bar"><div id="money" class="w3-yellow w3-center">_money</div></div></div>
+</div>
+<<silently>>
+<<done>>
+  <<set document.getElementById("health").style.width = `${_health}%`>>
+  <<set document.getElementById("wariness").style.width = `${_carefulness}%`>>
+  <<set document.getElementById("social-dist").style.width = `${_social_dist}%`>>
+  <<set document.getElementById("money").style.width = `${_money}%`>>
+<</done>>
+<</silently>>
+
+
+:: Morning {"position":"475,250","size":"100,100"}
+  <<include "DebugStats">>
+  <<set $stable_passage to "Morning">>
+
+  Good morning Steve, get ready for another day!
+
+  <<if getMask()>>
+    [[Remove Mask|RemoveMask]]
+  <<else>>
+    [[Put a mask on|TryMask]]
+  <</if>>
+  [[Take a COVID test|TryTest]]
+  [[Go to work|MorningEventPool]]
+
+
+:: RemoveMask {"position":"150,100","size":"100,100"}
+  <<include "DebugStats">>
+  <<script>>setMask(false)<</script>>
+  Steve looks sort of troubled by the mask. Maybe taking it off a bit would be good.
+
+  [[Back|$stable_passage]]
+
+
+:: ResultTest {"position":"1050,175","size":"100,100"}
+  <<include "DebugStats">>
+  /* determine whether Health is below COVID threshold */
+  <<if getHealth() < COVID_THRESHOLD>>
+    It came back positive....
+
+    It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
+  <<else>>
+    /* Steve is an idiot, so taking a negative test boosts his confidence */
+    <<script>>addWariness(-5)<</script>>
+    It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
+
+    Steve, you look way more relieved than you should be...
+  <</if>>
+
+  [[Back|$stable_passage]]
+
+
+:: TryMask {"position":"775,325","size":"100,100"}
+  <<include "DebugStats">>
+  /* this passage determines whether Steve puts on mask and shows the correct message */
+  <<if isCareless()>>
+    <<set _result to arrayChoice([
+      "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
+      "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
+    ])>> /* add more variations inside the array */
+
+    _result /* Display the resulting message */
+
+    [[What the hell, Steve...|$stable_passage]]
+  <<else>>
+    <<script>>addHealth(2)<</script>>
+    <<script>>setMask(true)<</script>>
+    Steve puts his mask on. Feeling protected already!
+
+    [[Well done, Steve!|$stable_passage]]
+  <</if>>
+
+
+:: TryTest {"position":"475,25","size":"100,100"}
+  <<include "DebugStats">>
+  /* this passage will have Steve try to take a test */
+  <<if getWariness() < CARELESS_THRESHOLD>>
+    <<set _result to arrayChoice([
+      "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
+      "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
+    ])>>
+
+    _result /* Display the resulting message */
+
+    [[What the hell, Steve...|$stable_passage]]
+  <<else>>
+    Steve reluctanly stabs his nostril with the swab and rummages around before he finally stops torturing his nose.
+
+    And now, we wait...
+
+    [[Wait for the result|WaitTest]]
+  <</if>>
+
+
+:: WaitTest {"position":"725,50","size":"100,100"}
+  <<include "DebugStats">>
+  The suspense is killing Steve. He feels fine, sort of.
+  So it should most definitely be fine....right?
+
+  [[See the results|ResultTest]]
+
+
+:: MorningEventPool {"position":"725,50","size":"100,100"}
+  <<include "DebugStats">>
+  /* this passage will have the random events that Steve might do while going to work */
+  <<nobr>>
+  <<set $morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
+  <</nobr>>
+  <<include $morning_event>>
+
+
+:: MorningWalk {"position":"725,50","size":"100,100"}
+  Steve decided to exercise a little and take a walk to the work. 
+  <<set _greet to randomChance(60)>> /* Probability of greeting someone */
+  <<if _greet>>
+    He sometimes stop to greeting people tho.
+    <<script>>addSocialDist(-2)<</script>>
+    [[At least he's exercising, right...?|Work]]
+  <<else>>
+    Steve feels good after doing some exercise!
+    <<script>>addHealth(2)<</script>>
+    [[Nicely done, Steve!|Work]]
+  <</if>>
+
+
+:: MorningBus
+  Steve got it's usual bus to go to work.
+  <<if isCareless()>> /* doesn't believe in vaccine */
+    He straight up sat on the middle of a music gang playing some cool songs to listen to it.
+
+    [[I mean, it is indeed a cool song.|Work]]
+  <<elseif isParanoid()>>
+    Steve started to shout to anyone that tried to sit down close to him. 
+    He looks really afraid and clearly he is not okay.
+    <<script>>addSocialDist(6)<</script>>
+
+    [[Steve...?|Work]]
+  <<else>>
+    Steve tried to avoid uneeded talk and went to work.
+    <<script>>addSocialDist(3)<</script>>
+
+    [[Let's go to work!|Work]]
+  <</if>>
+
+
+:: TeleworkAnnounce
+  Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
+  Isn't that amazing Steve?
+  <<if isIsolated()>>
+    For some reason, Steve doesn't look so happy about this news... What could be wrong?
+  <</if>>
+
+  [[Work at Home|Telework]]
+  [[Go work|RainWalk]]
+
+
+:: Telework
+  <<include "DebugStats">>
+  /* If steve feels alone, he can just ignore the telework */
+  <<if isIsolated() && randomChance(80)>>
+    <<set _result to arrayChoice([
+      "Steve just picked up his umbrella and went work anyways.",
+      "Wait, where are you going Steve?"
+    ])>>
+
+    _result
+
+    Steve just picked up his umbrella and went work anyways...
+
+    [[Did he just ignored me?|Work]]
+
+  <<else>>
+    /* Everything is fine, Steve will telework */
+    <<set _result to arrayChoice([
+      "Yeah, remote work is awesome!",
+      "Working in pijamas is a really good feeling, I know how it feels, Steve."
+    ])>>
+
+    _result
+
+    <<script>>addSocialDist(5)<</script>>
+  <</if>>
+
+
+:: RainWalk
+  <<include "DebugStats">>
+  /* probability of getting sick because of the rain */
+  <<if randomChance(80)>> 
+    <<script>>addHealth(-5)<</script>>
+    Oh no! It looks like Steve got a wash from the rain!
+    I hope he is still okay.
+
+  <<else>>
+    The travel worked perfectly, Steve somehow dodged the rain!
+  <</if>>
+
+  [[Continue to Work|Work]]
+
+
+:: Work {"position":"725,50","size":"100,100"}
+  <<include "DebugStats">>
+  <<script>>addSocialDist(-1)<</script>>
+  <<set _result to arrayChoice([
+    "Steve is a regular person, nobody likes working. Oh god, it is already 12:00?",
+    "Damn, that was a though work morning! At least is lunch time, you can relax a little bit, Steve."
+  ])>>
+
+  _result
+
+  [[Eat with friends|EatFriends]]
+  [[Eat alone|EatAlone]]
+
+
+:: EatAlone
+  <<include "DebugStats">>
+
+  <<if isIsolated && randomChance(50)>>
+    Wait, are you going to eat with them? Steve, you know that you need to isolate yourself a little bit, right?
+
+    [[Hey, Ste- Oh, there he goes...|EatFriends]]
+
+  <<else>>
+    <<script>>addSocialDist(5)<</script>>
+    <<script>>addWariness(3)<</script>>
+    <<set _result to arrayChoice([
+      "Yeah, who need to eat with real people, you can eat alone perfectly fine.",
+      "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
+    ])>>
+    _result
+
+    <<if randomChance(10)>>
+    /* Receiving a message event */
+      <<set _result to arrayChoice([
+        "Hey, Steve! You just receive a message from your parents. They really love you, hum?",
+        "Yoooo, isn't this a message from the girl you like? Way to go, man!"
+      ])>>
+      _result
+      <<script>>addSocialDist(-2)<</script>>
+      <<script>>addHealth(1)<</script>>
+    <</if>>
+
+    [[Back to Work|Work2]]
+  <</if>>
+
+
+:: EatFriends
+  <<include "DebugStats">>
+  /* Happens when Steve is eating together with people at the work */
+  <<script>>addSocialDist(-3)<</script>>
+  <<script>>addHealth(-1)<</script>>
+  <<script>>addWariness(-1)<</script>>
+
+  <<set _result to arrayChoice([
+    "Eating with friends is good, I guess. I hope you are following the hygienic protocols, right, Steve?",
+    "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
+  ])>>
+
+  _result
+
+  /* Total chance of an event happening is 27.75%*/
+  <<if randomChance(15)>>
+    /* Chance of friends spreading missinformation */
+    <<script>>addWariness(-4)<</script>>
+
+    <<set _result to arrayChoice([
+      "Wait, your colleague just told you that his friend's wife's neighbour took a vaccine that gave him cancer? Please do not believe in that, Steve.",
+      "Don't listen to this Joe guy that vaccines will turn you into an aligator, his source is twitter! T-W-I-T-T-E-R"
+    ])>>
+    _result
+
+    [[Oh no, look at the time, back to work!|Work2]]
+
+  <<elseif randomChance(15)>>
+  /* Chance of they being reckless */
+    <<set _result to arrayChoice([
+      "Okay, they are not using masks and too much close to each other! Steve, do something!",
+      "Steve, your friends are not even using masks..."
+    ])>>
+    _result
+
+    [[Join them|JoinMaskFriends]]
+    [[Stay Away|StayAwayFromFriends]]
+
+  <<else>>
+    [[Back to Work|Work2]]
+  <</if>>
+
+
+:: StayAwayFromFriends
+  <<include "DebugStats">>
+  /* Used when the player choose to stay away from friends without mask during lunch */
+  <<if isIsolated && randomChance(50)>>
+    No, Steve! You should stay away from them, not taking off your mask!
+    [[Proceed|JoinMaskFriends]]
+  <<else>>
+    <<script>>addSocialDist(3)<</script>>
+    <<script>>addWariness(2)<</script>>
+    <<set _result to arrayChoice([
+      "Perfect, Steve! Let's enjoy our meal alone.",
+      "You love spaghetti, don't you? Eating alone will make you appreciate it even more."
+    ])>>
+    _result
+    [[Finish Eating|Work2]]
+  <</if>>
+
+
+:: JoinMaskFriends
+  <<include "DebugStats">>
+  /* Used when Steve is removes his mask to eat with friends */
+  <<script>>setMask(false)<</script>>
+  <<script>>addSocialDist(-5)<</script>>
+  <<script>>addHealth(-3)<</script>>
+  <<script>>addWariness(-2)<</script>>
+
+  <<set _result to arrayChoice([
+    "There's no way to eat with mask, have it?",
+    "I hope you are enjoying this situation, Steve."
+  ])>>
+  _result
+
+  [[Finish Eating|Work2]]
+
+
+:: Work2
+  <<include "DebugStats">>
+  /* Here will have */
+
+  <<set _result to arrayChoice([
+    "Okay, time to focus again, Steve! You need this work, remember?",
+    "The lunch was fun, now time to return to business."
+  ])>>
+  _result
+
+  /* Probability of an event: 27.75% */
+  <<if randomChance(15)>>
+    /* Probability of overwork */
+    <<set _result to arrayChoice([
+      "Oh no, this task has a deadline for today! You can try to finish it in time, but you will probably need to stay overtime."
+    ])>>
+    _result
+
+    [[Stay Overtime|OvertimeWork]]
+    [[Too much work, time to go home|IgnoreOvertime]]
+
+  <<elseif randomChance(15)>>
+    /* Probability of calling for a drink
+    <<set _result to arrayChoice([
+      "Steve, your friends are calling you to take a drink afterwork. Don't they have any dishes to wash?",
+      "Hey, Steve, they are doing a party to comemorate Joe's birthday after the job. What do you think?"
+    ])>>
+    _result
+
+    [[It might be good to socialize a little bit|GoParty]]
+    [[I can party at home alone|NoParty]]
+  <<else>>
+    <<set _result to arrayChoice([
+      "Finally, a day of work done, Steve! Time to go home now.",
+      "Today was hard, but it is finally over."
+    ])>>
+    _result
+
+    [[Go Home|HomeNight]]
+  <</if>>
+
+
+:: OvertimeWork
+  <<include "DebugStats">>
+  <<set _result to arrayChoice([
+    "Okay, Steve, you can swear quietly to your boss later, now we need to focus on this.",
+    "Argh, this work is exaustive. Don't worry, buddy, it's almost over for real now."
+  ])>>
+  <<script>>addMoney(5)<</script>>
+  <<script>>addHealth(-3)<</script>>
+  _result
+
+  [[Finally it's over|HomeNight]]
+
+
+:: IgnoreOvertime
+  /* Used when there was an overtime random event, but it was chosen to ignore */
+  <<include "DebugStats">>
+  <<set _result to arrayChoice([
+    "We need the money, but this is the XXI century, slavery is already over.",
+    "You need to rest a little bit, think of money later."
+  ])>>
+  <<script>>addMoney(-2)<</script>>
+
+  [[Time to go home for real now|HomeNight]]
+
+
+:: GoParty
+  <<include "DebugStats">>
+  /* Used when Steve goes out after work */
+  <<set _result to arrayChoice([
+    "Damn, that was indeed a nice party! Wait, how much did it cost?",
+    "I hope all people in here remembered to bring their masks, riiight?"
+  ])>>
+  _result
+  <<script>>addHealth(-3)<</script>>
+  <<script>>addMoney(-5)<</script>>
+  <<script>>addSocialDist(-10)<</script>>
+  <<script>>addWariness(-5)<</script>>
+
+  [[Go home|HomeNight]]
+
+
+:: NoParty
+  <<include "DebugStats">>
+  /* Used when the player rejects the party offer */
+  <<set _result to arrayChoice([
+    "That looked like a cool party, but you need to focus, Steve!",
+    "Are you sure that you want to go there after such a tiresome day of work? Your bed is calling you."
+  ])>>
+  _result
+
+  <<if isIsolated && randomChance(75)>>
+    <<set _result to arrayChoice([
+      "Wait, Steve, where are you going?!",
+      "C'mon, Steve, go back here! Are you really sure that you are going to just ignore your fluffy bed at home?"
+    ])>>
+    _result
+
+    [[Accompany Steve in the Party|GoParty]]
+  <<else>>
+    <<script>>addSocialDist(2)<</script>>
+    [[Go home|HomeNight]]
+  <</if>>
+
+
+:: HomeNight
+  <<include "DebugStats">>
+  /* Used when Steve goes out after work */
+  <<set _result to arrayChoice([
+    "Today was a tiresome day, but at least you are free now.",
+    "Finally at home, right? So, what do you want to do, Steve?"
+  ])>>
+  _result
+
+  [[Sleep|Morning]]
+
+
+:: 1 {"position":"600,100","size":"100,100"}
+<<set $chapter to "chapter one">><<if visited() is 1>><<if settings.notifications>><<notify 3s>>Notifications active!<</notify>><</if>><</if>>\
+In direct trade kickstarter gochujang poutine, PBR&B food truck cronut. //Health goth pabst hashtag, ut leggings duis pork belly venmo.// Sriracha pariatur asymmetrical, you probably haven't heard of them YOLO prism. ''Offal palo santo listicle polaroid.'' Pour-over taiyaki beard, flexitarian veniam sartorial prism retro cillum sriracha.
+
+Ut waistcoat knausgaard iceland excepteur eiusmod ennui gastropub fingerstache sint quis duis. Sunt whatever ea keytar af disrupt jean shorts. Pop-up meh pug, brunch ipsum locavore cred pork belly forage labore id. Narwhal duis man braid lyft chicharrones, roof party hashtag poke palo santo waistcoat. Magna readymade messenger bag pabst, keffiyeh biodiesel man braid pour-over irure cold-pressed nulla ramps.
+
+Say what...?
+
+*[[Echo park elit austin DIY dolor edison bulb letterpress.|2]]
+*[[Organic consectetur 8-bit cronut schlitz DIY leggings.|2]]
+
+
+:: 2 [autosave] {"position":"700,100","size":"100,100"}
+I'm baby shaman hell of consectetur poke. Flexitarian DIY lo-fi unicorn freegan next level irure disrupt prism eu yuccie magna. Fugiat biodiesel meh etsy vape, tote bag try-hard. XOXO hoodie anim exercitation literally. Officia yr laborum non exercitation lorem consectetur cornhole swag actually fingerstache migas normcore.
+
+Beard adipisicing gluten-free drinking vinegar. Ugh helvetica semiotics, pour-over cold-pressed banjo eiusmod glossier vape fingerstache pok pok pitchfork flannel. Everyday carry locavore voluptate kombucha chambray hot chicken vexillologist, excepteur squid deserunt fingerstache enamel pin poutine. Letterpress DIY eiusmod ut voluptate twee consectetur qui kinfolk. Pinterest mixtape jianbing franzen, hammock irure glossier austin gastropub roof party lorem.
+
+Freegan hexagon hella aesthetic flannel ethical veniam iceland. Culpa DIY readymade, bushwick iPhone hell of portland four loko fam trust fund. Est venmo church-key mumblecore, messenger bag letterpress fingerstache heirloom esse plaid do tote bag nulla pinterest post-ironic. Deep v waistcoat laboris beard, food truck copper mug messenger bag kitsch hexagon blog drinking vinegar williamsburg in ethical esse. Meditation aute disrupt cliche, gastropub affogato seitan mlkshk. 90's in knausgaard readymade gochujang ea fanny pack prism messenger bag organic 8-bit. Salvia ad selvage you probably haven't heard of them.
+
+Austin ugh synth you probably haven't heard of them, hexagon drinking vinegar pitchfork prism flannel poutine vaporware. Duis actually austin deep v activated charcoal migas hella. Exercitation raclette tote bag, voluptate lomo organic crucifix poke mlkshk food truck laborum jianbing biodiesel aliquip. Godard commodo selfies, deserunt meh photo booth truffaut before they sold out jean shorts consequat edison bulb everyday carry. Duis beard pinterest eu.
+
+<span class="next"><<button "Next" "3">><</button>></span>
+
+
+:: 3 {"position":"800,100","size":"100,100"}
+<<set $they to "They">><<set $plural to true>>\
+Here's an example of how the 'Live Update' macro by Cycy works:
+
+*<<link "She/Her">><<set $they to "She">><<set $plural to false>><<update>><</link>>
+*<<link "He/Him">><<set $they to "He">><<set $plural to false>><<update>><</link>>
+*<<link "They/Them">><<set $they to "They">><<set $plural to true>><<update>><</link>>
+
+<<liveblock>>
+$they <<are>> super fun and love<<s>> cupcakes.
+<</liveblock>>
+
+You can also use it to update the dialog labels! Try it by opening the settings menu and toggling the dialog labels button :)
+
+<<liveblock>>
+*<<link "Choice with flirt label $flirt_label" "4">><</link>>
+*<<link "Choice with info label $info_label" "4">><</link>>
+<</liveblock>>
+
+
+:: 4 {"position":"900,100","size":"100,100"}
+When publishing to itch.io, you have a couple options for how to have your game display in mobile browsers.
+
+As a general rule, make sure to choose 'Click to launch in fullscreen' in the 'Embed options' section and click the checkbox to enable 'Mobile friendly' under the 'Frame options'.
+
+To force the game to always display in portrait mode on mobile, select 'Portrait' for the orientation. To display in landscape mode, select 'Landscape'. Easy peasy<3
+
+Note: The latest update to the template has styling for both portrait and landscape modes for mobile, so have fun playing around with each to decide which option works best for your game!
+
+<span class="next"><<button "Next" "5">><</button>></span>
+
+
+:: 5 {"position":"1000,100","size":"100,100"}
+Some helpful resources:
+[[Sugarcube 2 Documentation|https://www.motoslave.net/sugarcube/2/docs]]
+[[Twine Cookbook|https://twinery.org/cookbook]]
+[[Beginner’s Guide to Twine 2.1|http://www.adamhammond.com/twineguide]]
+[[The Twine Grimoires|https://gcbaccaris.itch.io]]
+[[Quick Twine Tutorial|https://catn.decontextualize.com/twine]]
+[[r/twinegames|https://www.reddit.com/r/twinegames]]
+
+Macros/Sample code:
+[[Chapel's Custom Macros|https://github.com/ChapelR/custom-macros-for-sugarcube-2]]
+[[Cycy's Custom Macros|https://github.com/cyrusfirheir/cycy-wrote-custom-macros]]
+[[HIEv's Sample Code|https://qjzhvmqlzvoo5lqnrvuhmg-on.drv.tw/UInv/Sample_Code.html#Main%20Menu]]
+
+Other Sugarcube 2 templates:
+[[1 by Cerberus|https://ccrberus.itch.io/twine-sugarcube-template]]
+[[2 by Vahnya|https://vahnya.itch.io/twine-template]]
+[[3 by Nyehilism|https://nyehilism.itch.io/sugarcube-template]]
+[[4 by Nyehilism|https://nyehilism.itch.io/twine-template]]
+[[5 by Strandworks|https://strandworks.itch.io/gradient-template]]
+
+
+:: StoryInit {"position":"300,100","size":"100,100"}
+/* define your story variables here */
+
+
+:: StoryInterface {"position":"100,100","size":"100,100"}
+<div class="header">
+	<div id="header-text" data-passage="header-text"></div>
+	<div id="function-menu">
+		<span id="menu" class="lnr lnr-menu"></span>
+		<span id="settings" class="lnr lnr-cog"></span>
+		<span id="saves" class="lnr lnr-download"></span>
+		<span id="restart" class="lnr lnr-redo"></span>
+	</div>
+</div>
+
+<div id="story">
+	<div id="passages"></div>
+</div>
+
+<div class="footer">
+	<span id="up" class="lnr lnr-chevron-up"></span>
+	<span id="footer-menu" data-passage="footer-menu"></span>
+	<div class="mobile-menu">
+	 <span id="mob-menu" class="lnr lnr-menu"></span>
+		<div id="mob-function-menu">
+		 <span id="mob-settings" class="lnr lnr-cog"></span>
+		 <span id="mob-saves" class="lnr lnr-download"></span>
+		 <span id="mob-restart" class="lnr lnr-redo"></span>
+		</div>
+	 <span id="mob-footer-menu" data-passage="footer-menu"></span>
+	</div>
+</div>
+
+
+:: Widgets [widget] {"position":"200,100","size":"100,100"}
+/* custom widgets go in here */
+<<widget "are">><<switch $plural>><<case true>>are<<case false>>is<</switch>><</widget>>
+<<widget "were">><<switch $plural>><<case true>>were<<case false>>was<</switch>><</widget>>
+<<widget "s">><<switch $plural>><<case true>><<case false>>s<</switch>><</widget>>
+<<widget "es">><<switch $plural>><<case true>><<case false>>es<</switch>><</widget>>
+<<widget "re">><<switch $plural>><<case true>>re<<case false>>s<</switch>><</widget>>
+<<widget "ve">><<switch $plural>><<case true>>ve<<case false>>s<</switch>><</widget>>
+
+
+:: credits {"position":"300,200","size":"100,100"}
+[[Sugarcube 2 Documentation|https://www.motoslave.net/sugarcube/2/docs]]
+
+[[OpenDyslexic Font by Abbie Gonzalez|https://opendyslexic.org]]
+
+[[Notify Macro by Chapel|https://github.com/ChapelR/custom-macros-for-sugarcube-2]]
+
+[[Live Update Macro by Cycy|https://github.com/cyrusfirheir/cycy-wrote-custom-macros]]
+
+
+:: footer-menu {"position":"200,200","size":"100,100"}
+<<nobr>>
+<li><<link "credits">><<script>>
+	Dialog.setup("Credits");
+	Dialog.wiki(Story.get("credits").processText());
+	Dialog.open();
+<</script>><</link>></li>
+<</nobr>>
+
+
+:: header-text {"position":"100,200","size":"100,100"}
+<span class="title">Pandemic</span>
+<span class="author">by Lucius Vinicius and Pedro Valério</span>
+
+
+:: StoryScript [script]
+// ------------- Our true code ---------------
+// --------------------
+// || --- Config --- ||
+// --------------------
+
+// failsafe error message
+window.logVariableError = function(variable) {
+  console.error("Could not declare "+variable+" in this namespace");
+}
+
+// if wariness is below this value, Steve might not do some of the things you tell him
+if (!window.CARELESS_THRESHOLD) window.CARELESS_THRESHOLD = 30;
+else logVariableError("CARELESS_THRESHOLD")
+
+// if wariness is above this value, Steve might get too paranoid to interact with people
+if (!window.PARANOID_THRESHOLD) window.PARANOID_THRESHOLD = 70;
+else logVariableError("PARANOID_THRESHOLD")
+
+// if health is below this limit, Steve has COVID
+if (!window.COVID_THRESHOLD) window.COVID_THRESHOLD = 30;
+else logVariableError("COVID_THRESHOLD")
+
+// if health is below this limit, Steve has COVID AND is very sick
+if (!window.SICK_THRESHOLD) window.SICK_THRESHOLD = 10;
+else logVariableError("SICK_THRESHOLD")
+
+// if social dist is above this value, Steve starts to feeling alone
+if (!window.ISOLATED_THRESHOLD) window.ISOLATED_THRESHOLD = 70;
+else logVariableError("ISOLATED_THRESHOLD")
+
+// if money is below this value, Steve is considered with low budget
+if (!window.POOR_THRESHOLD) window.POOR_THRESHOLD = 30;
+else logVariableError("POOR_THRESHOLD")
+
+// -------------------
+// || --- Stats --- ||
+// -------------------
+
+// wariness (or carefulness)
+if (!window._wariness) window._wariness = 71;
+else logVariableError("_wariness")
+window.getWariness = function() {
+  return _wariness;
+}
+window.addWariness = function(toAdd) {
+  _wariness += toAdd;
+}
+window.isCareless = function() {
+  return _wariness < CARELESS_THRESHOLD
+}
+window.isParanoid = function() {
+  return _wariness > PARANOID_THRESHOLD
+}
+
+// social_dist
+if (!window._social_dist) window._social_dist = 71;
+else logVariableError("_social_dist")
+window.getSocialDist = function() {
+  return _social_dist;
+}
+window.addSocialDist = function(toAdd) {
+  _social_dist += toAdd;
+}
+window.isIsolated = function() {
+  return _social_dist > ISOLATED_THRESHOLD
+}
+
+// health
+if (!window._health) window._health = 50;
+else logVariableError("_health")
+window.getHealth = function() {
+  return _health;
+}
+window.addHealth = function(toAdd) {
+  _health += toAdd;
+}
+
+// money
+if (!window._money) window._money = 50;
+else logVariableError("_money")
+window.getMoney = function() {
+  return _money;
+}
+window.addMoney = function(toAdd) {
+  _money += toAdd;
+}
+window.isPoor = function() {
+  return _money < POOR_THRESHOLD
+}
+
+// day
+if (!window._day) window._day = 1;
+else logVariableError("_day")
+window.getDay = function() {
+  return ("0" + _day).slice(-2); // returns "0 + day" if day < 10 or "day" otherwise
+}
+window.goToNextDay = function() {
+  _day += 1
+}
+// --- Non-Numeric ---
+
+// whether Steve has mask on, could be interesting
+if (!window._has_mask) window._has_mask = false;
+else logVariableError("_has_mask")
+window.getMask = function() {
+  return _has_mask;
+}
+window.setMask = function(onoff) {
+  _has_mask = onoff;
+}
+
+
+// -------------------
+// || --- Utils --- ||
+// -------------------
+
+// return a random int between min (inclusive) and max (inclusive)
+window.randint = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+// return a random element from an array
+window.arrayChoice = function(array) {
+  let ix = randint(0, array.length - 1); // choose random index
+  return array[ix];
+}
+
+// return boolean for random probability chance (in %)
+window.randomChance = function(probability) {
+  return Math.random() < probability/100
+}
+
+
+
+// ------------- TEMPLATE SHENANIGANS + CSS bellow (you can probably ignore everything below Pedro) --------------
+// import linearicons
+importStyles(
+	"https://cdn.linearicons.com/free/1.0.0/icon-font.min.css");
+// end linearicons
+
+// reset passage to top
+$(document).on(":passagedisplay", function() {
+	$("#passages").scrollTop(0);
+});
+// end reset passage
+
+// function menu
+$(document).ready(function() {
+	$("#saves").click(function() {
+		UI.saves();
+	});	
+	$("#settings").click(function() {
+		UI.settings();
+	});
+	$("#restart").click(function() {
+		UI.restart();
+	});	
+	$("#back").click(function() {
+		Engine.backward();
+	});
+	$("#mob-saves").click(function() {
+		UI.saves();
+	});
+	$("#mob-settings").click(function() {
+		UI.settings();
+	});
+	$("#mob-restart").click(function() {
+		UI.restart();
+	});	
+});
+// function menu
+
+// force fullscreen portrait mode on mobile
+function lock (orientation) {
+	if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen();
+  } else if (document.documentElement.mozRequestFullScreen) {
+    document.documentElement.mozRequestFullScreen();
+  } else if (document.documentElement.webkitRequestFullscreen) {
+    document.documentElement.webkitRequestFullscreen();
+  } else if (document.documentElement.msRequestFullscreen) {
+    document.documentElement.msRequestFullscreen();
+  }
+	screen.orientation.lock(orientation);
+};
+// end force fullscreen
+
+// tag passage 'noreturn' to avoid return loop errors
+$(document).on(':passagestart', function (ev) {
+    if (!ev.passage.tags.includes('noreturn')) {
+        State.variables.return = ev.passage.title;
+    }
+});
+// end noreturn
+
+// autosaves - tag passage 'autosave' to trigger saving
+config.saves.autosave = true;
+config.saves.isAllowed = function () {
+	if (tags().includes('noreturn')) {
+		return false;
+	}
+	return true;
+};
+// end autosaves
+
+// name saves - allows players to change name of save file
+Config.saves.onSave = function (save, details) {
+	if (settings.autoname) {
+		save.title = State.getVar("$chapter");
+	} else if (details.type == "autosave") {
+		save.title = "Autosave";
+	} else {
+		save.title = prompt("Enter Save Name:", save.title);
+	}
+}
+// end name saves
+
+// STAT BARS (just an example!)//
+// stat one
+$(document).on(":passagedisplay", function() {
+	$("#story").scrollTop(0);
+	var statbarStat = State.getVar("$statone") + "%";
+	$("#statone-stat").attr("style", "width: " + statbarStat);
+});
+// end stat one
+
+//SETTINGS//
+// change font size
+var settingFontSize = ["100%", "130%", "150%"];
+var resizeFont = function() {
+	var size = document.getElementById("passages");
+	switch (settings.fontSize) {
+		case "100%":
+			size.style.fontSize = "100%";
+			break;
+	}
+	switch (settings.fontSize) {
+		case "130%":
+			size.style.fontSize = "130%";
+			break;
+	}
+	switch (settings.fontSize) {
+		case "150%":
+			size.style.fontSize = "150%";
+			break;
+	}
+};
+Setting.addList("fontSize", {
+	label		: "Change font size",
+	list		: settingFontSize,
+	onInit		: resizeFont,
+	onChange	: resizeFont
+});
+// end change font size
+
+// change font family
+var settingFontFamily = ["Serif","Sans-serif","OpenDyslexic"];
+var fontFamily = function() {
+	var $html = $("html");
+		$html.removeClass("serif sansserif opendyslexic");
+	switch (settings.fontFamily) {
+		case "Sans-serif":
+			$html.addClass("sansserif");
+			break;
+		case "Serif":
+			$html.addClass("serif");
+			break;
+			case "OpenDyslexic":
+			$html.addClass("opendyslexic");
+			break;
+	}
+};
+Setting.addList("fontFamily", {
+	label		: "Change font style",
+	list		: settingFontFamily,
+	default: "Sans-serif",
+	onInit		: fontFamily,
+	onChange	: fontFamily
+});
+// end change font family
+
+// change theme
+var settingThemeNames = ["Dark", "Light"];
+var settingThemeHandler = function () {
+	var $html = $("html");
+	$html.removeClass("dm");
+	switch (settings.theme) {
+	case "Dark":
+		$html.addClass("dm");
+		break;
+	}
+};
+Setting.addList("theme", {
+	label    : "Switch display mode",
+	list     : settingThemeNames,
+	default	 : "Light",
+	onInit   : settingThemeHandler,
+	onChange : settingThemeHandler
+});
+// end change theme
+
+// name saves toggle
+Setting.addToggle("autoname", {
+	label : "Autoname saves",
+	default  : true,
+}); 
+// end name saves toggle
+
+
+// enable/disable dialog tags toggle
+var settingDialogTags = function () {
+	if (settings.dialogtags) {
+		State.variables.choice_labels = true;
+		State.variables.flirt_label = '— &#9825;';
+		State.variables.info_label = '— &#8634;';
+		$(document).trigger(":liveupdate");
+	}
+	else {
+		State.variables.choice_labels = false;
+		State.variables.flirt_label = '';
+		State.variables.info_label = '';
+		$(document).trigger(":liveupdate");
+	}
+};
+// end dialog tags
+
+//MACROS//
+// notify.min.js, for SugarCube 2, by Chapel
+// v1.1.1, 2021-01-22, 404cc7678295ca61a8b0b8bc3fa5d54dba6ac858
+;!function(){var s=/\d+m?s$/;function e(s,e,t){"string"==typeof s&&("number"!=typeof e&&(e=!1),$(document).trigger({type:":notify",message:s,delay:e,class:t||""}))}$(document.body).append("<div id='notify'></div>"),$(document).on(":notify",(function(s){s.message&&"string"==typeof s.message&&(s.message.trim(),s.class?"string"==typeof s.class?s.class="open macro-notify "+s.class:Array.isArray(s.class)?s.class="open macro-notify "+s.class.join(" "):s.class="open macro-notify":s.class="open macro-notify",s.delay?("number"!=typeof s.delay&&(s.delay=Number(s.delay)),Number.isNaN(s.delay)&&(s.delay=2e3)):s.delay=2e3,$("#notify").empty().wiki(s.message).addClass(s.class),setTimeout((function(){$("#notify").removeClass()}),s.delay))})),Macro.add("notify",{tags:null,handler:function(){var t=this.payload[0].contents,a=!1,n=!1;if(this.args.length>0){var i=s.test(this.args[0]);"number"==typeof this.args[0]||i?(a=i?Util.fromCssTime(this.args[0]):this.args[0],n=this.args.length>1&&this.args.slice(1).flatten()):n=this.args.flatten().join(" ")}e(t,a,n)}}),setup.notify=e}();
+// end notify.min.js
+
+// live update js by Cycy
+(function () {
+	"use strict";
+	$(document).on(":liveupdate", function () {
+		$(".macro-live").trigger(":liveupdateinternal");
+	});
+	Macro.add(['update', 'upd'], {
+		handler: function handler() {
+			$(document).trigger(":liveupdate");
+		}
+	});
+	Macro.add(['live', 'l', 'lh'], {
+		skipArgs: true,
+		handler: function handler() {
+			if (this.args.full.length === 0) {
+				return this.error('no expression specified');
+			}
+			try {
+				var statement = this.args.full;
+				var result = toStringOrDefault(Scripting.evalJavaScript(statement), null);
+				if (result !== null) {
+					var lh = this.name === "lh";
+					var $el = $("<span></span>").addClass("macro-live").wiki(lh ? Util.escape(result) : result).appendTo(this.output);
+					$el.on(":liveupdateinternal", this.createShadowWrapper(function (ev) {
+						var out = toStringOrDefault(Scripting.evalJavaScript(statement), null);
+						$el.empty().wiki(lh ? Util.escape(out) : out);
+					}));
+				}
+			} catch (ex) {
+				return this.error("bad evaluation: " + (_typeof(ex) === 'object' ? ex.message : ex));
+			}
+		}
+	});
+	Macro.add(['liveblock', 'lb'], {
+		tags: null,
+		handler: function handler() {
+			try {
+				var content = this.payload[0].contents.trim();
+				if (content) {
+					var $el = $("<span></span>").addClass("macro-live macro-live-block").wiki(content).appendTo(this.output);
+					$el.on(":liveupdateinternal", this.createShadowWrapper(function (ev) {
+						$el.empty().wiki(content);
+					}));
+				}
+			} catch (ex) {
+				return this.error("bad evaluation: " + (_typeof(ex) === 'object' ? ex.message : ex));
+			}
+		}
+	});
+})();
+// end live update js
+
+:: StoryStylesheet [stylesheet]
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto+Slab&family=Monoton&display=swap');
+
+  @font-face {
+    font-family: "Open Dyslexic";
+    src: url("https://dl.dropbox.com/s/z61rc6kecqzn2pm/OpenDyslexic-Regular.woff2")format("woff2"),
+    url("https://dl.dropbox.com/s/7utsi12557865ty/OpenDyslexic-Regular.woff")format("woff"),
+      url("https://dl.dropbox.com/s/1q7eh2yte04g3z5/OpenDyslexic-Regular.otf")format("otf");
+  }
+
+  /*put your theme colors & fonts here so that you don't have to type the codes over and over again!*/
+  :root {
+    /*light mode (default)*/
+    --bg: #e8e8e8;
+    --bg2: #f4f4f2;
+    --menu: #ab9eae;
+    --text: #222;
+    --accent: #e8e8e8;
+    /*dark mode*/
+    --dm-bg: #212224;
+    --dm-bg2: #2c2c2c;
+    --dm-menu: #607d8b;
+    --dm-text: #efefef;
+    --dm-accent: #212224;
+    --dm-link: #00bcd4;
+    --dm-link-hover: #00ffff;
+    /*fonts*/
+    --special: "Monoton", cursive;
+    --serif: "Roboto Slab", serif;
+    --sansserif: "Montserrat", sans-serif;
+    --opendyslexic: "Open Dyslexic", sans-serif;
+  }
+
+  /*basics*/
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    width: 90vw;
+    max-width: 1400px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .dm body {
+    background-color: var(--dm-bg);
+    color: var(--dm-text);
+  }
+  #ui-bar {
+    display: none;
+  }
+  #story {
+    background-color: var(--bg);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: .9em;
+    margin: 0 auto;
+  }
+  .dm #story {
+    background-color: var(--dm-bg);
+  }
+  .serif .passage {
+    font-family: var(--serif);
+  }
+  .sansserif .passage {
+    font-family: var(--sansserif);
+  }
+  .opendyslexic .passage {
+    font-family: var(--opendyslexic);
+  }
+  .passage {
+    line-height: 200%;
+    font-size: 1em;
+    letter-spacing: 0.05em;
+  }
+  #passages {
+    background-color: var(--bg2);
+    max-height: 60%;
+    width: 80%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 1.8em solid var(--bg2);
+    margin: 50px auto;
+    padding: 0 1.2em .5em 2em;
+  }
+  .dm #passages {
+    background-color: var(--dm-bg2);
+    border: 2em solid var(--dm-bg2);
+  }
+  #story hr {
+    border: none;
+    height: 2px;
+    margin-bottom: 1.5em;
+  }
+  #story hr::before {
+    background-color: var(--menu);
+    content: "";
+    display: block;
+    height: 2px;
+    width: 100%;
+  }
+  .dm #story hr::before {
+    background-color: var(--dm-menu);
+  }
+
+  /*scrollbar*/
+  #passages::-webkit-scrollbar {
+    width: 3px;
+  }
+  #passages::-webkit-scrollbar-track {
+    background-color: var(--menu);
+    border: 1px solid var(--bg2);
+  }
+  .dm #passages::-webkit-scrollbar-track {
+    background-color: var(--dm-menu);
+    border: 1px solid var(--dm-bg2);
+  }
+  #passages::-webkit-scrollbar-thumb {
+    background-color: var(--menu);
+  }
+  .dm #passages::-webkit-scrollbar-thumb {
+    background-color: var(--dm-menu);
+  }
+
+  /*headings*/
+  #story h1 {
+    font-family: var(--special);
+    margin: .2em;
+    text-transform: uppercase;
+    font-weight: normal;
+  }
+  #story h2 {
+    color: var(--menu);
+    margin: .2em;
+    text-transform: uppercase;
+  }
+  .dm #story h2 {
+    color: var(--dm-menu);
+  }
+  #story h3 {
+    margin: .2em;
+    text-transform: lowercase;
+    letter-spacing: .2em;
+  }
+
+  /*links*/
+  a {
+    color: var(--text);
+    text-decoration: none !important;
+  }
+  .dm a {
+    color: var(--dm-link);
+  }
+  a:hover {
+    color: var(--menu);
+  }
+  .dm a:hover {
+    color: var(--dm-link-hover);
+  }
+  .passage a {
+    font-weight: bold;
+  }
+  .passage a:hover {
+    color: var(--text);
+    font-style: italic;
+  }
+  .dm .passage a:hover {
+    color: var(--dm-text);
+  }
+  .header a:hover {
+    color: var(--accent) !important;
+    transition: .5s;
+  }
+  .dm .header a:hover {
+    color: var(--dm-accent) !important;
+  }
+
+  /*cycling*/
+  #story .macro-cycle {
+    font-weight: bold;
+  }
+  #story .macro-cycle:hover {
+    font-style: italic;
+  }
+  #story .macro-cycle::after {
+    color: var(--menu);
+    content: "↴";
+    padding-left: .2em;
+  }
+  .dm #story .macro-cycle::after {
+    color: var(--dm-menu);
+  }
+
+  /*buttons*/
+  .passage button {
+    background-color: transparent;
+    color: var(--text);
+    border: 1px solid var(--text);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: .05em;
+    padding: .5em;
+  }
+  .dm .passage button {
+    color: var(--dm-text);
+    border: 1px solid var(--dm-text);
+  }
+  .passage button:hover {
+    box-shadow: 4px 4px 0 var(--menu);
+  }
+  .dm .passage button:hover {
+    box-shadow: 4px 4px 0 var(--dm-menu);
+  }
+  .next button {
+    display: flex;
+    margin: 0 auto;
+    transform: translateX(-10%);
+  }
+
+  /*textbox*/
+  #story .macro-textbox {
+    background-color: transparent;
+    color: var(--text);
+    border: 1px solid var(--text);
+    letter-spacing: .05em;
+    padding: .5em;
+    margin-right: .5em;
+  }
+  .dm #story .macro-textbox {
+    color: var(--dm-text);
+    border: 1px solid var(--dm-text);
+  }
+  #story .macro-textbox:focus {
+    box-shadow: 4px 4px 0 var(--menu);
+  }
+  .dm #story .macro-textbox:focus {
+    box-shadow: 4px 4px 0 var(--dm-menu);
+  }
+
+  /*lists*/
+  #story ul {
+    list-style: none;
+    padding-left: 2em;
+    margin: auto;
+    text-align: left;
+  }
+  #story ul li{
+    cursor: pointer;
+    letter-spacing: 0.1em;
+  }
+  #story ul li::before {
+    content: '|';
+    margin-right: .5em;
+    margin-left: -1em;
+  }
+  #story ul li:hover {
+    color: var(--menu);
+    font-weight: bold;
+  }
+  .dm #story ul li:hover {
+    color: var(--dm-menu);
+  }
+
+  /*header*/
+  .header {
+    background-color: var(--menu);
+    height: 10%;
+    width: 100%;
+    transition: 0.75s;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+  .dm .header {
+    background-color: var(--dm-menu);
+  }
+  .header:hover {
+    height: 14%;
+  }
+  #header-text {
+    text-align: center;
+    margin: 0 auto;
+  }
+  .title {
+    color: var(--text);
+    font-family: var(--special);
+    text-transform: uppercase;
+    font-size: 3vw;
+  }
+  .dm .title {
+    color: var(--dm-text);
+  }
+  .author {
+    font-family: var(--sansserif);
+    text-transform: lowercase;
+    letter-spacing: .1em;
+    font-size: .7vw;
+  }
+  .author a:hover {
+    font-weight: bold;
+  }
+
+  /*function menu*/
+  #function-menu {
+    display: flex;
+    position: fixed;
+    left: 2%;
+  }
+  #function-menu span {
+    color: transparent;
+    position: relative;
+    padding: 20px;
+    transition: 0.3s;
+    font-size: 1.5vw;
+  }
+  #menu {
+    color: var(--text) !important;
+  }
+  .dm #menu {
+    color: var(--dm-text);
+  }
+  .header:hover #function-menu span {
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.75s;
+  }
+  .dm .header:hover #function-menu span {
+    color: var(--dm-text);
+  }
+  .header:hover #settings:hover {
+    color: var(--accent);
+    transition: 0.5s;
+  }
+  .dm .header:hover #settings:hover {
+    color: var(--dm-accent);
+  }
+  .header:hover #saves:hover {
+    color: var(--accent);
+    transition: 0.5s;
+  }
+  .dm .header:hover #saves:hover {
+    color: var(--dm-accent);
+  }
+  .header:hover #restart:hover {
+    color: var(--accent);
+    transition: 0.5s;
+  }
+  .dm .header:hover #restart:hover {
+    color: var(--dm-accent);
+  }
+  .mobile-menu {
+    display: none;
+  }
+
+  /*back button*/
+  #back {
+    color: var(--menu);
+    position: fixed;
+    left: 15%;
+    font-size: 1.5vw;
+  }
+  .dm #back {
+    color: var(--dm-text);
+  }
+  #back:hover {
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.75s;
+  }
+  .dm #back:hover {
+    color: var(--dm-menu);
+  }
+
+  /*up button*/
+  #up {
+    color: var(--text);
+    cursor: pointer;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5vw;
+  }
+  .dm #up {
+    color: var(--dm-text);
+  }
+  .footer:hover #up {
+    color: var(--menu);
+    bottom: 75%;
+  }
+  .dm .footer:hover #up {
+    color: var(--dm-menu);
+  }
+
+  /*footer*/
+  .footer {
+    background-color: var(--menu);
+    height: 10%;
+    width: 100%;
+    transition: 0.75s;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
+  .dm .footer {
+    background-color: var(--dm-menu);
+  }
+  .footer:hover {
+    height: 14%;
+  }
+
+  /*footer menu*/
+  #footer-menu {
+    font-family: var(--special);
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  #footer-menu a {
+    color: transparent;
+    transition: 0.75s;
+    font-size: 2vw;
+  }
+  .footer:hover #footer-menu a {
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.75s;
+  }
+  .dm .footer:hover #footer-menu a {
+    color: var(--dm-text);
+  }
+  #footer-menu li {
+    list-style: none;
+    padding: 5%;
+  }
+  #footer-menu a:hover {
+    letter-spacing: .1em;
+  }
+
+  /*dialog boxes*/
+  #ui-overlay {
+    background-color: var(--bg);
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+  }
+  .dm #ui-overlay {
+    background-color: var(--dm-bg);
+  }
+  #ui-dialog {
+    background-color: var(--menu);
+    height: auto;
+    max-width: 60vw;
+    padding: .5em;
+  }
+  .dm #ui-dialog {
+    background-color: var(--dm-menu);
+    border: 1px solid var(--dm-menu);
+  }
+  #ui-dialog-titlebar {
+    background-color: var(--menu);
+    position: relative;
+    padding: 2em;
+  }
+  .dm #ui-dialog-titlebar {
+    background-color: var(--dm-menu);
+  }
+  #ui-dialog-title {
+    font-family: var(--special);
+    font-size: 2em;
+    font-weight: normal;
+    text-align: center;
+    width: 100%;
+    padding: 0;
+  }
+  #ui-dialog-close {
+    background-color: transparent;
+    color: var(--text);
+    height: auto;
+    width: auto;
+    border: none;
+    font-size: 2em;
+    position: absolute;
+    top: .5em;
+    right: .5em;
+  }
+  .dm #ui-dialog-close {
+    color: var(--dm-text);
+  }
+  #ui-dialog-close:hover {
+    background-color: transparent;
+    color: var(--accent);
+  }
+  .dm #ui-dialog-close:hover {
+    color: var(--dm-accent);
+  }
+  #ui-dialog-body {
+    background-color: var(--bg2);
+    border: none;
+    color: var(--text);
+    height: auto;
+    width: 100%;
+    font-family: var(--sansserif);
+    font-size: 90%;
+  }
+  .dm #ui-dialog-body {
+    background-color: var(--dm-bg2);
+    color: var(--dm-text);
+  }
+  #ui-dialog-body button {
+    background-color: var(--menu);
+    border: 1px solid var(--text);
+    color: var(--text);
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  #ui-dialog-body button::before {
+    content: "" !important;
+  }
+  .dm #ui-dialog-body button {
+    background-color: var(--dm-menu);
+    border: 1px solid var(--dm-text);
+    color: var(--dm-text);
+  }
+  #ui-dialog-body button:hover {
+    box-shadow: 4px 4px 0 var(--text);
+  }
+  .dm #ui-dialog-body button:hover {
+    box-shadow: 4px 4px 0 var(--dm-text);
+  }
+
+  /*setting dropdowns*/
+  #setting-control-theme, #setting-control-fontsize, #setting-control-fontfamily {
+    background-color: var(--bg);
+    border: 1px solid var(--text);
+    color: var(--text);
+  }
+  .dm #setting-control-theme, .dm #setting-control-fontsize, .dm #setting-control-fontfamily {
+    background-color: var(--dm-bg);
+    border: 1px solid var(--dm-text);
+    color: var(--dm-text);
+  }
+  #setting-control-theme:hover, #setting-control-fontsize:hover, #setting-control-fontfamily:hover {
+    background-color: var(--menu);
+    border: 1px solid var(--text);
+    color: var(--text);
+  }
+  .dm #setting-control-theme:hover, .dm #setting-control-fontsize:hover, .dm #setting-control-fontfamily:hover {
+    background-color: var(--dm-menu);
+    border: 1px solid var(--dm-text);
+    color: var(--dm-text);
+  }
+
+  /*setting toggle buttons*/
+  #ui-dialog-body.settings button[id|=setting-control] {
+    background-color: var(--bg);
+    border: 1px solid var(--text);
+    color: var(--text);
+    text-transform: none;
+    font-weight: normal;
+  }
+  .dm #ui-dialog-body.settings button[id|=setting-control] {
+    background-color: var(--dm-bg);
+    border: 1px solid var(--dm-text);
+    color: var(--dm-text);
+  }
+  #ui-dialog-body button[id|="setting-control"]:hover {
+    background-color: var(--bg) !important;
+    border: 1px solid var(--text) !important;
+    box-shadow: none;
+  }
+  .dm #ui-dialog-body button[id|="setting-control"]:hover {
+    background-color: var(--dm-bg) !important;
+    border: 1px solid var(--dm-text) !important;
+  }
+  #ui-dialog-body button[id|="setting-control"].enabled {
+    background-color: var(--menu) !important;
+    border: 1px solid var(--text) !important;
+  }
+  .dm #ui-dialog-body button[id|="setting-control"].enabled {
+    background-color: var(--dm-menu) !important;
+    border: 1px solid var(--dm-text) !important;
+  }
+
+  /*stat bars*/
+  .stat-bar-group {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 1em 3em 3em;
+    border: 1px solid var(--menu);
+  }
+  .dm .stat-bar-group {
+    border: 1px solid var(--dm-menu);
+  }
+  .stat-bar-container {
+    background-color: var(--accent);
+    color: var(--text);
+    position: relative;
+    height: 3vh;
+    width: 100%;
+    padding: 1em 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: .05em;
+  }
+  .dm .stat-bar-container {
+    background-color: var(--dm-accent);
+    color: var(--dm-text);
+  }
+  .stat-bar {
+    background-color: var(--menu);
+    max-width: 100%;
+    height: 100%;
+    width: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .dm .stat-bar {
+    background-color: var(--dm-menu);
+  }
+  .stat-bar-overlay-right {
+    position: absolute;
+    right: .5em;
+    bottom: 20%;
+    z-index: 3;
+  }
+  .stat-bar-overlay-left {
+    position: absolute;
+    left: .5em;
+    bottom: 20%;
+    z-index: 3;
+  }
+
+  /*notifications*/
+  #notify {
+    background-color: var(--bg2);
+    color: var(--text);
+    display: block;
+    width: 15em;
+    font-family: var(--sansserif);
+    text-align: left;
+    text-transform: lowercase;
+    letter-spacing: .05em;
+    padding : .5em;
+    -webkit-transition: right 1s;
+    -moz-transition: right 1s;
+    -o-transition: right 1s;
+    transition: right 1s;
+    position: fixed;
+    right: -20em;
+    top: 13%;
+  }
+  .dm #notify {
+    background-color: var(--dm-bg2);
+    color: var(--dm-text);
+  }
+  #notify.open {
+    right: 0;
+  }
+
+  /*tablet*/
+  @media screen and (max-width: 1024px) {
+    .header {
+    height: 60px;
+    }
+    .header:hover {
+    height: 100px;
+    }
+    .title {
+    font-size: 2em;
+    }
+    .author {
+    font-size: .7em;
+    }
+    #function-menu {
+    display: block;
+    }
+    #function-menu span {
+    font-size: 3vw;
+    padding: .5em;
+    }
+    #back {
+    font-size: 3vw;
+    }
+    #up {
+    font-size: 3vw;
+    }
+    .footer {
+    height: 60px;
+    }
+    .footer:hover {
+    height: 100px;
+    }
+    #footer-menu {
+    padding-top: 10em;
+    transition: 1s;
+    }
+    #footer-menu a {
+    font-size: 4vw;
+    }
+    .footer:hover #footer-menu {
+    padding-top: 0;
+    transition: 1s;
+    }
+    #notify {
+    top: 12%;
+    }
+  }
+  @media screen and (max-width: 800px) {
+    #passages {
+    max-height: 70%;
+    }
+    #back {
+    left: 16%;
+    }
+    #up {
+    bottom: 50%;
+    }
+    #footer-menu li {
+    padding: 5%;
+    }
+    .stat-bar-group {
+    padding: .5em 2em 2.5em;
+    }
+    .stat-bar-container {
+    padding: .5em 0;
+    }
+    #notify {
+    top: 9%;
+    }
+  }
+  @media screen and (max-width: 600px) {
+    #story {
+    font-size: 80%
+    }
+    #story ul {
+    padding-left: .5em;
+    }
+    #passages {
+    max-height: 70%;
+    border: 2.5em solid var(--bg2);
+    }
+    .dm #passages {
+    border: 2.5em solid var(--dm-bg2);
+    }
+    .stat-bar-group {
+    padding: 0 1em 2em;
+    }
+    .stat-bar-container {
+    padding: 1em 0;
+    font-size: 80%;
+    }
+    #notify {
+    top: 9.5%;
+    }
+  }
+    
+  /*mobile portrait*/
+  @media screen and (max-width: 420px) {
+    body {
+    background-color: var(--bg2);
+    }
+    .dm body {
+    background-color: var(--dm-bg2);
+    }
+    #story {
+    background-color: var(--bg2);
+    font-size: 70%;
+    }
+    .dm #story {
+    background-color: var(--dm-bg2);
+    font-size: 70%;
+    }
+    #passages {
+    max-height: 70%;
+    width: 100%;
+    border: none;
+    padding: 1.5em;
+    }
+    .dm #passages {
+    border: none;
+    }
+    #passages::-webkit-scrollbar {
+    width: 2px;
+    }
+    #passages::-webkit-scrollbar-track {
+    border: .5px solid var(--bg2);
+    }
+    .dm #passages::-webkit-scrollbar-track {
+    border: .5px solid var(--dm-bg2);
+    }
+    .header {
+    height: 40px;
+    }
+    .header:hover {
+    height: 15vh;
+    }
+    .title {
+    font-size: 1.5em;
+    transition: .75s;
+    }
+    .author {
+    display: none;
+    transition: .75s;
+    }
+    .dm .author {
+    color: transparent;
+    }
+    .author a {
+    color: transparent;
+    }
+    .dm .author a {
+    color: transparent;
+    }
+    .header:hover .title {
+    font-size: 4vh;
+    }
+    .header:hover .author {
+    display: block;
+    color: var(--text);
+    transition: .75s;
+    }
+    .dm .header:hover .author {
+    color: var(--dm-text);
+    }
+    .header:hover .author a {
+    color: var(--text);
+    }
+    .dm .header:hover .author a {
+    color: var(--dm-text);
+    }
+    #function-menu {
+    display: none;
+    }
+    #footer-menu {
+    display: none;
+    }
+    #back {
+    left: 2%;
+    }
+    .footer {
+    height: 40px;
+    }
+    .footer:hover {
+    height: 15vh;
+    }
+    #up {
+    display: none;
+    }
+    #notify {
+    background-color: var(--menu);
+    width: 12em;
+    font-size: 70%;
+    font-weight: bold;
+    }
+    .dm #notify {
+    background-color: var(--dm-menu);
+    }
+    /*mobile dialog boxes*/
+    #ui-overlay {
+    background-color: var(--menu);
+    opacity: 1 !important;
+    }
+    .dm #ui-overlay {
+    background-color: var(--dm-menu);
+    }
+    #ui-dialog {
+    min-width: 100vw;
+    position: absolute;
+    top: 2em !important;
+    left: 0 !important;
+    padding: 1px;
+    }
+    #ui-dialog-close {
+    font-size: 1.2em;
+    top: -10%;
+    right: 10%;
+    }
+    #ui-dialog-body {
+    background-color: var(--menu);
+    font-size: 80%;
+    padding: 30px;
+    }
+    .dm #ui-dialog-body {
+    background-color: var(--dm-menu);
+    }
+    #ui-dialog-body.saves {
+    font-size: 60%;
+    padding: 10px;
+    }
+    #ui-dialog-body button {
+    background-color: var(--bg2);
+    }
+    .dm #ui-dialog-body button {
+    background-color: var(--dm-bg2);
+    }
+    /*mobile menu*/
+    .mobile-menu {
+    height: 100px;
+    width: 100%;
+    display: block;
+    position: fixed;
+    left: 0;
+    bottom: -70px;
+    }
+    .footer:hover .mobile-menu {
+    height: 13vh;
+    bottom: 0;
+    }
+    #mob-menu {
+    transition: .75s;
+    position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .footer:hover #mob-menu {
+    color: transparent;
+    transition: 0s;
+    }
+    #mob-function-menu {
+    margin: 2.2vh auto 1vh;
+    color: transparent;
+    text-align: center;
+    font-size: 2.5vh;
+    padding-top: 20em;
+    transition: 1s;
+    }
+    .footer:hover #mob-function-menu {
+    color: var(--text);
+    padding-top: 0;
+    transition: 1s;
+    }
+    .dm .footer:hover #mob-function-menu {
+    color: var(--dm-text);
+    }
+    #mob-function-menu span {
+    padding: 5px;
+    }
+    #mob-footer-menu {
+    display: none;
+    transition: 1s;
+    }
+    #mob-footer-menu li {
+    font-family: var(--special);
+    font-size: 3vh;
+    padding: .2vh 1vh;
+    }
+    .footer:hover #mob-footer-menu {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    transition: 1s;
+    }
+  .footer:hover #mob-footer-menu a {
+    color: var(--text);
+    }
+    .dm .footer:hover #mob-footer-menu a {
+    color: var(--dm-text);
+    }
+  }
+  /*mobile landscape*/
+  @media screen and (max-height: 500px) {
+    .passage {
+    font-size: 80%;
+    }
+    #story ul {
+    padding-left: 1em;
+    }
+    #ui-dialog-titlebar {
+    padding: 1em;
+    }
+    #ui-dialog-close {
+    top: 0;
+    }
+    #ui-dialog-body {
+    max-height: 65vh;
+    font-size: 80%;
+    }
+    #ui-dialog-body::-webkit-scrollbar-track {
+    background-color: var(--menu);
+    border: 1px solid var(--bg2);
+    }
+    .dm #ui-dialog-body::-webkit-scrollbar-track {
+    background-color: var(--dm-menu);
+    border: 1px solid var(--dm-bg2);
+    }
+    #ui-dialog-body::-webkit-scrollbar-thumb {
+    background-color: var(--menu);
+    }
+    .dm #ui-dialog-body::-webkit-scrollbar-thumb {
+    background-color: var(--dm-menu);
+    }
+    #ui-dialog-body.saves {
+    padding: 1em;
+    }
+    #footer-menu {
+      padding-top: 4em;
+    }
+    #notify {
+    width: 12em;
+    font-size: 70%;
+    font-weight: bold;
+    top: 5vh;
+    }
+  }
+
+  .w3-center{text-align:center!important}
+  /* Colors */
+  .w3-red{color:#fff!important;background-color:#f44336!important}
+  .w3-blue{color:#fff!important;background-color:#2196F3!important}
+  .w3-green{color:#fff!important;background-color:#4CAF50!important}
+  .w3-yellow{color:#000!important;background-color:#ffeb3b!important}
+  .hud-bar {
+    width: 90%;
+    background-color: #202324;
+  }
+  .hud-flex-box {
+    display: flex;
+    justify-content: space-between;
+  }
+  .hud-box {
+    width: 100%;
+  }
