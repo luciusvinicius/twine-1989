@@ -51,11 +51,18 @@ Day: _day
 
 :: WakeUp
   /* Reset and evaluate daily procedures and variables */
+  <<script>>goToNextDay()<</script>>
   <<script>>setMask(false)<</script>>
 
-  <<set _day_version to "MorningPhase">> /* this happens if there is nothing wrong */
-  TODO: evaluate losing conditions or being sick/depressed/panicking/wtv
-  [[Another day begins|_day_version]]
+  <<if getDay() == END_DAY>>
+    [[It's here! Vaccine day has arrived!|Ending]]
+    [[Another day begins|MorningPhase]]
+  <</if>>
+
+
+:: Ending
+  TODO: include the appropriate passage depending on the stats. Like EndingSick, EndingDepressed, ...
+  Each of these could include multiple passages.
 
 
 :: MorningPhase {"position":"475,250","size":"100,100"}
@@ -63,7 +70,25 @@ Day: _day
   <<include "StablePhaseCommon">>
   <<set $stable_passage to "MorningPhase">>
 
-  Good morning Steve, get ready for another day!
+  <<if isDepressed()>>
+    Another meaningless day begins... How is Steve supposed to even keep track anymore...
+    No matter how many days pass, that void in Steve's very soul, derived from that craving for human contact, keeps getting wider and wider...
+  <<elseif isPanick()>>
+    So, another day begins. Another trial awaits Steve once again. Outside, all sorts of dangers await. Perhaps, if Steve could convince his boss to let him work fully remote, Steve could barricade himself in his room until the pandemic ends!
+    He has food. He has water. He has toilet paper! It might not be such a bad idea. Outside, all sorts of danger awaits. Inside, Steve can stay safe. <b>FOR EVER.</b>
+  <<elseif isBroke()>>
+    Steve looks at his piggy bank in dismay. His savings should last him until he gets the vaccine at least. But after that, who knows........
+  <<else>>
+    Good morning Steve, get ready for another day!
+  <</if>>
+
+  <<if randomChance(60)>>
+    <<if isSick()>>
+      Whoa... Steve feels a little dizzy, right now. That's not a good sign.
+    <<elseif isUnhealthy()>>
+      Hmm. Steve just coughed...
+    <</if>>
+  <</if>>
 
   /* --- Steve's Morning Actions --- */
   <<if getMask()>>
@@ -1048,6 +1073,10 @@ if (!window.fake_news_array) window.fake_news_array = [
 ];
 else logVariableError("fake_news_array")
 
+// the last day of the game
+if (!window.END_DAY) window.END_DAY = 10; // TODO: change this to an appropriate value
+else logVariableError("END_DAY")
+
 
 // -------------------
 // || --- Stats --- ||
@@ -1097,6 +1126,12 @@ window.getHealth = function() {
 window.addHealth = function(toAdd) {
   _health += toAdd;
 }
+window.isUnhealthy = function() {
+  return _health < MIDLOW_STAT
+}
+window.isSick = function() {
+  return _health < LOWEST_STAT
+}
 
 // money
 if (!window._money) window._money = 50;
@@ -1115,7 +1150,7 @@ window.isBroke = function() {
 }
 
 // day
-if (!window._day) window._day = 1;
+if (!window._day) window._day = 0;
 else logVariableError("_day")
 window.getDay = function() {
   return ("0" + _day).slice(-2); // returns "0 + day" if day < 10 or "day" otherwise
