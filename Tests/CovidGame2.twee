@@ -77,7 +77,7 @@ Day: _day
   After he is ready, Steve must work. His company does have the option to work from home... though they don't really support it much...
   What to do...
 
-  [[Go to work in person|MorningChooseOfficework]]
+  [[Go to work in person|MorningChooseOffice]]
   [[Call his boss to request working from home|MorningChooseTelework]]
   /* ----- */
 
@@ -196,7 +196,7 @@ Day: _day
   [[Back|$stable_passage]]
 
 
-:: MorningChooseOfficework
+:: MorningChooseOffice
   /* choosing to go to work in person */
   <<include "DebugStats">>
   <<if isParanoid()>>
