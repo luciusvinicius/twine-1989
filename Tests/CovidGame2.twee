@@ -273,87 +273,120 @@ Day: _day
   <</link>>
   @@
 
-  [[Work begins!|WorkPhase1]]
+  [[Work begins!|OfficeworkPhase1]]
 
 
 :: MorningBus
   Steve decided he'd take his usual bus to work. Doesn't feel like walking it seems.
-  <<if isCareless()>> /* doesn't believe in vaccine */
-    He straight up sat on the middle of a music gang playing some cool songs to listen to it.
 
-    [[I mean, it is indeed a cool song.|Work]]
-  <<elseif isParanoid()>>
-    There was a vacant spot next to Steve, so an elderly passaneger moved to take that seat.
-    Steve started to shout to anyone that tried to sit down close to him. 
-    <<script>>addSocialDist(10)<</script>>
+  @@#links;
+  <<link "Take a seat only if it has no one next to it and try to keep it that way">>
+      <<replace "#links">>\
+        <<set _chance to arrayChoice([0,1])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addSocialDist(6)<</script>>
+          Steve glares and quickly covers the seat next to him whenever he sees someone approach.
+          It seems to work as people actually start avoiding getting too close to Steve!
 
-    [[That's... a bit of an overreaction, Steve|Work]]
-  <<else>>
-    Steve tried to avoid uneeded talk and went to work.
-    <<script>>addSocialDist(3)<</script>>
+          Mission successful! ...Right?
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          <<script>>addHealth(-4)<</script>>
+          Someone is approaching to seat next to Steve and no amount of hostile glaring seems to be enough to dissuade them.
+          In a moment of anger, Steve springs up from his seat and starts berating the man for wanting to sit next to him.
+          The man, apparently, is all too ready to engage Steve in this contest of shouting.
 
-    [[Let's go to work!|Work]]
-  <</if>>
+          Along the way, neither of them even had their masks on anymore.
+
+          You were supposed to be careful, Steve.....
+        <</if>>
+      <</replace>>
+  <</link>>
+  <<link "Don't be picky with which seat you choose">>
+      <<replace "#links">>\
+        <<set _chance to arrayChoice([0,1,2])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(-2)<</script>>
+          Oh no! Some noisy group of people sat near Steve and just started singing to their favourite tunes.
+
+          <<if isCareless()>>
+            <<script>>addSocialDist(-10)<</script>>
+            What the?! And Steve started singing along with them!!
+            <<if getMask()>>
+              <<script>>addWariness(-3)<</script>>
+              He even took off his mask!!
+            <</if>>
+
+            It IS a good song, but come on, Steve!
+          <</if>>
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          Seeing the vacant spot next to Steve, an elderly passaneger moved to take that seat.
+          <<if isParanoid()>>
+            <<script>>addSocialDist(10)<</script>>
+            Steve doesn't seem like he wants to share the space. He just started yelling out of the blue, referring to the poor person as a "wrinkled walking biohazard".
+            You know, people are staring, Steve.
+          <<else>>
+            <<script>>addWariness(6)<</script>>
+            The person coughs from time to time.
+            Every time that happens, Steve seems to try and schooch even further towards the bus window and away for the old fellow.
+            Hopefully, that at least makes you a little more conscious of the danger you're in, Steve.
+          <</if>>
+        <<elseif _chance == 2>> /* Random outcome 2 */
+          <<script>>addSocialDist(-2)<</script>>
+          Someone else sits next to Steve.
+          They engage in small talk.
+          It's okay to keep interacting with people every now and then, but just make sure you do so safely.
+        <</if>>
+      <</replace>>
+  <</link>>
+  @@
+  
+  [[Work begins!|OfficeworkPhase1]]
 
 
 :: TeleworkAnnounce
-  Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work!
-  Isn't that amazing Steve?
+  Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work, if he doesn't want to!
 
   <<if isIsolated()>>
-    For some reason, Steve doesn't look so happy about this news... What could be wrong?
+    Steve looks sort of down with the possibility of not going in person...
   <</if>>
 
-  [[Work at Home|Telework]]
-  [[Go work|RainWalk]]
+  @@#links;
+  <<link "Go back home">>
+      <<replace "#links">>\
+        <<script>>addSocialDist(6)<</script>>
+        <<if isIsolated()>>
+          Steve just picked up his umbrella and went to work anyways!?
+
+          [[Uh... Steve, the rain, though...?|OfficeworkPhase1]]
+        <<else>>
+          Delighted, Steve hurries back home. He is probably happier with not having to work than with being able to protect himself at home, though.
+          What matters is that he'll be able to avoid taking risks.
+
+          [[Telework begins!|TeleworkPhase1]]
+        <</if>>
+      <</replace>>
+  <</link>>
+  <<link "Go to work anyways">>
+      <<replace "#links">>\
+        Steve decides to go to work anyway, despite what his boss told him
+        <<set _chance to arrayChoice([0,1])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(-5)<</script>>
+          And it rained indeed! As a result, Steve was soaking wet when he reached the office. Hopefully, this won't affect his health too much...
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          Well, he managed to avoid the rain. That's good, but maybe this could have been an opportunity to practice social distancing.
+        <</if>>
+
+        [[Work begins!|OfficeworkPhase1]]
+      <</replace>>
+  <</link>>
+  @@
 
 
-:: Telework
-  <<include "DebugStats">>
-  /* If steve feels alone, he can just ignore the telework */
-  <<if isIsolated() && randomChance(80)>>
-    <<set _result to arrayChoice([
-      "Steve just picked up his umbrella and went work anyways.",
-      "Wait, where are you going Steve?"
-    ])>>
-
-    _result
-
-    Steve just picked up his umbrella and went work anyways...
-
-    [[Did he just ignored me?|Work]]
-
-  <<else>>
-    /* Everything is fine, Steve will telework */
-    <<set _result to arrayChoice([
-      "Yeah, remote work is awesome!",
-      "Working in pijamas is a really good feeling, I know how it feels, Steve."
-    ])>>
-
-    _result
-
-    <<script>>addSocialDist(5)<</script>>
-  <</if>>
-
-
-:: RainWalk
-  <<include "DebugStats">>
-  /* probability of getting sick because of the rain */
-  <<if randomChance(80)>> 
-    <<script>>addHealth(-5)<</script>>
-    Oh no! It looks like Steve got a wash from the rain!
-    Hope he's still okay.
-  <<else>>
-    Somehow, Steve managed to avoid the rain. That's good.
-  <</if>>
-
-  [[Continue to Work|WorkPhase1]]
-
-
-:: WorkPhase1 {"position":"725,50","size":"100,100"}
+:: OfficeworkPhase1 {"position":"725,50","size":"100,100"}
   <<include "DebugStats">>
   <<include "StablePhaseCommon">>
-  <<set $stable_passage to "WorkPhase1">>
+  <<set $stable_passage to "OfficeworkPhase1">>
   <<script>>addSocialDist(-2)<</script>>
   <<set _result to arrayChoice([
     "Well that was a stressful morning. Steve is a regular person, so of course he's not too keen on working. Oh god, it's already 12:00?!",
@@ -362,33 +395,107 @@ Day: _day
 
   _result
 
-  
+    /* --- Steve's Morning Actions --- */
+  <<if getMask()>>
+    [[Remove Mask|OfficeMaskOff]]
+  <<else>>
+    [[Put a mask on|OfficeMaskOn]]
+  <</if>>
+  [[Wash Hands|OfficeWash]]
 
-  [[Eat with friends|EatFriends]]
-  [[Eat alone|EatAlone]]
+  Well, this is lunch break after all. So, time to eat.
+  It seems the ret of the guys are gathering again to eat together...
+
+  [[Eat with friends|OfficeChooseEatFriends]]
+  [[Eat alone|OfficeChooseEatAlone]]
 
 
-:: EatAlone
+:: OfficeMaskOn {"position":"775,325","size":"100,100"}
+/* Work in office mask on test. Being outside, Steve should put on a mask. */
+  <<include "DebugStats">>
+  /* this passage determines whether Steve puts on mask and shows the correct message */
+  <<if isCareless()>>
+    <<set _result to arrayChoice([
+      "Not happening, it seems. Steve all the cool kids not wearing their masks, so he decides to do the same, apparently.",
+      "Steve seems to think that, seeing as they're all locked in a closed space for hours, it's not really worth it wearing a mask anyway."
+    ])>> /* add more variations inside the array */
+
+    _result /* Display the resulting message */
+
+    [[What the hell, Steve...|$stable_passage]]
+  <<else>>
+    <<script>>addHealth(2)<</script>>
+    <<script>>setMask(true)<</script>>
+    Steve puts his mask on.
+    You are outside after all.
+
+    [[Well done, Steve!|$stable_passage]]
+  <</if>>
+
+
+:: OfficeMaskOff {"position":"150,100","size":"100,100"}
+  /* Work in office mask off test. Since he is outside, taking the mask off will result in adverse effects */
+  <<include "DebugStats">>
+  <<script>>setMask(false)<</script>>
+  /* this passage determines whether Steve takes mask off and shows the correct message */
+  <<if isParanoid()>>
+    <<set _result to arrayChoice([
+      "Steve is trembling just thinking about taking the mask off. In the end, he leaves it on.",
+      "Not only does Steve NOT take the mask off, he puts on ANOTHER mask over the previous one. That might be overdoing it a bit.",
+    ])>> /* add more variations inside the array */
+
+    _result /* Display the resulting message */
+
+    [[Well, yeah, maybe that's for the best, Steve|$stable_passage]]
+    /*[[What the hell, Steve...|$stable_passage]]*/
+  <<else>>
+    <<script>>addHealth(-8)<</script>>
+    <<script>>setMask(false)<</script>>
+    His colleagues look healthy enough, right?
+    Surely, none of them have covid, so it's fine... right?
+
+    [[Hopefully, nothing bad will come of it|$stable_passage]]
+  <</if>>
+
+
+:: OfficeWash
+  <<include "DebugStats">>
+  /* Office time hand wash. Being just before eating, it's important to properly wash hands. */
+
+  Steve just woke up, but you never know right. Virus could be anywhere. He should wash his hands, just to be safe... Right?
+
+  <<if isCareless()>>
+    Steve doesn't really want to go through all the trouble of having to wash his hands for two minutes or whatever, it seems.
+  <<else>>
+    <<script>>addHealth(5)<</script>>
+    Yes, well done, Steve! You're gonna eat and you've been handling objects all this time. It's important to properly wash your hands now.
+  <</if>>
+
+  [[Back|$stable_passage]]
+
+
+:: OfficeChooseEatAlone
   <<include "DebugStats">>
 
-  <<if isIsolated && randomChance(50)>>
-    Wait, are you going to eat with them? Steve, you know that you need to isolate yourself a little bit, right?
+  <<if isIsolated() and randomChance(50)>>
+    Wait, are you going to eat with them, after all? Steve, you know that you need to isolate yourself a little bit, right?
 
-    [[Hey, Ste- Oh, there he goes...|EatFriends]]
+    [[Hey, Ste- Oh, there he goes...|EatFriendsPool]]
 
   <<else>>
-    <<script>>addSocialDist(5)<</script>>
+    <<script>>addSocialDist(8)<</script>>
     <<script>>addWariness(3)<</script>>
-    <<set _result to arrayChoice([
-      "Yeah, who need to eat with real people, you can eat alone perfectly fine.",
-      "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
-    ])>>
-    _result
+    
+    <<if isIsolated()>>
+      Eating alone... Again... It's been so long that Steve feels like he's even part of the office staff. Do their friends even remember his name at this point?
+    <<else>>
+      Right! Eating alone. That's the healthy choice now, ha ha ha... ha....
+    <</if>>
 
     <<if randomChance(10)>>
     /* Receiving a message event */
       <<set _result to arrayChoice([
-        "Hey, Steve! You just receive a message from your parents. They really love you, hum?",
+        "Hey, Steve! You just received a message from your parents. They really love you, hum?",
         "Yoooo, isn't this a message from the girl you like? Way to go, man!"
       ])>>
       _result
@@ -396,20 +503,20 @@ Day: _day
       <<script>>addHealth(1)<</script>>
     <</if>>
 
-    [[Back to Work|Work2]]
+    [[Let's eat, then|EatAlonePool]]
   <</if>>
 
 
-:: EatFriends
+:: OfficeChooseEatFriends
   <<include "DebugStats">>
   /* Happens when Steve is eating together with people at the work */
-  <<script>>addSocialDist(-3)<</script>>
-  <<script>>addHealth(-1)<</script>>
-  <<script>>addWariness(-1)<</script>>
+  <<script>>addSocialDist(-9)<</script>>
+  <<script>>addHealth(-2)<</script>>
+  <<script>>addWariness(-4)<</script>>
 
   <<set _result to arrayChoice([
-    "Eating with friends is good, I guess. I hope you are following the hygienic protocols, right, Steve?",
-    "Everyone needs time with some friends, enjoy while you can, we should take care from now on."
+    "Eating with friends is also good. So long as everyone follows the proper protocols, right, Steve?",
+    "Everyone needs time with some friends. Enjoy while you can, but you should still remember to take care from now on."
   ])>>
 
   _result
@@ -756,29 +863,24 @@ window.logVariableError = function(variable) {
   console.error("Could not declare "+variable+" in this namespace");
 }
 
-// if wariness is below this value, Steve might not do some of the things you tell him
-if (!window.CARELESS_THRESHOLD) window.CARELESS_THRESHOLD = 30;
-else logVariableError("CARELESS_THRESHOLD")
+// The following constants are used in different contexts (because their values were the same anyways)
 
-// if wariness is above this value, Steve might get too paranoid to interact with people
-if (!window.PARANOID_THRESHOLD) window.PARANOID_THRESHOLD = 70;
-else logVariableError("PARANOID_THRESHOLD")
+// lowest limit for checking stat values
+if (!window.LOWEST_STAT) window.LOWEST_STAT = 10;
+else logVariableError("LOWEST_STAT")
 
-// if health is below this limit, Steve has COVID
-if (!window.COVID_THRESHOLD) window.COVID_THRESHOLD = 30;
-else logVariableError("COVID_THRESHOLD")
+// lower limit for checking stat values
+if (!window.MIDLOW_STAT) window.MIDLOW_STAT = 10;
+else logVariableError("MIDLOW_STAT")
 
-// if health is below this limit, Steve has COVID AND is very sick
-if (!window.SICK_THRESHOLD) window.SICK_THRESHOLD = 10;
-else logVariableError("SICK_THRESHOLD")
+// upper limit for checking stat values
+if (!window.MIDHIGH_STAT) window.MIDHIGH_STAT = 10;
+else logVariableError("MIDHIGH_STAT")
 
-// if social dist is above this value, Steve starts to feeling alone
-if (!window.ISOLATED_THRESHOLD) window.ISOLATED_THRESHOLD = 70;
-else logVariableError("ISOLATED_THRESHOLD")
+// highest limit for checking stat values
+if (!window.HIGHEST_STAT) window.HIGHEST_STAT = 10;
+else logVariableError("HIGHEST_STAT")
 
-// if money is below this value, Steve is considered with low budget
-if (!window.POOR_THRESHOLD) window.POOR_THRESHOLD = 30;
-else logVariableError("POOR_THRESHOLD")
 
 // -------------------
 // || --- Stats --- ||
@@ -794,10 +896,13 @@ window.addWariness = function(toAdd) {
   _wariness += toAdd;
 }
 window.isCareless = function() {
-  return _wariness < CARELESS_THRESHOLD
+  return _wariness < MIDLOW_STAT
 }
 window.isParanoid = function() {
-  return _wariness > PARANOID_THRESHOLD
+  return _wariness > MIDHIGH_STAT
+}
+window.isPanick = function() {
+  return _wariness > HIGHEST_STAT
 }
 
 // social_dist
@@ -810,7 +915,10 @@ window.addSocialDist = function(toAdd) {
   _social_dist += toAdd;
 }
 window.isIsolated = function() {
-  return _social_dist > ISOLATED_THRESHOLD
+  return _social_dist > MIDHIGH_STAT
+}
+window.isDepressed = function() {
+  return _social_dist > HIGHEST_STAT
 }
 
 // health
@@ -833,7 +941,10 @@ window.addMoney = function(toAdd) {
   _money += toAdd;
 }
 window.isPoor = function() {
-  return _money < POOR_THRESHOLD
+  return _money < MIDLOW_STAT
+}
+window.isBroke = function() {
+  return _money < LOWEST_STAT
 }
 
 // day
