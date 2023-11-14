@@ -55,14 +55,38 @@ Day: _day
   <<script>>setMask(false)<</script>>
 
   <<if getDay() == END_DAY>>
-    [[It's here! Vaccine day has arrived!|Ending]]
+    [[It's here! Vaccine day has arrived!|EndingPool]]
+  <<else>>
     [[Another day begins|MorningPhase]]
   <</if>>
 
 
-:: Ending
-  TODO: include the appropriate passage depending on the stats. Like EndingSick, EndingDepressed, ...
-  Each of these could include multiple passages.
+:: EndingPool
+  Here it is at last!
+
+  Steve's assigned vaccination day has arrived!
+
+  <<set _ending to "GoodEnding">>
+
+  <<if isCareless()>>
+    <<set _ending to "CarelessEnding1">>
+  <<elseif isPanick()>>
+    <<set _ending to "PanickEnding1">>
+  <<elseif isDepressed()>>
+    <<set _ending to "DepressedEnding1">>
+  <<elseif isNotDistance()>>
+    <<set _ending to "PartyEnding1">>
+  <<elseif isSick()>>
+    <<set _ending to "SickEnding1">>
+  <<elseif isOverconfident()>>
+    <<set _ending to "OverconfidentEnding1">>
+  <<elseif isRich()>>
+    <<set _ending to "RichEnding1">>
+  <<elseif isBroke()>>
+    <<set _ending to "BrokeEnding1">>
+  <</if>>
+
+  [[Time to get ready, Steve!|_ending]]
 
 
 :: MorningPhase {"position":"475,250","size":"100,100"}
@@ -884,6 +908,418 @@ Day: _day
   [[Sleep|WakeUp]]
 
 
+:: GoodEnding1
+  Steve rushes through his breakfast and excitedly leaves his house.
+
+  His vaccine was scheduled to early in the morning, so he won't even have to skip work! ...wait, that's a bad thing...
+
+  [[Anyway, off you go, Steve]]
+
+
+:: GoodEnding2
+  Upon reaching the vaccination site, Steve hurriedly gets in line to wait his turn.
+
+  Though, he should be used to it by now, Steve can barely stand waiting. So close to being free!
+
+  [[Finally, it's Steve's turn|GoodEnding3]]
+
+
+:: GoodEnding3
+  As the needle approaches his skin, Steve is suddenly reminded of how much he is afraid of needles and nearly passes out.
+  Don't be such a baby, Steve.
+
+  A slight prick, a tingling feeling in his arm and it's done, Steve! At long last. ...Steve? Come now, open your eyes, the needle is out already.
+
+  [[Now to wait 30 minutes|GoodEnding4]]
+
+
+:: GoodEnding4
+  Steve just spent his 30 minutes reading conspiracy theories about vaccine side-effects.
+  No backsies now, Steve! Moreover, THOSE. ARE. FAKE. STEVE.
+
+  As Steve leaves the vaccination centre, he feels a sense of relief he hadn't felt in a good long while.
+
+  [[...|GoodEnding5]]
+
+
+:: GoodEnding5
+  Yeah, well, that's great and all, Steve, but remember, this is only your first shot anyway.
+
+  <<linkreplace "Oh... Right...">>
+    Plus, having the vaccine doesn't make you immune, in the first place. It just means you are more protected.
+    
+    <<linkreplace "Yeah...">>
+      Probably, anyway. There could also be the chance that it doesn't really work on you.
+
+      Besides, you should still do your best to protect yourself and others.
+      
+      <<linkreplace "What...?">>
+        That means no going to parties.
+
+        <<linkreplace "...">>
+          Or forgetting your mask.
+
+          <<linkreplace "...Still a mask...?">>
+            And remember to keep washing your hands, thouroughly, of course!
+
+            You know, wetting them with water.
+            <<linkappend "Applying Soap">>
+              <<linkappend "Rubbing them together">>
+                <<linkappend "Washing the back of your hand">>
+                  <<linkappend "Between the fingers">>
+                    <<linkappend "Both your hands, of course">>
+                      <<linkappend "And your palms">>
+                        <<linkappend "Rubbing the tip of your fingers">>
+                          <<linkappend "And thumbs!">>
+                            And finally rinsing and drying them.
+                            <<linkappend "And you're done!">>
+                              If you remember to use a disposable towel to dry your hands and turn off the tap with.
+                              Otherwise, maybe you should wash them again.
+
+                              In any case, well done, Steve.
+
+                              <b>Maybe getting the vaccine won't really change your life from now on</b>, but if you don't focus on that and, instead, think about how, probably, safer you are, you'll be fine!
+
+                              <<linkappend "Well! Then until the next vaccine shot.">>
+                                
+                                Oh! By the way, you should on to work, it's almost time for you to start!
+
+                                <<linkreplace "THE END">>THE END...?<</linkreplace>>
+                              <</linkappend>>
+                            <</linkappend>>
+                          <</linkappend>>
+                        <</linkappend>>
+                      <</linkappend>>
+                    <</linkappend>>
+                  <</linkappend>>
+                <</linkappend>>
+              <</linkappend>>
+            <</linkappend>>
+          <</linkreplace>>
+        <</linkreplace>>
+      <</linkreplace>>
+    <</linkreplace>>
+  <</linkreplace>>
+
+
+:: CarelessEnding1
+  Wait... Steve, are you not going to get your shot?
+
+  Oh no... Is it because of all those conspiracy theories you've been reading about??
+
+  [[Steve! The vaccine WON'T inject you with micro trackers to let the government spy on you|CarelessEnding2]]
+
+
+:: CarelessEnding2
+  OR make turn you into a man-lizard hybrid. That's just stupid!
+
+  [[Steve doesn't seem to care, it seems|CarelessEnding3]]
+
+
+:: CarelessEnding3
+  As Steve goes about his normal business, as he would have any other day, fully confident that he won't be corrupted by the secret mind-controlling toxins the vaccine puts inside you, his best chance to finally be protected against this virus just slips away.
+
+  Congratulations, Steve, you've become another one of the careless morons that put everyone else at risk, believing in everything they hear from other careless morons.
+
+  Hopefully, the next person will try to be a little more sensible and realise that most of what you read on the internet is a bunch of baseless <<linkreplace "bullsh*">>crap<</linkreplace>>
+
+  <<linkappend "THE END">>
+
+    Obviously, the next day, Steve caught covid. He handled it pretty badly, resulting in him dying.
+  <</linkappend>>
+
+
+:: PanickEnding1
+  ...Steve? Are you not going to get ready to leave?
+
+  [[Uh oh...|PanickEnding2]]
+
+
+:: PanickEnding2
+  Seems like doesn't plan on leaving his house anytime soon. Or ever.
+
+  The outside is nothing bu danger.
+
+  Even if he gets the vaccine, there's no guarantee he won't get infected later on.
+
+  [[Besides|PanickEnding3]]
+
+
+:: PanickEnding3
+  If other people don't get vaccinated, eventually, the virus will continue spreading and, when the effects of the vaccine wear off, it'll come back!!
+
+  [[The vaccine won't change anything!!!|PanickEnding4]]
+
+
+:: PanickEnding4
+  //''PEOPLE CAN'T BE TRUSTED
+
+  THE VACCINE ITSELF CAN'T BE TRUSTED
+
+  IF STEVE LEAVES HE HOUSE, HE'LL BE VULNERABLE! HE'LL BE EXPOSED!!!!''//
+
+  [[THERE IS ONLY ONE CHOICE|PanickEnding5]]
+
+
+:: PanickEnding5
+  //Steve has been preparing for this for a while now...
+
+  He's been stockpiling on the necessary supplies!
+
+  Water, canned beans, industrial sized barrels of sanitiser, medicine.
+  IT'S ALL IN HIS HOUSE!
+
+  There's no need to go outside... There's no need to go to work if you already have everything you need, inside...//
+
+  <<linkappend "//Steve has food//">>
+    <<linkappend "//Steve has water//">>
+      <<linkappend "//AND TOILET PAPER!!//">>
+
+        //Steve can endure... ''AS LONG AS IT TAKES''//
+
+        ...Guess you couldn't handle the stress very well, huh, Steve...
+
+        <<linkappend "THE END">>
+
+          Just a few days later, Steve's supplies ran out... Except for the toilet paper. He still refused to leave his house, though, resulting in him getting sick and dying because of that. But not of covid!
+        <</linkappend>>
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
+:: PartyEnding1
+  Not going to the vaccine?? How come???
+
+  [[Brunch with your friends???!!|PartyEnding2]]
+
+
+:: PartyEnding2
+  You should be practicing social distancing, Steve!
+
+  This is the opposite of that! And on the vaccination day, no less!
+
+  [[Should you really do this??|PartyEnding3]]
+
+
+:: PartyEnding3
+  Steve acknowledges that the pandemic is dangerous and there is a risk.
+
+  <<linkappend "But he is absolutely not worried!">>
+
+    He knows he'll be fine! He'll be protected! <<linkappend "By what?">>
+      //THE POWER OF FRIENDSHIP//
+
+
+      ...
+
+      If you say so, Steve.....
+
+      <<linkappend "THE END">>
+
+        Turns out someone one of Steve's friends was infected and didn't tell anyone. Because of that, Steve got really sick and died.
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
+:: DepressedEnding1
+  Wait, you don't look so good, Steve.
+
+  [[Something on your mind?|DepressedEnding2]]
+
+
+:: DepressedEnding2
+  Steve has been away from people for so long that he no longer cares about anything.
+
+  It seems the crushing loneliness of not being with his friends and loved ones really got to him.
+
+  [[Does it even matter anymore...|DepressedEnding3]]
+
+
+:: DepressedEnding3
+  How long has it been since he's seen anyone other than his own reflection in the mirror.
+
+  <<linkappend "Steve misses his friends at work">>
+    <<linkappend "And his friends outside work">>
+      <<linkappend "His family">>
+        Do they even remember him anymore...?
+
+        Will the vaccine really change anything? After all, there's no guarantee they'll get vaccinated.
+        Even if they do, they'll probably still have to distance themselves for a good while longer.
+
+        <<linkappend "This is too much for Steve to endure...">>
+
+          He doesn't want to live in a world like this.
+          Because this is not really living, anyway.
+
+          Goodbye, cruel world!!!
+
+          <<linkappend "THE END">>
+
+            Steve ended up jumping off a cliff in desperation from a little too much social distancing.
+            At least, he didn't get infected, right...?
+          <</linkappend>>
+        <</linkappend>>
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
+:: SickEnding1
+  Oh no...
+
+  It happened...
+
+  It seems Steve is very sick right now...
+
+  [[He can barely get out of bed|SickEnding2]]
+
+
+:: SickEnding2
+  It is definetely covid, Steve...
+
+  You haven't been very careful lately, have you...?
+
+  You should have been more cautious!
+
+  <<linkappend "You know">>
+    <<linkappend "Wearing a mask">>
+      <<linkappend "Washing your hands">>
+        <<linkappend "Socially distancing yourself">>
+          <<linkappend "Even if it's hard">>
+
+            Well, nothing to be done now. Your really shouldn't exhert yourself now.
+
+            You'll be going to the hospital once you can move, though.
+
+            Seems the vaccine will have to wait.
+
+            <<linkappend "THE END">>
+
+              Steve ended up not resisting the virus and died. Oopsie Poopsie. Better luck next time.
+            <</linkappend>>
+          <</linkappend>>
+        <</linkappend>>
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
+:: OverconfidentEnding1
+  Don't need the vaccine???
+
+  [[What does that mean??|OverconfidentEnding2]]
+
+
+:: OverconfidentEnding2
+  Well, it's true that you've been in top shape lately, but don't you think that's a bit too much optimism??
+
+  Steve reasons that if he hasn't caught the virus until now, he probably won't anymore.
+
+  <<linkappend "Maybe, he's even immune!">>
+
+    Besides, this just means that what he's been doing so far has been working!
+    
+    <<linkappend "He just needs to keep going like this and he'll be just fine!">>
+      <<linkappend "Let the virus at him!">>
+        <<linkappend "Let the next pandemic begin already">>
+          Steve will tough it all out!
+
+          Nothing can stop him! Wooooooooo!
+
+          ...And there he went.
+
+          <<linkappend "THE END">>
+
+            The following week, the infection rates went up and Steve got infected.
+            <<linkappend "He didn't die, though!">>
+              Until the next month, when he got infected again and, then, died.
+            <</linkappend>>
+          <</linkappend>>
+        <</linkappend>>
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
+:: BrokeEnding1
+  It seems Steve isn't really thinking about the vaccine right now....
+
+  [[His savings are all spent|BrokeEnding2]]
+
+
+:: BrokeEnding2
+  As he looks at his expenses record of this month, he feels chills just thinking about the next one.
+
+  [[He has to do something about this fast|BrokeEnding3]]
+
+
+:: BrokeEnding3
+  Oh no, Steve spent o much time looking for another job to get more money, that he forgot about his actual job.
+
+  <<linkappend "He remembered because his boss sent him a message">>
+    He says he's gonna fire him!!
+
+    <<linkappend "Oh crap!">>
+      He's had enough with Steve's incompetence and says he's getting sacked!
+
+      And for all of this to happen on vaccination day....
+      What an unlucky coincidence, huh......
+
+      <<linkappend "THE END">>
+
+        Steve also forgot about being careful about the virus, because of all that.
+        He ended up getting sick and, since he had no money for medicine or doctors, he died.
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
+:: RichEnding1
+  Vaccines are for poor people??
+
+  [[What are you talking about??|RichEnding2]]
+
+
+:: RichEnding2
+  Steve has been making so much money lately, he shouldn't have to worry about poor people problems like viruses and all that.
+
+  He needs to think BIG now.
+
+  <<linkappend "Like what his first sports car is gonna be.">>
+    <<linkappend "Or what kind of boat he'll get.">>
+      <<linkappend "Or what supermodel he's gonna date, now">>
+
+        So many questions!
+
+        <<linkappend "But first, to do the only sensible thing possible when one has a lot of money.">>
+          
+          GAMBLING!
+
+          To get more money!
+
+          And after that, to get even more money AGAIN!
+
+          //''TO THE CASINO!!''//
+
+          <<linkappend "...">>
+            Um, you kinda have your vaccine today...?
+
+            <<linkappend "THE END">>
+
+              Steve ended up betting his entire fortune on the first round.
+              <<linkappend "He lost it all.">>
+                Also, turns out one of the casino people was infected. Steve got covid and died.
+              <</linkappend>>
+            <</linkappend>>
+          <</linkappend>>
+        <</linkappend>>
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
+
+
 :: 1 {"position":"600,100","size":"100,100"}
 <<set $chapter to "chapter one">><<if visited() is 1>><<if settings.notifications>><<notify 3s>>Notifications active!<</notify>><</if>><</if>>\
 In direct trade kickstarter gochujang poutine, PBR&B food truck cronut. //Health goth pabst hashtag, ut leggings duis pork belly venmo.// Sriracha pariatur asymmetrical, you probably haven't heard of them YOLO prism. ''Offal palo santo listicle polaroid.'' Pour-over taiyaki beard, flexitarian veniam sartorial prism retro cillum sriracha.
@@ -1116,6 +1552,9 @@ window.isIsolated = function() {
 window.isDepressed = function() {
   return _social_dist > HIGHEST_STAT
 }
+window.isNotDistance = function() {
+  return _social_dist < MIDLOW_STAT
+}
 
 // health
 if (!window._health) window._health = 50;
@@ -1132,6 +1571,9 @@ window.isUnhealthy = function() {
 window.isSick = function() {
   return _health < LOWEST_STAT
 }
+window.isOverconfident = function() {
+  return _health > HIGHEST_STAT
+}
 
 // money
 if (!window._money) window._money = 50;
@@ -1147,6 +1589,9 @@ window.isPoor = function() {
 }
 window.isBroke = function() {
   return _money < LOWEST_STAT
+}
+window.isRich = function() {
+  return _money > HIGHEST_STAT
 }
 
 // day
