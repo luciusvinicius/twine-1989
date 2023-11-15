@@ -15,31 +15,31 @@ CovidGame2
   "zoom": 1
 }
 
-:: DebugStats {"position":"475,250","size":"300,100"}
-<<silently>>
-<<set _health to getHealth()>>
-<<set _carefulness to getWariness()>>
-<<set _social_dist to getSocialDist()>>
-<<set _money to getMoney()>>
-<<set _day to getDay()>>
-<</silently>>
-Day: _day
-<div class="hud-flex-box">
-<div class="hud-box">Health: <div class="hud-bar"><div id="health" class="w3-red w3-center">_health</div></div></div>
-<div class="hud-box">Carefulness: <div class="hud-bar"><div id="wariness" class="w3-green w3-center">_carefulness</div></div></div>
-</div>
-<div class="hud-flex-box">
-<div class="hud-box">Social Distance: <div class="hud-bar"><div id="social-dist" class="w3-blue w3-center">_social_dist</div></div></div>
-<div class="hud-box">Money: <div class="hud-bar"><div id="money" class="w3-yellow w3-center">_money</div></div></div>
-</div>
-<<silently>>
-<<done>>
-  <<set document.getElementById("health").style.width = `${_health}%`>>
-  <<set document.getElementById("wariness").style.width = `${_carefulness}%`>>
-  <<set document.getElementById("social-dist").style.width = `${_social_dist}%`>>
-  <<set document.getElementById("money").style.width = `${_money}%`>>
-<</done>>
-<</silently>>
+:: DebugStats
+  <<silently>>
+  <<set _health to getHealth()>>
+  <<set _carefulness to getWariness()>>
+  <<set _social_dist to getSocialDist()>>
+  <<set _money to getMoney()>>
+  <<set _day to getDay()>>
+  <</silently>>
+  Day: _day
+  <div class="hud-flex-box">
+  <div class="hud-box">Health: <div class="hud-bar"><div id="health" class="w3-red w3-center">_health</div></div></div>
+  <div class="hud-box">Carefulness: <div class="hud-bar"><div id="wariness" class="w3-green w3-center">_carefulness</div></div></div>
+  </div>
+  <div class="hud-flex-box">
+  <div class="hud-box">Social Distance: <div class="hud-bar"><div id="social-dist" class="w3-blue w3-center">_social_dist</div></div></div>
+  <div class="hud-box">Money: <div class="hud-bar"><div id="money" class="w3-yellow w3-center">_money</div></div></div>
+  </div>
+  <<silently>>
+  <<done>>
+    <<set document.getElementById("health").style.width = `${_health * 100/40}%`>>
+    <<set document.getElementById("wariness").style.width = `${_carefulness * 100/40}%`>>
+    <<set document.getElementById("social-dist").style.width = `${_social_dist * 100/40}%`>>
+    <<set document.getElementById("money").style.width = `${_money * 100/40}%`>>
+  <</done>>
+  <</silently>>
 
 
 :: StablePhaseCommon
@@ -51,15 +51,17 @@ Day: _day
   /* mask is reset the start of each day */
 
 
-:: WakeUp
+:: WakeUp [autosave]
   /* Reset and evaluate daily procedures and variables */
   <<nobr>>
+    <<set _remaining_days to getRemainingDays()>>
     <<script>>goToNextDay()<</script>>
     <<script>>setMask(false)<</script>>
   <</nobr>>
   <<if getDay() == END_DAY>>
     [[It's here! Vaccine day has arrived!|EndingPool]]
   <<else>>
+    There are _remaining_days days before the release of the vaccine.
     [[Another day begins|MorningPhase]]
   <</if>>
 
@@ -94,7 +96,7 @@ Day: _day
   [[Time to get ready, Steve!|_ending]]
 
 
-:: MorningPhase {"position":"475,250","size":"100,100"}
+:: MorningPhase
   <<nobr>>
     <<include "DebugStats">>
     <<include "StablePhaseCommon">>
@@ -107,11 +109,21 @@ Day: _day
   <<if isDepressed()>>
     Another meaningless day begins... How is Steve supposed to even keep track anymore...
     No matter how many days pass, that void in Steve's very soul, derived from that craving for human contact, keeps getting wider and wider...
+  <<elseif isNotDistance()>>
+    Steve looked at his cellphone fulled with messages from people and he is anxious to start to talk to people again. Did he forget that we are in a pandemic?
   <<elseif isPanick()>>
     So, another day begins. Another trial awaits Steve once again. Outside, all sorts of dangers await. Perhaps, if Steve could convince his boss to let him work fully remote, Steve could barricade himself in his room until the pandemic ends!
     He has food. He has water. He has toilet paper! It might not be such a bad idea. Outside, all sorts of danger awaits. Inside, Steve can stay safe. <b>FOR EVER.</b>
+  <<elseif isCareless()>>
+    Steve just looked at the neighbour using a mask through the window and made a disgusted face. You aren't falling for fake news, right, Steve?
   <<elseif isBroke()>>
     Steve looks at his piggy bank in dismay. His savings should last him until he gets the vaccine at least. But after that, who knows........
+  <<elseif isRich()>>
+    Steve looks confident as he sees his wallet full.
+  <<elseif isSick()>>
+    Oh no... Steve looks bad, like, REALLY BAD.
+  <<elseif isOverconfident()>>
+    What is a disease for someone as healthy as Steve? He isn't even at the target age of risk!
   <<else>>
     Good morning Steve, get ready for another day!
   <</if>>
@@ -143,8 +155,8 @@ Day: _day
   /* ----- */
 
 
-:: MorningMaskOn {"position":"775,325","size":"100,100"}
-/* Morning mask on test. In the morning, Steve should put on a mask, since he's is going outside. Putting a mask on increases health. Does NOT increase wariness because that's what he should do. */
+:: MorningMaskOn 
+  /* Morning mask on test. In the morning, Steve should put on a mask, since he's is going outside. Putting a mask on increases health. Does NOT increase wariness because that's what he should do. */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
   <<if isCareless()>>
@@ -170,7 +182,7 @@ Day: _day
   <</if>>
 
 
-:: MorningMaskOff {"position":"150,100","size":"100,100"}
+:: MorningMaskOff 
   /* Morning mask off test. In the morning, Steve should put on a mask, since he's is going outside. Taking off the mask, results in minus health and minus wariness */
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
@@ -200,7 +212,7 @@ Day: _day
   <</if>>
 
 
-:: TakeTest {"position":"475,25","size":"100,100"}
+:: TakeTest 
   <<include "DebugStats">>
   /* this passage will have Steve try to take a test */
   <<if isCareless()>>
@@ -223,7 +235,7 @@ Day: _day
   <</if>>
 
 
-:: WaitTest {"position":"725,50","size":"100,100"}
+:: WaitTest 
   <<include "DebugStats">>
   The suspense is killing Steve. He feels fine, sort of.
   So it should most definitely be fine....right?
@@ -231,7 +243,7 @@ Day: _day
   [[See the results|ResultTest]]
 
 
-:: ResultTest {"position":"1050,175","size":"100,100"}
+:: ResultTest 
   <<include "DebugStats">>
   /* determine whether Health is below COVID threshold */
   <<if isSick()>>
@@ -274,6 +286,7 @@ Day: _day
   <<include "DebugStats">>
   <<if isParanoid()>>
     <<silently>>
+      <<script>>addMoney(-3)<</script>>
       <<set _result to arrayChoice([
         "Steve refuses to even think about leaving the house. There's people out there, mindlessly spitting germs and deadly viruses into each others faces!",
         "Apparently Steve never even got out of his pajamas and has already sat down at his desk, surounded by toilet paper and hand sanitiser bottles. Seems someone isn't getting out anytime soon...\n"
@@ -284,7 +297,7 @@ Day: _day
     [[Aaaaah.... If you say so, Steve...|TeleworkPhase]]
   <<else>>
     <<silently>>
-      <<script>>addSocialDist(-8)<</script>>
+      <<script>>addSocialDist(-4)<</script>>
     <</silently>>
     Steve should probably go to work. His boss wouldn't be very happy if he skipped anyway.
 
@@ -318,7 +331,7 @@ Day: _day
   <</if>>
 
 
-:: OfficePool1 {"position":"725,50","size":"100,100"}
+:: OfficePool1 
   /* this passage will have the random events that Steve might do while going to work */
   <<nobr>>
   <<set _morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
@@ -326,7 +339,7 @@ Day: _day
   <<include _morning_event>>
 
 
-:: MorningWalk {"position":"725,50","size":"100,100"}
+:: MorningWalk 
   <<include "DebugStats">>
   Steve decided to exercise a little and take a walk to the work.
 
@@ -359,12 +372,13 @@ Day: _day
         <<if _chance == 0>> /* Random outcome 0 */
           <<silently>>
             <<script>>addHealth(2)<</script>>
+            <<script>>addSocialDist(2)<</script>>
           <</silently>>
           What a nice day it is today. Steve feels good after doing some exercise!
           Nicely done, Steve!
         <<elseif _chance == 1>> /* Random outcome 1 */
           <<silently>>
-            <<script>>addMoney(-10)<</script>>
+            <<script>>addMoney(-4)<</script>>
           <</silently>>
           Steve was so caught up in avoiding people that he forgot where he was going. He should be in the office already!
           His boss won't be happy...
@@ -404,13 +418,13 @@ Day: _day
   <</link>>
   <<link "Don't be picky with which seat you choose">>
       <<replace "#links">>\
-        <<set _chance to arrayChoice([0,1,2])>>
+        <<set _chance to arrayChoice([0,1,2,3])>>
         <<if _chance == 0>> /* Random outcome 0 */
           <<script>>addHealth(-2)<</script>>
           Oh no! Some noisy group of people sat near Steve and just started singing to their favourite tunes.
 
           <<if isCareless()>>
-            <<script>>addSocialDist(-10)<</script>>
+            <<script>>addSocialDist(-6)<</script>>
             What the?! And Steve started singing along with them!!
             <<if getMask()>>
               <<script>>addWariness(-3)<</script>>
@@ -422,7 +436,7 @@ Day: _day
         <<elseif _chance == 1>> /* Random outcome 1 */
           Seeing the vacant spot next to Steve, an elderly passaneger moved to take that seat.
           <<if isParanoid()>>
-            <<script>>addSocialDist(10)<</script>>
+            <<script>>addSocialDist(8)<</script>>
             Steve doesn't seem like he wants to share the space. He just started yelling out of the blue, referring to the poor person as a "wrinkled walking biohazard".
             You know, people are staring, Steve.
           <<else>>
@@ -436,6 +450,9 @@ Day: _day
           Someone else sits next to Steve.
           They engage in small talk.
           It's okay to keep interacting with people every now and then, but just make sure you do so safely.
+        <<elseif _chance == 3>> /* Random outcome 3 */
+          <<script>>addSocialDist(6)<</script>>
+          Steve didn't mind talk a little bit, but he felt kind alone in the bus when nobody sat at his side. Maybe he's stinking for some reason?
         <</if>>
       <</replace>>
   <</link>>
@@ -521,7 +538,7 @@ Day: _day
   @@#links;
   <<link "Surf the net">>
       <<replace "#links">>\
-        <<set _chance to arrayChoice([0,1,2,3])>>
+        <<set _chance to arrayChoice([0,1,2,3,4])>>
         <<if _chance == 0>> /* Random outcome 0 (Healthy tips) */
           <<script>>addWariness(8)<</script>>
           <<set _result to arrayChoice([
@@ -544,6 +561,12 @@ Day: _day
             "Steve decided to spend his lunch break solely watching cat videos. Well, who doesn't like cat videos?",
             "Ooh great! A new episode from Steve's favourite series came out! Guess you know what you'll do right now, huh."
           ])>>
+        <<elseif _chance == 4>> /* Random outcome 1 (Alone) */
+          <<script>>addSocialDist(6)<</script>>
+          <<set _result to arrayChoice([
+            "Steve saw news about the dangers of becoming alone in this pandemic, and now he relates to his situation...",
+            "After some telework, you just read news about feeling alone the entire day... That's sad."
+          ])>>
         <</if>>
         _result
         <<silently>>
@@ -562,14 +585,15 @@ Day: _day
   <<link "Relax a little bit">>
     <<replace "#links">>\
     <<script>>addHealth(1)<</script>>
-    <<set _chance to arrayChoice([0,1,2])>>
-        <<if _chance == 0>> /* Random outcome 0 (Healthy breath) */
+    <<set _chance to arrayChoice([0,1,2,3])>>
+        <<if _chance == 0 || _chance == 1>> /* Random outcome 0 (Healthy breath) (50% chance) (used to escape the softlock) */
           <<script>>addHealth(2)<</script>>
+          <<script>>addWariness(-3)<</script>>
           <<set _result to arrayChoice([
             "It is good to relax to breath sometimes. Steve feels a little bit more relaxed",
             "A good pause is enough to restore Steve's energy!"
           ])>>
-        <<elseif _chance == 1>> /* Random outcome (Steve finds an insect) */
+        <<elseif _chance == 2>> /* Random outcome (Steve finds an insect) */
           <<silently>>
             <<script>>addHealth(-8)<</script>>
             <<script>>addWariness(5)<</script>>
@@ -579,7 +603,7 @@ Day: _day
             "Yikes! A wild menacing spider appeared! Steve is TERRIFIED of Arthropods and that gave him a mini-heart attack. He managed to make the creature flee in the end, but at what cost?",
             "Wait, Steve... Is that a SPIDER???? Stopping running in circles and think in a solution! Yeah, keep this dark creature away with your broom."
           ])>>
-        <<elseif _chance == 2>> /* Random outcome (Steve discover he lost some money in the wallet) */
+        <<elseif _chance == 3>> /* Random outcome (Steve discover he lost some money in the wallet) */
           <<script>>addMoney(-5)<</script>>
           <<set _result to arrayChoice([
             "Oh no! Steve just noticed that he lost a 5-bill! He has no idea in where it might have fallen.",
@@ -635,7 +659,7 @@ Day: _day
 
 
 
-:: OfficePhase1 {"position":"725,50","size":"100,100"}
+:: OfficePhase1 
   <<include "DebugStats">>
   <<include "StablePhaseCommon">>
   <<silently>>
@@ -664,7 +688,7 @@ Day: _day
   [[Eat alone|OfficeChooseEatAlone]]
 
 
-:: OfficeMaskOn {"position":"775,325","size":"100,100"}
+:: OfficeMaskOn 
   /* Work in office mask on test. Being outside, Steve should put on a mask. */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
@@ -691,7 +715,7 @@ Day: _day
   <</if>>
 
 
-:: OfficeMaskOff {"position":"150,100","size":"100,100"}
+:: OfficeMaskOff 
   /* Work in office mask off test. Since he is outside, taking the mask off will result in adverse effects */
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
@@ -709,7 +733,7 @@ Day: _day
     /*[[What the hell, Steve...|$stable_passage]]*/
   <<else>>
     <<silently>>
-      <<script>>addHealth(-8)<</script>>
+      <<script>>addHealth(-5)<</script>>
       <<script>>setMask(false)<</script>>
     <</silently>>
     His colleagues look healthy enough, right?
@@ -913,20 +937,19 @@ Day: _day
   @@#links;
   <<link "Surf the net">>
       <<replace "#links">>\
-        <<set _chance to arrayChoice([0,1,2,3])>>
+        <<set _chance to arrayChoice([0,1,2,3,4])>>
         <<if _chance == 0>> /* Random outcome 0 (Healthy tips) */
-          <<script>>addWariness(8)<</script>>
+          <<script>>addWariness(4)<</script>>
           <<set _result to arrayChoice([
             "Steve starts looking through lists of proper health care and precautions to take during the pandemic. Nicely done, Steve.",
             "Steve is reading the news. Doctors are, one again, warning people to take extra care when outside.",
             "It seems a new study came out, once again confirming the usefulness of properly washing your hands thouroughly. Make sure to keep it in mind!"
           ])>>
-          _result
         <<elseif _chance == 1>> /* Random outcome 1 (Unhealthy tips from net) */
-          <<script>>addWariness(-8)<</script>>
+          <<script>>addWariness(-6)<</script>>
           <<set _result to arrayChoice(fake_news_array)>>
         <<elseif _chance == 2>> /* Random outcome 1 (Scary news) */
-          <<script>>addWariness(16)<</script>>
+          <<script>>addWariness(8)<</script>>
           <<set _result to arrayChoice([
             "Steve is reading through the latest infection and death rates... And it's... not good. Try to stay calm, Steve.",
             "There are some countries whose situation is far worse from yours, Steve. It seems, juts thinking about it is giving him the chills!"
@@ -937,8 +960,15 @@ Day: _day
             "Steve decided to spend his lunch break solely watching cat videos. Well, who doesn't like cat videos?",
             "Ooh great! A new episode from Steve's favourite series came out! Guess you know what you'll do right now, huh."
           ])>>
+        <<elseif _chance == 4>> /* Random outcome 1 (Alone) */
+          <<script>>addSocialDist(6)<</script>>
+          <<set _result to arrayChoice([
+            "Steve saw news about the dangers of becoming alone in this pandemic, and now he relates to his situation...",
+            "New abous being too alone are all over the place, and now Steve is thinking about the topic and why the heck he was eating completely alone."
+          ])>>
         <</if>>
         _result
+        [[Well, lunch time is over, back to work!|OfficePhase2]]
       <</replace>>
   <</link>>
   <<link "Go take a walk through the hallway a bit.">>
@@ -952,19 +982,21 @@ Day: _day
             "And it feels good! Steve also has a chance to eat by the window, so he's also getting a bit of fresh air.",
             "Thankfully, there's no one in the hall right now, so it's a pleasant walk."
           ])>>
+          _result
         <<elseif _chance == 2>> /* Random outcome 1 (Unlucko) */
           <<script>>addHealth(-14)<</script>>
           <<set _result to arrayChoice([
             "Uh oh, Steve just crossed paths with someone coughing hard on the hall. They don't look so good......",
             "Hm, wrong choice it seems, the hall is crowded and there are even some people not wearing their masks! This could be dangerous."
           ])>>
+          _result
+          [[Well, lunch time is over, back to work!|OfficePhase2]]
+
         <</if>>
-        _result
       <</replace>>
   <</link>>
   @@
 
-  [[Well, lunch time is over, back to work!|OfficePhase2]]
 
 
 :: OfficePhase2
@@ -997,7 +1029,7 @@ Day: _day
 :: OfficeEndPool
   /* this passage will have the random events that happen at the end of Steve's work */
   <<nobr>>
-  <<script>>addMoney(1)<</script>>
+  <<script>>addMoney(2)<</script>>
   <<set _eat_friends_event to either("Overtime", "FriendsInvite", "WalkHome")>>
   <</nobr>>
   <<include _eat_friends_event>>
@@ -1011,7 +1043,7 @@ Day: _day
   @@#links;
   <<link "Accept overtime">>
       <<replace "#links">>\
-        <<script>>addMoney(10)<</script>>
+        <<script>>addMoney(8)<</script>>
         <<set _chance to arrayChoice([0,1])>>
         <<if _chance == 0>> /* Random outcome 0 */
           <<script>>addSocialDist(6)<</script>>
@@ -1058,10 +1090,10 @@ Day: _day
   @@#links;
   <<link "Go with them">>
       <<replace "#links">>\
-        <<script>>addSocialDist(-20)<</script>>
+        <<script>>addSocialDist(-10)<</script>>
         <<set _chance to arrayChoice([0,1,2])>>
         <<if _chance == 0>> /* Random outcome 0 */
-          <<script>>addHealth(-20)<</script>>
+          <<script>>addHealth(-8)<</script>>
           What have you done, Steve....
 
           Turns out their definition of "hanging out" is throwing a huge party!
@@ -1075,7 +1107,7 @@ Day: _day
           Everything went pretty well, all things considered!
           Everyone kept their masks on and, while eating, actually kept a safe distance from each other. Good for you, Steve!
         <<elseif _chance == 2>> /* Random outcome 1 */
-          <<script>>addHealth(-12)<</script>>
+          <<script>>addHealth(-10)<</script>>
           Not good... As soon as they left the office, everyone took their masks off, but started talking and laughing way too close to each other.
 
           Maybe you should tell them to- Wha! No, Steve, don't take your mask off as well!
@@ -1142,8 +1174,8 @@ Day: _day
 
           Great! Now you can relax a bit, before having to prepare dinner and what not, Steve.
         <<elseif _chance == 1>> /* Random outcome 1 */
-          <<script>>addMoney(-20)<</script>>
-          <<script>>addHealth(-4)<</script>>
+          <<script>>addMoney(-8)<</script>>
+          <<script>>addHealth(-5)<</script>>
           It seems it wasn't a very good idea, though...
 
           Steve is confronted with someone pointing a knife at him. Steve's being mugged!!
@@ -1229,8 +1261,8 @@ Day: _day
   [[Sleep|WakeUp]]
 
 
-:: NightMaskOn {"position":"775,325","size":"100,100"}
-/* Night mask on test. Putting a mask on at night is not really healthy and increases Steve's paranoia */
+:: NightMaskOn 
+  /* Night mask on test. Putting a mask on at night is not really healthy and increases Steve's paranoia */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
   <<if isCareless()>>
@@ -1256,7 +1288,7 @@ Day: _day
   <</if>>
 
 
-:: NightMaskOff {"position":"150,100","size":"100,100"}
+:: NightMaskOff 
   /* Night mask off test. Steve should take his mask off at night */
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
@@ -1664,6 +1696,7 @@ Day: _day
 
         Steve also forgot about being careful about the virus, because of all that.
         He ended up getting sick and, since he had no money for medicine or doctors, he died.
+
       <</linkappend>>
     <</linkappend>>
   <</linkappend>>
@@ -1713,83 +1746,8 @@ Day: _day
   <</linkappend>>
 
 
-:: 1 {"position":"600,100","size":"100,100"}
-<<set $chapter to "chapter one">><<if visited() is 1>><<if settings.notifications>><<notify 3s>>Notifications active!<</notify>><</if>><</if>>\
-In direct trade kickstarter gochujang poutine, PBR&B food truck cronut. //Health goth pabst hashtag, ut leggings duis pork belly venmo.// Sriracha pariatur asymmetrical, you probably haven't heard of them YOLO prism. ''Offal palo santo listicle polaroid.'' Pour-over taiyaki beard, flexitarian veniam sartorial prism retro cillum sriracha.
-
-Ut waistcoat knausgaard iceland excepteur eiusmod ennui gastropub fingerstache sint quis duis. Sunt whatever ea keytar af disrupt jean shorts. Pop-up meh pug, brunch ipsum locavore cred pork belly forage labore id. Narwhal duis man braid lyft chicharrones, roof party hashtag poke palo santo waistcoat. Magna readymade messenger bag pabst, keffiyeh biodiesel man braid pour-over irure cold-pressed nulla ramps.
-
-Say what...?
-
-*[[Echo park elit austin DIY dolor edison bulb letterpress.|2]]
-*[[Organic consectetur 8-bit cronut schlitz DIY leggings.|2]]
-
-
-:: 2 [autosave] {"position":"700,100","size":"100,100"}
-I'm baby shaman hell of consectetur poke. Flexitarian DIY lo-fi unicorn freegan next level irure disrupt prism eu yuccie magna. Fugiat biodiesel meh etsy vape, tote bag try-hard. XOXO hoodie anim exercitation literally. Officia yr laborum non exercitation lorem consectetur cornhole swag actually fingerstache migas normcore.
-
-Beard adipisicing gluten-free drinking vinegar. Ugh helvetica semiotics, pour-over cold-pressed banjo eiusmod glossier vape fingerstache pok pok pitchfork flannel. Everyday carry locavore voluptate kombucha chambray hot chicken vexillologist, excepteur squid deserunt fingerstache enamel pin poutine. Letterpress DIY eiusmod ut voluptate twee consectetur qui kinfolk. Pinterest mixtape jianbing franzen, hammock irure glossier austin gastropub roof party lorem.
-
-Freegan hexagon hella aesthetic flannel ethical veniam iceland. Culpa DIY readymade, bushwick iPhone hell of portland four loko fam trust fund. Est venmo church-key mumblecore, messenger bag letterpress fingerstache heirloom esse plaid do tote bag nulla pinterest post-ironic. Deep v waistcoat laboris beard, food truck copper mug messenger bag kitsch hexagon blog drinking vinegar williamsburg in ethical esse. Meditation aute disrupt cliche, gastropub affogato seitan mlkshk. 90's in knausgaard readymade gochujang ea fanny pack prism messenger bag organic 8-bit. Salvia ad selvage you probably haven't heard of them.
-
-Austin ugh synth you probably haven't heard of them, hexagon drinking vinegar pitchfork prism flannel poutine vaporware. Duis actually austin deep v activated charcoal migas hella. Exercitation raclette tote bag, voluptate lomo organic crucifix poke mlkshk food truck laborum jianbing biodiesel aliquip. Godard commodo selfies, deserunt meh photo booth truffaut before they sold out jean shorts consequat edison bulb everyday carry. Duis beard pinterest eu.
-
-<span class="next"><<button "Next" "3">><</button>></span>
-
-
-:: 3 {"position":"800,100","size":"100,100"}
-<<set $they to "They">><<set $plural to true>>\
-Here's an example of how the 'Live Update' macro by Cycy works:
-
-*<<link "She/Her">><<set $they to "She">><<set $plural to false>><<update>><</link>>
-*<<link "He/Him">><<set $they to "He">><<set $plural to false>><<update>><</link>>
-*<<link "They/Them">><<set $they to "They">><<set $plural to true>><<update>><</link>>
-
-<<liveblock>>
-$they <<are>> super fun and love<<s>> cupcakes.
-<</liveblock>>
-
-You can also use it to update the dialog labels! Try it by opening the settings menu and toggling the dialog labels button :)
-
-<<liveblock>>
-*<<link "Choice with flirt label $flirt_label" "4">><</link>>
-*<<link "Choice with info label $info_label" "4">><</link>>
-<</liveblock>>
-
-
-:: 4 {"position":"900,100","size":"100,100"}
-When publishing to itch.io, you have a couple options for how to have your game display in mobile browsers.
-
-As a general rule, make sure to choose 'Click to launch in fullscreen' in the 'Embed options' section and click the checkbox to enable 'Mobile friendly' under the 'Frame options'.
-
-To force the game to always display in portrait mode on mobile, select 'Portrait' for the orientation. To display in landscape mode, select 'Landscape'. Easy peasy<3
-
-Note: The latest update to the template has styling for both portrait and landscape modes for mobile, so have fun playing around with each to decide which option works best for your game!
-
-<span class="next"><<button "Next" "5">><</button>></span>
-
-
-:: 5 {"position":"1000,100","size":"100,100"}
-Some helpful resources:
-[[Sugarcube 2 Documentation|https://www.motoslave.net/sugarcube/2/docs]]
-[[Twine Cookbook|https://twinery.org/cookbook]]
-[[Beginner’s Guide to Twine 2.1|http://www.adamhammond.com/twineguide]]
-[[The Twine Grimoires|https://gcbaccaris.itch.io]]
-[[Quick Twine Tutorial|https://catn.decontextualize.com/twine]]
-[[r/twinegames|https://www.reddit.com/r/twinegames]]
-
-Macros/Sample code:
-[[Chapel's Custom Macros|https://github.com/ChapelR/custom-macros-for-sugarcube-2]]
-[[Cycy's Custom Macros|https://github.com/cyrusfirheir/cycy-wrote-custom-macros]]
-[[HIEv's Sample Code|https://qjzhvmqlzvoo5lqnrvuhmg-on.drv.tw/UInv/Sample_Code.html#Main%20Menu]]
-
-Other Sugarcube 2 templates:
-[[1 by Cerberus|https://ccrberus.itch.io/twine-sugarcube-template]]
-[[2 by Vahnya|https://vahnya.itch.io/twine-template]]
-[[3 by Nyehilism|https://nyehilism.itch.io/sugarcube-template]]
-[[4 by Nyehilism|https://nyehilism.itch.io/twine-template]]
-[[5 by Strandworks|https://strandworks.itch.io/gradient-template]]
-
+:: ResetGame
+  <<script>>UISystem.restart()<</script>>
 
 :: StoryInit {"position":"300,100","size":"100,100"}
 /* define your story variables here */
@@ -1876,19 +1834,19 @@ window.logVariableError = function(variable) {
 // The following constants are used in different contexts (because their values were the same anyways)
 
 // lowest limit for checking stat values
-if (!window.LOWEST_STAT) window.LOWEST_STAT = 30;
+if (!window.LOWEST_STAT) window.LOWEST_STAT = 8;
 else logVariableError("LOWEST_STAT")
 
 // lower limit for checking stat values
-if (!window.MIDLOW_STAT) window.MIDLOW_STAT = 40;
+if (!window.MIDLOW_STAT) window.MIDLOW_STAT = 14;
 else logVariableError("MIDLOW_STAT")
 
 // upper limit for checking stat values
-if (!window.MIDHIGH_STAT) window.MIDHIGH_STAT = 60;
+if (!window.MIDHIGH_STAT) window.MIDHIGH_STAT = 26;
 else logVariableError("MIDHIGH_STAT")
 
 // highest limit for checking stat values
-if (!window.HIGHEST_STAT) window.HIGHEST_STAT = 70;
+if (!window.HIGHEST_STAT) window.HIGHEST_STAT = 32;
 else logVariableError("HIGHEST_STAT")
 
 // collection of fake news
@@ -1903,22 +1861,36 @@ if (!window.fake_news_array) window.fake_news_array = [
 else logVariableError("fake_news_array")
 
 // the last day of the game
-if (!window.END_DAY) window.END_DAY = 4; // TODO: change this to an appropriate value
+if (!window.END_DAY) window.END_DAY = 7; // TODO: change this to an appropriate value (one week?)
 else logVariableError("END_DAY")
+
+window.getRemainingDays = function() {
+  return END_DAY - _day;
+}
 
 
 // -------------------
 // || --- Stats --- ||
 // -------------------
 
+// Base stats
+if (!window._default_stat) window._default_stat = 20;
+else logVariableError("_default_stat")
+
+if (!window._max_stat) window._max_stat = 40;
+else logVariableError("_max_stat")
+
+if (!window._min_stat) window._min_stat = 0;
+else logVariableError("_min_stat")
+
 // wariness (or carefulness)
-if (!window._wariness) window._wariness = 50;
+if (!window._wariness) window._wariness = window._default_stat;
 else logVariableError("_wariness")
 window.getWariness = function() {
   return _wariness;
 }
 window.addWariness = function(toAdd) {
-  _wariness += toAdd;
+  _wariness = clamp(_wariness + toAdd, _min_stat, _max_stat);
 }
 window.isCareless = function() {
   return _wariness < MIDLOW_STAT
@@ -1931,13 +1903,14 @@ window.isPanick = function() {
 }
 
 // social_dist
-if (!window._social_dist) window._social_dist = 50;
+if (!window._social_dist) window._social_dist = window._default_stat;
 else logVariableError("_social_dist")
 window.getSocialDist = function() {
   return _social_dist;
 }
 window.addSocialDist = function(toAdd) {
-  _social_dist += toAdd;
+  _social_dist = clamp(_social_dist + toAdd, _min_stat, _max_stat);
+
 }
 window.isIsolated = function() {
   return _social_dist > MIDHIGH_STAT
@@ -1950,13 +1923,13 @@ window.isNotDistance = function() {
 }
 
 // health
-if (!window._health) window._health = 50;
+if (!window._health) window._health = window._default_stat;
 else logVariableError("_health")
 window.getHealth = function() {
   return _health;
 }
 window.addHealth = function(toAdd) {
-  _health += toAdd;
+  _health = clamp(_health + toAdd, _min_stat, _max_stat);
 }
 window.isUnhealthy = function() {
   return _health < MIDLOW_STAT
@@ -1969,13 +1942,13 @@ window.isOverconfident = function() {
 }
 
 // money
-if (!window._money) window._money = 50;
+if (!window._money) window._money = window._default_stat;
 else logVariableError("_money")
 window.getMoney = function() {
   return _money;
 }
 window.addMoney = function(toAdd) {
-  _money += toAdd;
+  _money = clamp(_money + toAdd, _min_stat, _max_stat);
 }
 window.isPoor = function() {
   return _money < MIDLOW_STAT
@@ -2035,7 +2008,7 @@ window.setWashed = function(onoff) {
 
 // return a random int between min (inclusive) and max (inclusive)
 window.randint = function(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 // return a random element from an array
@@ -2046,7 +2019,12 @@ window.arrayChoice = function(array) {
 
 // return boolean for random probability chance (in %)
 window.randomChance = function(probability) {
-  return Math.random() < probability/100
+  return Math.random() < probability/100;
+}
+
+// clamp of value in range (inclusive)
+window.clamp = function(num, min, max) {
+  return Math.min(Math.max(num, min), max);
 }
 
 
