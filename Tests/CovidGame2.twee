@@ -12,7 +12,7 @@ CovidGame2
     "autosave": "green",
     "noreturn": "red"
   },
-  "zoom": 0.6
+  "zoom": 0.3
 }
 
 
@@ -147,7 +147,7 @@ How long has it been since he's seen anyone other than his own reflection in the
   <</linkappend>>
 
 
-:: EatAlonePool {"position":"1600,500","size":"100,100"}
+:: EatAlonePool {"position":"2050,925","size":"100,100"}
 /* this passage will have the random events that Steve might do while eating with friends */
   <<include "DebugStats">>
   Steve is eating all alone... Time to entertain yourself with something.
@@ -216,7 +216,7 @@ How long has it been since he's seen anyone other than his own reflection in the
   @@
 
 
-:: EatFriendsPool {"position":"1600,225","size":"100,100"}
+:: EatFriendsPool {"position":"1700,825","size":"100,100"}
 /* this passage will have the random events that Steve might do while eating with friends */
   <<nobr>>
   <<set _eat_friends_event to either("PandemicChat", "SmallChat")>>
@@ -254,7 +254,7 @@ Here it is at last!
   [[Time to get ready, Steve!|_ending]]
 
 
-:: FriendsInvite {"position":"2050,400","size":"100,100"}
+:: FriendsInvite {"position":"2425,950","size":"100,100"}
 <<include "DebugStats">>
 
   As he's preparing to leave, Steve's friends invite him to hang out!
@@ -306,7 +306,7 @@ Here it is at last!
   @@
 
 
-:: GoParty {"position":"2050,300","size":"100,100"}
+:: GoParty {"position":"2425,850","size":"100,100"}
 <<include "DebugStats">>
   <<silently>>
     /* Used when Steve goes out after work */
@@ -420,7 +420,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</linkreplace>>
 
 
-:: MorningBus {"position":"1200,450","size":"100,100"}
+:: MorningBus {"position":"1100,1000","size":"100,100"}
 <<include "DebugStats">>
   Steve decided he'd take his usual bus to work. Doesn't feel like walking it seems.
 
@@ -491,7 +491,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   [[Work begins!|OfficePhase1]]
 
 
-:: MorningChooseOffice {"position":"950,350","size":"100,100"}
+:: MorningChooseOffice {"position":"1100,800","size":"100,100"}
 /* choosing to go to work in person */
   <<include "DebugStats">>
   <<if isParanoid()>>
@@ -515,7 +515,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: MorningChooseTelework {"position":"950,250","size":"100,100"}
+:: MorningChooseTelework {"position":"1275,400","size":"100,100"}
 /* choosing to work from home */
   <<include "DebugStats">>
   <<if isIsolated()>>
@@ -571,7 +571,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: MorningMaskOn {"position":"800,700","size":"100,100"}
+:: MorningMaskOn {"position":"700,675","size":"100,100"}
 /* Morning mask on test. In the morning, Steve should put on a mask, since he's is going outside. Putting a mask on increases health. Does NOT increase wariness because that's what he should do. */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
@@ -598,7 +598,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: MorningPhase {"position":"800,300","size":"100,100"}
+:: MorningPhase {"position":"775,300","size":"100,100"}
 <<nobr>>
     <<include "DebugStats">>
     <<include "StablePhaseCommon">>
@@ -659,7 +659,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   /* ----- */
 
 
-:: MorningWalk {"position":"1200,350","size":"100,100"}
+:: MorningWalk {"position":"1100,900","size":"100,100"}
 <<include "DebugStats">>
   Steve decided to exercise a little and take a walk to the work.
 
@@ -710,7 +710,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   @@
 
 
-:: MorningWash {"position":"800,800","size":"100,100"}
+:: MorningWash {"position":"800,875","size":"100,100"}
 <<include "DebugStats">>
   /* Morning hand wash. Since it's morning, it's not as important and overdoing it increases wariness. */
 
@@ -736,7 +736,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   [[Back|$stable_passage]]
 
 
-:: NightMaskOff {"position":"2400,700","size":"100,100"}
+:: NightMaskOff {"position":"2950,325","size":"100,100"}
 /* Night mask off test. Steve should take his mask off at night */
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
@@ -762,7 +762,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: NightMaskOn {"position":"2300,700","size":"100,100"}
+:: NightMaskOn {"position":"2775,550","size":"100,100"}
 /* Night mask on test. Putting a mask on at night is not really healthy and increases Steve's paranoia */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
@@ -789,7 +789,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: NightPhase {"position":"2300,500","size":"100,100"}
+:: NightPhase {"position":"2775,250","size":"100,100"}
 <<include "DebugStats">>
   <<silently>>
     /* Used when Steve goes out after work */
@@ -817,7 +817,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   [[Sleep|WakeUp]]
 
 
-:: NightWash {"position":"2300,800","size":"100,100"}
+:: NightWash {"position":"2900,500","size":"100,100"}
 <<include "DebugStats">>
   /* Night hand wash. Since it's night, so it's important to wash hands. */
 
@@ -844,7 +844,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   [[Back|$stable_passage]]
 
 
-:: NoParty {"position":"2050,200","size":"100,100"}
+:: NoParty {"position":"2425,750","size":"100,100"}
 <<include "DebugStats">>
   /* Used when the player rejects the party offer */
   <<set _result to arrayChoice([
@@ -867,7 +867,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: OfficeChooseEatAlone {"position":"1500,500","size":"100,100"}
+:: OfficeChooseEatAlone {"position":"1800,1000","size":"100,100"}
 <<include "DebugStats">>
 
   <<if isIsolated() and randomChance(50)>>
@@ -905,7 +905,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: OfficeChooseEatFriends {"position":"1500,225","size":"100,100"}
+:: OfficeChooseEatFriends {"position":"1575,650","size":"100,100"}
 <<include "DebugStats">>
   /* Choosing to eat with friends at work */
   <<if isParanoid()>>
@@ -930,7 +930,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: OfficeEndPool {"position":"1950,400","size":"100,100"}
+:: OfficeEndPool {"position":"2325,950","size":"100,100"}
 /* this passage will have the random events that happen at the end of Steve's work */
   <<nobr>>
   <<script>>addMoney(2)<</script>>
@@ -939,7 +939,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <<include _eat_friends_event>>
 
 
-:: OfficeMaskOff {"position":"1950,700","size":"100,100"}
+:: OfficeMaskOff {"position":"1800,1275","size":"100,100"}
 /* Work in office mask off test. Since he is outside, taking the mask off will result in adverse effects */
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
@@ -967,7 +967,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: OfficeMaskOn {"position":"1850,700","size":"100,100"}
+:: OfficeMaskOn {"position":"1800,1375","size":"100,100"}
 /* Work in office mask on test. Being outside, Steve should put on a mask. */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
@@ -994,7 +994,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <</if>>
 
 
-:: OfficePhase1 {"position":"1350,375","size":"100,100"}
+:: OfficePhase1 {"position":"1500,1000","size":"100,100"}
 <<include "DebugStats">>
   <<include "StablePhaseCommon">>
   <<silently>>
@@ -1023,7 +1023,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   [[Eat alone|OfficeChooseEatAlone]]
 
 
-:: OfficePhase2 {"position":"1850,400","size":"100,100"}
+:: OfficePhase2 {"position":"2200,950","size":"100,100"}
 <<include "DebugStats">>
   <<include "StablePhaseCommon">>
   <<silently>>
@@ -1050,7 +1050,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   [[Prepare to leave|OfficeEndPool]]
 
 
-:: OfficePool1 {"position":"1100,350","size":"100,100"}
+:: OfficePool1 {"position":"1150,575","size":"100,100"}
 /* this passage will have the random events that Steve might do while going to work */
   <<nobr>>
   <<set _morning_event to either("MorningWalk", "MorningBus", "TeleworkAnnounce")>>
@@ -1058,7 +1058,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
   <<include _morning_event>>
 
 
-:: OfficeWash {"position":"1850,800","size":"100,100"}
+:: OfficeWash {"position":"1800,1475","size":"100,100"}
 <<include "DebugStats">>
   /* Office time hand wash. Being just before eating, it's important to properly wash hands. */
 
@@ -1117,7 +1117,7 @@ Well, it's true that you've been in top shape lately, but don't you think that's
   <</linkappend>>
 
 
-:: Overtime {"position":"2050,600","size":"100,100"}
+:: Overtime {"position":"2425,1150","size":"100,100"}
 <<include "DebugStats">>
 
   As Steve was leaving, his boss stops him, saying they're a little behind and he was wondering if Steve would like to do overtime?
@@ -1161,7 +1161,7 @@ Well, it's true that you've been in top shape lately, but don't you think that's
   @@
 
 
-:: PandemicChat {"position":"1700,175","size":"100,100"}
+:: PandemicChat {"position":"2075,500","size":"100,100"}
 <<include "DebugStats">>
   /* Events with friends talking about the pandemic. Might be both good and bad. */
   Steve's friends are talking about the pandemic, it seems.
@@ -1311,7 +1311,7 @@ Steve acknowledges that the pandemic is dangerous and there is a risk.
   <</linkappend>>
 
 
-:: ResultTest {"position":"1300,900","size":"100,100"}
+:: ResultTest {"position":"1350,150","size":"100,100"}
 <<include "DebugStats">>
   /* determine whether Health is below COVID threshold */
   <<if isSick()>>
@@ -1415,7 +1415,7 @@ It is definetely covid, Steve...
   <</linkappend>>
 
 
-:: SmallChat {"position":"1700,275","size":"100,100"}
+:: SmallChat {"position":"1975,575","size":"100,100"}
 <<include "DebugStats">>
   /* Events with friends talking about the nothing in particular. Might be good to socialise, but bad for risks. */
   Steve's friends are talking about random stuff. They seem lively
@@ -1551,7 +1551,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
 </div>
 
 
-:: TakeTest {"position":"1300,700","size":"100,100"}
+:: TakeTest {"position":"1525,300","size":"100,100"}
 <<include "DebugStats">>
   /* this passage will have Steve try to take a test */
   <<if isCareless()>>
@@ -1575,7 +1575,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
   <</if>>
 
 
-:: TeleworkAnnounce {"position":"1200,250","size":"100,100"}
+:: TeleworkAnnounce {"position":"1400,700","size":"100,100"}
 <<include "DebugStats">>
   Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work, if he doesn't want to!
 
@@ -1616,7 +1616,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
   @@
 
 
-:: TeleworkPhase {"position":"1350,0","size":"100,100"}
+:: TeleworkPhase {"position":"1600,475","size":"100,100"}
 <<include "DebugStats">>
   <<include "StablePhaseCommon">>
   <<silently>>
@@ -1634,7 +1634,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
   [[Start working|TeleworkPool]]
 
 
-:: TeleworkPool {"position":"1450,0","size":"100,100"}
+:: TeleworkPool {"position":"1850,400","size":"100,100"}
 <<include "DebugStats">>
   Working alone is nice and all, but it can be boring sometimes...
 
@@ -1776,7 +1776,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
   @@
 
 
-:: WaitTest {"position":"1300,800","size":"100,100"}
+:: WaitTest {"position":"1525,125","size":"100,100"}
 <<include "DebugStats">>
   The suspense is killing Steve. He feels fine, sort of.
   So it should most definitely be fine....right?
@@ -1784,7 +1784,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
   [[See the results|ResultTest]]
 
 
-:: WakeUp [autosave] {"position":"600,300","size":"100,100"}
+:: WakeUp [autosave] {"position":"625,225","size":"100,100"}
 /* Reset and evaluate daily procedures and variables */
   <<nobr>>
     <<set _remaining_days to getRemainingDays()>>
@@ -1802,7 +1802,7 @@ Ah, the brief sense of relief you felt when you received the good news that ther
   <</if>>
 
 
-:: WalkHome {"position":"2050,500","size":"100,100"}
+:: WalkHome {"position":"2425,1050","size":"100,100"}
 <<include "DebugStats">>
 
   Steve begins his walk back home. It's nighttime already, as usual.
