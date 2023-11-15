@@ -7,7 +7,7 @@ CovidGame2
   "ifid": "B23132D3-91BF-4158-99DA-9C128303991B",
   "format": "SugarCube",
   "format-version": "2.36.1",
-  "start": "WakeUp",
+  "start": "Start1",
   "tag-colors": {
     "autosave": "green",
     "noreturn": "red"
@@ -49,6 +49,53 @@ CovidGame2
     <<script>>setWashed(false)<</script>>
   <</nobr>>
   /* mask is reset the start of each day */
+
+
+:: Start1
+  BEEP BEEP
+  
+  <<linkreplace "You have 1 unread message!">>
+    Your vaccination has been scheduled.
+    Please report to the specified location to receive your first vaccination dose.
+
+    [[Close|Start2]]
+  <</linkreplace>>
+
+
+:: Start2
+  Ah, the brief sense of relief you felt when you received the good news that there was a vaccine shot especially saved for you.
+
+  The pandemic took its toll in all of us. And, more than enough times, it seemed our normal way of life was forever lost.
+  
+  <<linkappend "Until the vaccine was made available">>
+    When the vaccination process began, people started having hope that the virus could be beat! And that our lives would be able to resume.
+
+    <<linkappend "And it all started with that simple message!">>
+
+      This particular message reached Steve's phone.
+
+      Steve is an average salary-man. Trying to live his life as best as he can through the challenges imposed by the pandemic.
+
+      Steve lives alone, which is maybe why he enjoys the company of his friends so much. Needless to say, the proper precautions against covid, with social distancing becoming a vital part of our lives, Steve's routine was severely affected.
+
+      <<linkappend "While that alone is a problem, there is, unfortunately, a much bigger one.">>
+
+        Steve, as rude as it is to put like this, is not smart. Steve is an individual who is easily influenced by what others around him do or say.
+        Moreover, he is not very pacient either. Steve has endured these past months in utter agony, over restrictions he does not feel are necessary and precautions that are beyond his ability to understand.
+        Truth be told, it is quite a miracle that Steve hasn't been infected yet.
+
+        Thankfully, there is only a little bit more time left before you ease up a bit. Stay strong, Steve!
+
+        <<linkappend "You'll see, if you just keep going as you have, you'll be fully vaccinated and protected in no time at all!">>
+          After being woken up by the vaccine message sent at 3am, Steve grudgingly tries to go back to sleep.
+
+          After a short 4 hours sleep, it's time to start the new day!
+
+          [[Get Up|WakeUp]]
+        <</linkappend>>
+      <</linkappend>>
+    <</linkappend>>
+  <</linkappend>>
 
 
 :: WakeUp [autosave]
@@ -147,7 +194,9 @@ CovidGame2
   <<else>>
     [[Put a mask on|MorningMaskOn]]
   <</if>>
-  [[Take a COVID test|TakeTest]]
+  <<if !getTest()>>
+    [[Take a COVID test|TakeTest]]
+  <</if>>
   [[Wash Hands|MorningWash]]
 
   After he is ready, Steve must work. His company does have the option to work from home... though they don't really support it much...
@@ -176,7 +225,7 @@ CovidGame2
     [[What the hell, Steve...|$stable_passage]]
   <<else>>
     <<silently>>
-      <<script>>addHealth(2)<</script>>
+      <<script>>addHealth(1)<</script>>
       <<script>>setMask(true)<</script>>
     <</silently>>
     Steve puts his mask on. Feeling protected already!
@@ -205,7 +254,7 @@ CovidGame2
     /*[[What the hell, Steve...|$stable_passage]]*/
   <<else>>
     <<silently>>
-      <<script>>addHealth(-2)<</script>>
+      <<script>>addHealth(-4)<</script>>
       <<script>>addWariness(-5)<</script>>
       <<script>>setMask(false)<</script>>
     <</silently>>
@@ -270,15 +319,23 @@ CovidGame2
   <<include "DebugStats">>
   /* Morning hand wash. Since it's morning, it's not as important and overdoing it increases wariness. */
 
-  Steve just woke up, but you never know right. Virus could be anywhere. He should wash his hands, just to be safe... Right?
+  <<if getWashed()>>
+    Steve already washed his hands. You shouldn't need to wash again, but if it makes you feel safer
 
-  <<if isCareless()>>
-    Steve doesn't seem to think so. Well, it is morning, but you shouldn't be so dismissive about it either way Steve...
-  <<elseif isParanoid()>>
-    Steve seems a little too eager to wash his hands. He's even doing the whole birthday song thing. It's only morning Steve, maybe you don't need that much.
+    Steve washes them again just as thoroughly. You should also take it easy, Steve. You don't need to exaggerate.
+    <<script>>addWariness(25)<</script>>
   <<else>>
-    Indeed, Steve starts thinking that maybe he hasn't been washing ENOUGH... Uh oh...
-    <<script>>addWariness(5)<</script>>
+    Steve just woke up, but you never know right. Virus could be anywhere. He should wash his hands, just to be safe... Right?
+
+    <<if isCareless()>>
+      Steve doesn't seem to think so. Well, it is morning, but you shouldn't be so dismissive about it either way Steve...
+    <<elseif isParanoid()>>
+      Steve seems a little too eager to wash his hands. He's even doing the whole birthday song thing. It's only morning Steve, maybe you don't need that much.
+    <<else>>
+      Indeed, Steve starts thinking that maybe he hasn't been washing ENOUGH... Uh oh...
+      <<script>>addWariness(5)<</script>>
+      <<script>>setWashed(true)<</script>>
+    <</if>>
   <</if>>
 
   [[Back|$stable_passage]]
@@ -289,7 +346,7 @@ CovidGame2
   <<include "DebugStats">>
   <<if isParanoid()>>
     <<silently>>
-      <<script>>addMoney(-3)<</script>>
+      <<script>>addMoney(-5)<</script>>
       <<set _result to arrayChoice([
         "Steve refuses to even think about leaving the house. There's people out there, mindlessly spitting germs and deadly viruses into each others faces!",
         "Apparently Steve never even got out of his pajamas and has already sat down at his desk, surounded by toilet paper and hand sanitiser bottles. Seems someone isn't getting out anytime soon...\n"
@@ -543,7 +600,7 @@ CovidGame2
   @@#links;
   <<link "Surf the net">>
       <<replace "#links">>\
-        <<set _chance to arrayChoice([0,1,2,3,4])>>
+        <<set _chance to arrayChoice([0,1,2,3,4,5,6])>>
         <<if _chance == 0>> /* Random outcome 0 (Healthy tips) */
           <<script>>addWariness(8)<</script>>
           <<set _result to arrayChoice([
@@ -551,7 +608,8 @@ CovidGame2
             "Steve is reading the news. Doctors are, one again, warning people to take extra care when outside.",
             "It seems a new study came out, once again confirming the usefulness of properly washing your hands thouroughly. Make sure to keep it in mind!"
           ])>>
-        <<elseif _chance == 1>> /* Random outcome 1 (Unhealthy tips from net) */
+        /* the other numbers in the condition below are to increase probability, yes, it's horrible like that, but did i ask */
+        <<elseif _chance == 1 || _chance == 5 || _chance == 6>> /* Random outcome 1 (Unhealthy tips from net) */
           <<script>>addWariness(-8)<</script>>
           <<set _result to arrayChoice(fake_news_array)>>
         <<elseif _chance == 2>> /* Random outcome 1 (Scary news) */
@@ -576,12 +634,12 @@ CovidGame2
         _result
         <<silently>>
 
-        /* <<include _eat_friends_event>> */
+          /* <<include _eat_friends_event>> */
 
-        <<set _result2 to arrayChoice([
-          "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
-          "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
-        ])>>
+          <<set _result2 to arrayChoice([
+            "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss doesn't like it that much.",
+            "Working in pajamas has its advantages, however so does gaining money from going in person. You could manage to work on-line today, but you shouldn't make this a habit."
+          ])>>
         <</silently>>
         _result2
         [[Go to Night|NightPhase]]
@@ -616,10 +674,15 @@ CovidGame2
           ])>>
         <</if>>
         _result
-        <<set _result2 to arrayChoice([
-          "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
-          "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
-        ])>>
+        <<silently>>
+
+          /* <<include _eat_friends_event>> */
+
+          <<set _result2 to arrayChoice([
+            "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss doesn't like it that much.",
+            "Working in pajamas has its advantages, however so does gaining money from going in person. You could manage to work on-line today, but you shouldn't make this a habit."
+          ])>>
+        <</silently>>
         _result2
 
         [[Go to Night|NightPhase]]
@@ -639,8 +702,8 @@ CovidGame2
         <<elseif _chance == 2>> /* Random outcome 1 (Unlucko) */
           <<script>>addHealth(-14)<</script>>
           <<set _result to arrayChoice([
-            "Great! When turning in the corner, Steve just bumped into a coughing person. The time couldn't be more perfect!",
-            "That immediately felt like a bad idea. It looks like the place where Steve chosen to go was doing a cosplay event of maskless characters."
+            "Great! When turning in the corner, Steve just bumped into a coughing person. The timing couldn't be more perfect.....",
+            "That immediately felt like a bad idea. It looks like the place where Steve chose to go to was doing a cosplay event of maskless characters."
           ])>>
         <</if>>
         _result
@@ -650,8 +713,8 @@ CovidGame2
           /* <<include _eat_friends_event>> */
 
           <<set _result2 to arrayChoice([
-            "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
-            "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
+            "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss doesn't like it that much.",
+            "Working in pajamas has its advantages, however so does gaining money from going in person. You could manage to work on-line today, but you shouldn't make this a habit."
           ])>>
         <</silently>>
         _result2
@@ -752,11 +815,19 @@ CovidGame2
   <<include "DebugStats">>
   /* Office time hand wash. Being just before eating, it's important to properly wash hands. */
 
-  <<if isCareless()>>
-    Steve doesn't really want to go through all the trouble of having to wash his hands for two minutes or whatever, it seems.
+  <<if getWashed()>>
+    Steve already washed his hands. You shouldn't need to wash again, but if it makes you feel safer
+
+    Steve washes them again just as thoroughly. You should also take it easy, Steve. You don't need to exaggerate.
+    <<script>>addWariness(25)<</script>>
   <<else>>
-    <<script>>addHealth(5)<</script>>
-    Yes, well done, Steve! You should wash your hands both before and after eating. It's important to properly wash your hands now.
+    <<if isCareless()>>
+      Steve doesn't really want to go through all the trouble of having to wash his hands for two minutes or whatever, it seems.
+    <<else>>
+      <<script>>addHealth(5)<</script>>
+      <<script>>setWashed(true)<</script>>
+      Yes, well done, Steve! You should wash your hands both before and after eating. It's important to properly wash your hands now.
+    <</if>>
   <</if>>
 
   [[Back|$stable_passage]]
@@ -1262,7 +1333,9 @@ CovidGame2
   <<else>>
     [[Put a mask on|NightMaskOn]]
   <</if>>
-  [[Take a COVID test|TakeTest]]
+  <<if !getTest()>>
+    [[Take a COVID test|TakeTest]]
+  <</if>>
   [[Wash Hands|NightWash]]
 
   After that, all that's left is for Steve to tuck himself into bed and rest up for the next day.
@@ -1327,17 +1400,25 @@ CovidGame2
   <<include "DebugStats">>
   /* Night hand wash. Since it's night, so it's important to wash hands. */
 
-  Steve just spent most of his day outside, touching strange doorknobs and handling unsanitised objects.
-  It's a given that you should wash your hands, right now.
+  <<if getWashed()>>
+    Steve already washed his hands. You shouldn't need to wash again, but if it makes you feel safer
 
-  <<if isCareless()>>
-    <<script>>addHealth(-5)<</script>>
-    Steve seems thinks it's probably fine, even if he doesn't wash, though. He probably didn't touch anything bad, right?
-    Steve immediately proceeds to touch his face.
+    Steve washes them again just as thoroughly. You should also take it easy, Steve. You don't need to exaggerate.
+    <<script>>addWariness(25)<</script>>
   <<else>>
-    Steve thouroughly washes his hands, even though it tires him out, for the full duration of two birthday songs. Well done!
-    <<script>>addHealth(4)<</script>>
-  <</if>>
+    Steve just spent most of his day outside, touching strange doorknobs and handling unsanitised objects.
+    It's a given that you should wash your hands, right now.
+
+    <<if isCareless()>>
+      <<script>>addHealth(-5)<</script>>
+      Steve seems thinks it's probably fine, even if he doesn't wash, though. He probably didn't touch anything bad, right?
+      Steve immediately proceeds to touch his face.
+    <<else>>
+      Steve thouroughly washes his hands, even though it tires him out, for the full duration of two birthday songs. Well done!
+      <<script>>addHealth(4)<</script>>
+      <<script>>setWashed(true)<</script>>
+    <</if>>
+  <</if>>>>
 
   [[Back|$stable_passage]]
 
@@ -1870,7 +1951,7 @@ if (!window.fake_news_array) window.fake_news_array = [
 else logVariableError("fake_news_array")
 
 // the last day of the game
-if (!window.END_DAY) window.END_DAY = 4; // TODO: change this to an appropriate value (one week?)
+if (!window.END_DAY) window.END_DAY = 7; // TODO: change this to an appropriate value (one week?)
 else logVariableError("END_DAY")
 
 window.getRemainingDays = function() {
