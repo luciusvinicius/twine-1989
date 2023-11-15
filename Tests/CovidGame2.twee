@@ -1,5 +1,5 @@
 :: StoryTitle
-CovidGame2
+Pandemic
 
 
 :: StoryData
@@ -12,7 +12,7 @@ CovidGame2
     "autosave": "green",
     "noreturn": "red"
   },
-  "zoom": 0.3
+  "zoom": 0.6
 }
 
 
@@ -827,7 +827,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
     Steve washes them again just as thoroughly. You should also take it easy, Steve. You don't need to exaggerate.
     <<script>>addWariness(25)<</script>>
   <<else>>
-    Steve just spent most of his day outside, touching strange doorknobs and handling unsanitised objects.
+    Steve just spent most of his day touching strange doorknobs and handling unsanitised objects.
     It's a given that you should wash your hands, right now.
 
     <<if isCareless()>>
@@ -839,7 +839,7 @@ Yeah, well, that's great and all, Steve, but remember, this is only your first s
       <<script>>addHealth(4)<</script>>
       <<script>>setWashed(true)<</script>>
     <</if>>
-  <</if>>>>
+  <</if>>
 
   [[Back|$stable_passage]]
 
