@@ -120,7 +120,7 @@ Day: _day
   <<else>>
     [[Put a mask on|MorningMaskOn]]
   <</if>>
-  [[Take a COVID test|MorningTest]]
+  [[Take a COVID test|TakeTest]]
   [[Wash Hands|MorningWash]]
 
   After he is ready, Steve must work. His company does have the option to work from home... though they don't really support it much...
@@ -156,7 +156,6 @@ Day: _day
 :: MorningMaskOff {"position":"150,100","size":"100,100"}
   /* Morning mask off test. In the morning, Steve should put on a mask, since he's is going outside. Taking off the mask, results in minus health and minus wariness */
   <<include "DebugStats">>
-  <<script>>setMask(false)<</script>>
   /* this passage determines whether Steve takes mask off and shows the correct message */
   <<if isParanoid()>>
     <<set _result to arrayChoice([
@@ -180,7 +179,7 @@ Day: _day
   <</if>>
 
 
-:: MorningTest {"position":"475,25","size":"100,100"}
+:: TakeTest {"position":"475,25","size":"100,100"}
   <<include "DebugStats">>
   /* this passage will have Steve try to take a test */
   <<if isCareless()>>
@@ -516,7 +515,6 @@ Day: _day
 :: OfficeMaskOff {"position":"150,100","size":"100,100"}
   /* Work in office mask off test. Since he is outside, taking the mask off will result in adverse effects */
   <<include "DebugStats">>
-  <<script>>setMask(false)<</script>>
   /* this passage determines whether Steve takes mask off and shows the correct message */
   <<if isParanoid()>>
     <<set _result to arrayChoice([
@@ -903,9 +901,86 @@ Day: _day
   ])>>
   _result
 
-  TODO: Complete this phase with a NightPool and actions: Mask, which is not very useful and increases Steve's paranoia; washing hands and taking a test.
+  /* --- Steve's Night Actions --- */
+  <<if getMask()>>
+    [[Remove Mask|NightMaskOff]]
+  <<else>>
+    [[Put a mask on|NightMaskOn]]
+  <</if>>
+  [[Take a COVID test|TakeTest]]
+  [[Wash Hands|NightWash]]
+
+  After that, all that's left is for Steve to tuck himself into bed and rest up for the next day.
 
   [[Sleep|WakeUp]]
+
+
+:: NightMaskOn {"position":"775,325","size":"100,100"}
+/* Night mask on test. Putting a mask on at night is not really healthy and increases Steve's paranoia */
+  <<include "DebugStats">>
+  /* this passage determines whether Steve puts on mask and shows the correct message */
+  <<if isCareless()>>
+    <<set _result to arrayChoice([
+      "Steve won't put on a mask right now. It's nighttime, there is literally no one else in his house (this last thought causes Steve to reflect on his sad lonely life).",
+      "If Steve is against putting a mask on during the day, he certainly won't do it at night. Steve skips right past the mask box."
+    ])>> /* add more variations inside the array */
+
+    _result /* Display the resulting message */
+
+    [[Well... Yeah, it is night right now.|$stable_passage]]
+  <<else>>
+    <<script>>addHealth(-2)<</script>>
+    <<script>>addWariness(20)<</script>>
+    <<script>>setMask(true)<</script>>
+    Steve put his mask on.
+    It's true that its nightime and he is alone and he should probably take it off before going to bed, but... why not...
+    Better safe than sorry, right Steve? Steve agrees a bit too quicky....
+
+    [[Well done, Steve!|$stable_passage]]
+  <</if>>
+
+
+:: NightMaskOff {"position":"150,100","size":"100,100"}
+  /* Night mask off test. Steve should take his mask off at night */
+  <<include "DebugStats">>
+  /* this passage determines whether Steve takes mask off and shows the correct message */
+  <<if isParanoid()>>
+    <<script>>addHealth(-2)<</script>>
+    <<set _result to arrayChoice([
+      "Steve has grown so accustomed to having the mask on, that he is finding it hard to take it off, even though it's nighttime. He decides to leave it on.",
+      "It is nighttime... And there is no one there... But, for some reason, Steve is struggling with taking the mask off. It feels like the minute he does, covid will find a way inside him. In the end, he leaves it on."
+    ])>> /* add more variations inside the array */
+
+    _result /* Display the resulting message */
+
+    [[Just don't go to bed with it, Steve...|$stable_passage]]
+  <<else>>
+    <<script>>addHealth(2)<</script>>
+    <<script>>addWariness(-2)<</script>>
+    <<script>>setMask(false)<</script>>
+    Finally, you can take the mask off safely!
+
+    [[Well, until a few hours, when you have to put it back on, of course.|$stable_passage]]
+  <</if>>
+
+
+:: NightWash
+  <<include "DebugStats">>
+  /* Night hand wash. Since it's night, so it's important to wash hands. */
+
+  Steve just spent most of his day outside, touching strange doorknobs and handling unsanitised objects.
+  It's a given that you should wash your hands, right now.
+
+  <<if isCareless()>>
+    <<script>>addHealth(-5)<</script>>
+    Steve seems thinks it's probably fine, even if he doesn't wash, though. He probably didn't touch anything bad, right?
+    Steve immediately proceeds to touch his face.
+  <<else>>
+    Steve thouroughly washes his hands, even though it tires him out, for the full duration of two birthday songs. Well done!
+    <<script>>addHealth(4)<</script>>
+  <</if>>
+
+  [[Back|$stable_passage]]
 
 
 :: GoodEnding1
