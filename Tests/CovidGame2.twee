@@ -44,16 +44,19 @@ Day: _day
 
 :: StablePhaseCommon
   /* Common procedures when game enters any of the stable phases */
-  <<script>>setTest(false)<</script>>
-  <<script>>setWashed(false)<</script>>
+  <<nobr>>
+    <<script>>setTest(false)<</script>>
+    <<script>>setWashed(false)<</script>>
+  <</nobr>>
   /* mask is reset the start of each day */
 
 
 :: WakeUp
   /* Reset and evaluate daily procedures and variables */
-  <<script>>goToNextDay()<</script>>
-  <<script>>setMask(false)<</script>>
-
+  <<nobr>>
+    <<script>>goToNextDay()<</script>>
+    <<script>>setMask(false)<</script>>
+  <</nobr>>
   <<if getDay() == END_DAY>>
     [[It's here! Vaccine day has arrived!|EndingPool]]
   <<else>>
@@ -66,33 +69,39 @@ Day: _day
 
   Steve's assigned vaccination day has arrived!
 
-  <<set _ending to "GoodEnding">>
+  <<silently>>
+    <<set _ending to "GoodEnding1">>
 
-  <<if isCareless()>>
-    <<set _ending to "CarelessEnding1">>
-  <<elseif isPanick()>>
-    <<set _ending to "PanickEnding1">>
-  <<elseif isDepressed()>>
-    <<set _ending to "DepressedEnding1">>
-  <<elseif isNotDistance()>>
-    <<set _ending to "PartyEnding1">>
-  <<elseif isSick()>>
-    <<set _ending to "SickEnding1">>
-  <<elseif isOverconfident()>>
-    <<set _ending to "OverconfidentEnding1">>
-  <<elseif isRich()>>
-    <<set _ending to "RichEnding1">>
-  <<elseif isBroke()>>
-    <<set _ending to "BrokeEnding1">>
-  <</if>>
+    <<if isCareless()>>
+      <<set _ending to "CarelessEnding1">>
+    <<elseif isPanick()>>
+      <<set _ending to "PanickEnding1">>
+    <<elseif isDepressed()>>
+      <<set _ending to "DepressedEnding1">>
+    <<elseif isNotDistance()>>
+      <<set _ending to "PartyEnding1">>
+    <<elseif isSick()>>
+      <<set _ending to "SickEnding1">>
+    <<elseif isOverconfident()>>
+      <<set _ending to "OverconfidentEnding1">>
+    <<elseif isRich()>>
+      <<set _ending to "RichEnding1">>
+    <<elseif isBroke()>>
+      <<set _ending to "BrokeEnding1">>
+    <</if>>
+  <</silently>>
 
   [[Time to get ready, Steve!|_ending]]
 
 
 :: MorningPhase {"position":"475,250","size":"100,100"}
-  <<include "DebugStats">>
-  <<include "StablePhaseCommon">>
-  <<set $stable_passage to "MorningPhase">>
+  <<nobr>>
+    <<include "DebugStats">>
+    <<include "StablePhaseCommon">>
+  <</nobr>>
+  <<silently>>
+    <<set $stable_passage to "MorningPhase">>
+  <</silently>>
 
   <<if isDepressed()>>
     Another meaningless day begins... How is Steve supposed to even keep track anymore...
@@ -136,17 +145,22 @@ Day: _day
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
   <<if isCareless()>>
-    <<set _result to arrayChoice([
-      "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
-      "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
-    ])>> /* add more variations inside the array */
+    <<silently>>
+      <<set _result to arrayChoice([
+        "Steve decides not to put on the mask. He read online that masks may cause you to die by choking in your own breath.",
+        "Steve decides not to put on the mask. He heard from a friend that their cousin's wife's neighbour had a horrible reaction to wearing a mask for a full day!"
+      ])>> /* add more variations inside the array */
+    <</silently>>
+
 
     _result /* Display the resulting message */
 
     [[What the hell, Steve...|$stable_passage]]
   <<else>>
-    <<script>>addHealth(2)<</script>>
-    <<script>>setMask(true)<</script>>
+    <<silently>>
+      <<script>>addHealth(2)<</script>>
+      <<script>>setMask(true)<</script>>
+    <</silently>>
     Steve puts his mask on. Feeling protected already!
 
     [[Well done, Steve!|$stable_passage]]
@@ -158,21 +172,25 @@ Day: _day
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
   <<if isParanoid()>>
-    <<set _result to arrayChoice([
-      /*"Steve is trembling just thinking about taking the mask off. In the end, he leaves it on.",
-      "Not only does Steve NOT take the mask off, he puts on ANOTHER mask over the previous one. That might be overdoing it a bit.",*/
-      "Steve looks at the scary, germ-infected cruel world out the window and promptly decides to ignore the idea of taking the mask off.",
-      "Steve actually ponders taking the mask off just for a split-second, before recalling all the different theories and studies on virus spread rate and risks. He puts his mask on tighter."
-    ])>> /* add more variations inside the array */
+    <<silently>>
+      <<set _result to arrayChoice([
+        /*"Steve is trembling just thinking about taking the mask off. In the end, he leaves it on.",
+        "Not only does Steve NOT take the mask off, he puts on ANOTHER mask over the previous one. That might be overdoing it a bit.",*/
+        "Steve looks at the scary, germ-infected cruel world out the window and promptly decides to ignore the idea of taking the mask off.",
+        "Steve actually ponders taking the mask off just for a split-second, before recalling all the different theories and studies on virus spread rate and risks. He puts his mask on tighter."
+      ])>> /* add more variations inside the array */
+    <</silently>>
 
     _result /* Display the resulting message */
 
     [[Well, yeah, maybe that's for the best, Steve|$stable_passage]]
     /*[[What the hell, Steve...|$stable_passage]]*/
   <<else>>
-    <<script>>addHealth(-2)<</script>>
-    <<script>>addWariness(-5)<</script>>
-    <<script>>setMask(false)<</script>>
+    <<silently>>
+      <<script>>addHealth(-2)<</script>>
+      <<script>>addWariness(-5)<</script>>
+      <<script>>setMask(false)<</script>>
+    <</silently>>
     Well.... Steve is supposed to go outside right now, but he looks sort of troubled by the mask. Maybe taking it off a bit would be good....
 
     [[Hopefully, nothing bad will come of it|$stable_passage]]
@@ -183,10 +201,12 @@ Day: _day
   <<include "DebugStats">>
   /* this passage will have Steve try to take a test */
   <<if isCareless()>>
-    <<set _result to arrayChoice([
-      "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
-      "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
-    ])>>
+    <<silently>>
+      <<set _result to arrayChoice([
+        "Screw tests! ...Is what Steve seems to think, as he puts the test he just opened straight in the trash.",
+        "Steve looks at the swab in disgust. Seems there is no way he is sticking that up his nose."
+      ])>>
+    <</silently>>
 
     _result /* Display the resulting message */
 
@@ -211,13 +231,15 @@ Day: _day
 :: ResultTest {"position":"1050,175","size":"100,100"}
   <<include "DebugStats">>
   /* determine whether Health is below COVID threshold */
-  <<if getHealth() < COVID_THRESHOLD>>
+  <<if isSick()>>
     It came back positive....
 
     It seems Steve wasn't careful enough. Right now, the best thing to do is to be extra careful and wait to get better.
   <<else>>
-    /* Steve is an idiot, so taking a negative test boosts his confidence */
-    <<script>>addWariness(-5)<</script>>
+    <<silently>>
+      /* Steve is an idiot, so taking a negative test boosts his confidence */
+      <<script>>addWariness(-5)<</script>>
+    <</silently>>
     It's negative. Well that's good news, but remember, it might be a false negative. So there is no reason to be any less careful, right Steve? ...Steve?
 
     Steve, you look way more relieved than you should be...
@@ -248,16 +270,19 @@ Day: _day
   /* choosing to go to work in person */
   <<include "DebugStats">>
   <<if isParanoid()>>
-    <<set _result to arrayChoice([
-      "Steve refuses to even think about leaving the house. There's people out there, mindlessly spitting germs and deadly viruses into each others faces!",
-      "Apparently Steve never even got out of his pajamas and has already sat down at his desk, surounded by toilet paper and hand sanitiser bottles. Seems someone isn't getting out anytime soon...\n"
-    ])>>
-
+    <<silently>>
+      <<set _result to arrayChoice([
+        "Steve refuses to even think about leaving the house. There's people out there, mindlessly spitting germs and deadly viruses into each others faces!",
+        "Apparently Steve never even got out of his pajamas and has already sat down at his desk, surounded by toilet paper and hand sanitiser bottles. Seems someone isn't getting out anytime soon...\n"
+      ])>>
+    <</silently>>
     _result
 
     [[Aaaaah.... If you say so, Steve...|TeleworkPhase]]
   <<else>>
-    <<script>>addSocialDist(-10)<</script>>
+    <<silently>>
+      <<script>>addSocialDist(-8)<</script>>
+    <</silently>>
     Steve should probably go to work. His boss wouldn't be very happy if he skipped anyway.
 
     [[To work we go!|OfficePool1]]
@@ -268,17 +293,21 @@ Day: _day
   /* choosing to work from home */
   <<include "DebugStats">>
   <<if isIsolated()>>
-    <<set _result to arrayChoice([
-      "Steve couldn't give a rat's ass about safety right now. HE NEEDS TO SEE ANOTHER HUMAN BEING.",
-      "Being away from people for so long, the thought of staying home never even crossed Steve's mind as he is already opening the front door to go out."
-    ])>>
+    <<silently>>
+      <<set _result to arrayChoice([
+        "Steve couldn't give a rat's ass about safety right now. HE NEEDS TO SEE ANOTHER HUMAN BEING.",
+        "Being away from people for so long, the thought of staying home never even crossed Steve's mind as he is already opening the front door to go out."
+      ])>>
+    <</silently>>
 
     _result
 
     [[Just try to be careful, Steve...|OfficePool1]]
   <<else>>
-    <<script>>addSocialDist(10)<</script>>
-    <<script>>addMoney(-5)<</script>>
+    <<silently>>
+      <<script>>addSocialDist(10)<</script>>
+      <<script>>addMoney(-5)<</script>>
+    <</silently>>
     Staying home is good from time to time. And much safer too.
     Of course, his boss might remember this at his next salary evaluation...
 
@@ -295,18 +324,25 @@ Day: _day
 
 
 :: MorningWalk {"position":"725,50","size":"100,100"}
+  <<include "DebugStats">>
   Steve decided to exercise a little and take a walk to the work.
 
   @@#links;
   <<link "Walk normally on the street">>
       <<replace "#links">>\
-        <<set _chance to arrayChoice([0,1])>>
+        <<silently>>
+          <<set _chance to arrayChoice([0,1])>>
+        <</silently>>
         <<if _chance == 0>> /* Random outcome 0 */
-          <<script>>addHealth(-4)<</script>>
+          <<silently>>
+            <<script>>addHealth(-4)<</script>>
+          <</silently>>
           Steve meets a friend on the street.
           He greets his friend, but forgets to keep his distance. Dammit Steve!
         <<elseif _chance == 1>> /* Random outcome 1 */
-          <<script>>addSocialDist(-4)<</script>>
+          <<silently>>
+            <<script>>addSocialDist(-4)<</script>>
+          <</silently>>
           Walking on the street, Steve has a chance to greet his neighbours. Safely, of course.
           It's a good chance to keep in touch with people. Good for you Steve.
         <</if>>
@@ -314,13 +350,19 @@ Day: _day
   <</link>>
   <<link "Expertly avoid any and all living soul on sight">>
       <<replace "#links">>\
-        <<set _chance to arrayChoice([0,1])>>
+        <<silently>>
+          <<set _chance to arrayChoice([0,1])>>
+        <</silently>>
         <<if _chance == 0>> /* Random outcome 0 */
-          <<script>>addHealth(2)<</script>>
+          <<silently>>
+            <<script>>addHealth(2)<</script>>
+          <</silently>>
           What a nice day it is today. Steve feels good after doing some exercise!
           Nicely done, Steve!
         <<elseif _chance == 1>> /* Random outcome 1 */
-          <<script>>addMoney(-10)<</script>>
+          <<silently>>
+            <<script>>addMoney(-10)<</script>>
+          <</silently>>
           Steve was so caught up in avoiding people that he forgot where he was going. He should be in the office already!
           His boss won't be happy...
         <</if>>
@@ -332,6 +374,7 @@ Day: _day
 
 
 :: MorningBus
+  <<include "DebugStats">>
   Steve decided he'd take his usual bus to work. Doesn't feel like walking it seems.
 
   @@#links;
@@ -399,6 +442,7 @@ Day: _day
 
 
 :: TeleworkAnnounce
+  <<include "DebugStats">>
   Steve's boss just called him to work at home because of the rain, he doesn't need to worry about travel to work, if he doesn't want to!
 
   <<if isIsolated()>>
@@ -441,8 +485,9 @@ Day: _day
 :: TeleworkPhase
   <<include "DebugStats">>
   <<include "StablePhaseCommon">>
-  <<set $stable_passage to "TeleworkPhase">>
-  <<script>>addSocialDist(4)<</script>>
+  <<silently>>
+    <<set $stable_passage to "TeleworkPhase">>
+  <</silently>>
   <<if isParanoid()>>
     There, you're home. You're safe, now, Steve. Nothing can hurt you here, right? <b>right?</b>
   <<elseif isIsolated()>>
@@ -457,18 +502,106 @@ Day: _day
 
 :: TeleworkPool
   
+  <<include "DebugStats">>
   Working alone is nice and all, but it can be boring sometimes...
 
   Steve finds it a bit hard to concentrate and his mind, sometimes, wanders off a bit.
 
   <<nobr>>
-  <<set _eat_friends_event to either("SurfNet", "Idling", "TakeWalk")>>
+  /* <<set _eat_friends_event to either("SurfNet", "Idling", "TakeWalk")>> <-- I think this shouldn't be random, but a choice */
   /* TODO: surf net was going to write events with fake_news_array, similarly to the one in EatAlone
   Idling was gonna have just text with no real downsides or upsides
   TakeWalk was also gonna be the equivalent to the one in EatAlone, only at Steve's home or nearby outside
   Telework is supposed to be just boring, uneventful stuff */
+
+  @@#links;
+  <<link "Surf the net">>
+      <<replace "#links">>\
+        <<set _chance to arrayChoice([0,1,2,3])>>
+        <<if _chance == 0>> /* Random outcome 0 (Healthy tips) */
+          <<script>>addWariness(8)<</script>>
+          <<set _result to arrayChoice([
+            "Steve starts looking through lists of proper health care and precautions to take during the pandemic. Nicely done, Steve.",
+            "Steve is reading the news. Doctors are, one again, warning people to take extra care when outside.",
+            "It seems a new study came out, once again confirming the usefulness of properly washing your hands thouroughly. Make sure to keep it in mind!"
+          ])>>
+          _result
+        <<elseif _chance == 1>> /* Random outcome 1 (Unhealthy tips from net) */
+          <<script>>addWariness(-8)<</script>>
+          <<set _result to arrayChoice(fake_news_array)>>
+        <<elseif _chance == 2>> /* Random outcome 1 (Scary news) */
+          <<script>>addWariness(16)<</script>>
+          <<set _result to arrayChoice([
+            "Steve is reading through the latest infection and death rates... And it's... not good. Try to stay calm, Steve.",
+            "There are some countries whose situation is far worse from yours, Steve. It seems, juts thinking about it is giving him the chills!"
+          ])>>
+        <<elseif _chance == 3>> /* Random outcome 1 (Relax) */
+          <<script>>addHealth(6)<</script>>
+          <<set _result to arrayChoice([
+            "Steve decided to spend his lunch break solely watching cat videos. Well, who doesn't like cat videos?",
+            "Ooh great! A new episode from Steve's favourite series came out! Guess you know what you'll do right now, huh."
+          ])>>
+        <</if>>
+        _result
+      <</replace>>
+  <</link>>
+  <<link "Relax a little bit">>
+    <<replace "#links">>\
+    <<script>>addHealth(1)<</script>>
+    <<set _chance to arrayChoice([0,1,2])>>
+        <<if _chance == 0>> /* Random outcome 0 (Healthy breath) */
+          <<script>>addHealth(2)<</script>>
+          <<set _result to arrayChoice([
+            "It is good to relax to breath sometimes. Steve feels a little bit more relaxed",
+            "A good pause is enough to restore Steve's energy!"
+          ])>>
+        <<elseif _chance == 1>> /* Random outcome (Steve finds an insect) */
+          <<script>>addHealth(-3)<</script>>
+          <<set _result to arrayChoice([
+            "Yikes! A wild menacing spider appeared! Steve is TERRIFIED of Arthropods and that gave him a mini-heart attack. He managed to make the creature flee in the end, but at what cost?",
+            "Wait, Steve... Is that a SPIDER???? Stopping running in circles and think in a solution! Yeah, keep this dark creature away with your broom."
+          ])>>
+        <<elseif _chance == 2>> /* Random outcome (Steve discover he lost some money in the wallet) */
+          <<script>>addMoney(-5)<</script>>
+          <<set _result to arrayChoice([
+            "Oh no! Steve just noticed that he lost a 5-bill! He has no idea in where it might have fallen.",
+            "Steve looks at his wallet worried. I think he might have lost some money somewhere."
+          ])>>
+        <</if>>
+        _result
+      <</replace>>
+  <</link>>
+  <<link "Go take a walk through the hallway a bit.">>
+      <<replace "#links">>\
+        Steve decides to stretch his legs a bit and walk while he eats.
+        
+        <<set _chance to arrayChoice([0,1])>>
+        <<if _chance == 0>> /* Random outcome 0 (Healthy walk) */
+          <<script>>addHealth(4)<</script>>
+          <<set _result to arrayChoice([
+            "This walk felt amazing! Steve managed to dodge his maskless neighbours with perfection!",
+            "Who could imagine that such a walk could feel so good, huh?"
+          ])>>
+          _result
+        <<elseif _chance == 2>> /* Random outcome 1 (Unlucko) */
+          <<script>>addHealth(-14)<</script>>
+          <<set _result to arrayChoice([
+            "Great! When turning in the corner, Steve just bumped into a coughing person. The time couldn't be more perfect!",
+            "That immediately felt like a bad idea. It looks like the place where Steve chosen to go was doing a cosplay event of maskless characters."
+          ])>>
+        <</if>>
+        _result
+      <</replace>>
+  <</link>>
+  @@
+
   <</nobr>>
-  <<include _eat_friends_event>>
+  /* <<include _eat_friends_event>> */
+
+  <<set _result to arrayChoice([
+    "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
+    "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
+  ])>>
 
   [[NightPhase]]
 
@@ -476,12 +609,14 @@ Day: _day
 :: OfficePhase1 {"position":"725,50","size":"100,100"}
   <<include "DebugStats">>
   <<include "StablePhaseCommon">>
-  <<set $stable_passage to "OfficePhase1">>
-  <<script>>addSocialDist(-2)<</script>>
-  <<set _result to arrayChoice([
-    "Well that was a stressful morning. Steve is a regular person, so of course he's not too keen on working. Oh god, it's already 12:00?!",
-    "Damn, that was a though work morning! At least it's lunch time, you can relax a little bit, Steve."
-  ])>>
+  <<silently>>
+    <<set $stable_passage to "OfficePhase1">>
+    <<script>>addSocialDist(-2)<</script>>
+    <<set _result to arrayChoice([
+      "Well that was a stressful morning. Steve is a regular person, so of course he's not too keen on working. Oh god, it's already 12:00?!",
+      "Damn, that was a though work morning! At least it's lunch time, you can relax a little bit, Steve."
+    ])>>
+  <</silently>>
 
   _result
 
@@ -505,17 +640,21 @@ Day: _day
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
   <<if isCareless()>>
-    <<set _result to arrayChoice([
-      "Not happening, it seems. Steve all the cool kids not wearing their masks, so he decides to do the same, apparently.",
-      "Steve seems to think that, seeing as they're all locked in a closed space for hours, it's not really worth it wearing a mask anyway."
-    ])>> /* add more variations inside the array */
+    <<silently>>
+      <<set _result to arrayChoice([
+        "Not happening, it seems. Steve all the cool kids not wearing their masks, so he decides to do the same, apparently.",
+        "Steve seems to think that, seeing as they're all locked in a closed space for hours, it's not really worth it wearing a mask anyway."
+      ])>> /* add more variations inside the array */
+    <</silently>>
 
     _result /* Display the resulting message */
 
     [[What the hell, Steve...|$stable_passage]]
   <<else>>
-    <<script>>addHealth(2)<</script>>
-    <<script>>setMask(true)<</script>>
+    <<silently>>
+      <<script>>addHealth(2)<</script>>
+      <<script>>setMask(true)<</script>>
+    <</silently>>
     Steve puts his mask on.
     You are outside after all.
 
@@ -528,18 +667,22 @@ Day: _day
   <<include "DebugStats">>
   /* this passage determines whether Steve takes mask off and shows the correct message */
   <<if isParanoid()>>
-    <<set _result to arrayChoice([
-      "Steve is trembling just thinking about taking the mask off. In the end, he leaves it on.",
-      "Not only does Steve NOT take the mask off, he puts on ANOTHER mask over the previous one. That might be overdoing it a bit.",
-    ])>> /* add more variations inside the array */
+    <<silently>>
+      <<set _result to arrayChoice([
+        "Steve is trembling just thinking about taking the mask off. In the end, he leaves it on.",
+        "Not only does Steve NOT take the mask off, he puts on ANOTHER mask over the previous one. That might be overdoing it a bit.",
+      ])>> /* add more variations inside the array */
+    <</silently>>
 
     _result /* Display the resulting message */
 
     [[Well, yeah, maybe that's for the best, Steve|$stable_passage]]
     /*[[What the hell, Steve...|$stable_passage]]*/
   <<else>>
-    <<script>>addHealth(-8)<</script>>
-    <<script>>setMask(false)<</script>>
+    <<silently>>
+      <<script>>addHealth(-8)<</script>>
+      <<script>>setMask(false)<</script>>
+    <</silently>>
     His colleagues look healthy enough, right?
     Surely, none of them have covid, so it's fine... right?
 
@@ -569,8 +712,10 @@ Day: _day
 
     [[Hey, Ste- Oh, there he goes...|EatFriendsPool]]
   <<else>>
-    <<script>>addSocialDist(8)<</script>>
-    <<script>>addWariness(3)<</script>>
+    <<silently>>
+      <<script>>addSocialDist(8)<</script>>
+      <<script>>addWariness(3)<</script>>
+    <</silently>>
     
     <<if isIsolated()>>
       Eating alone... Again... It's been so long that Steve feels like he's even part of the office staff. Do their friends even remember his name at this point?
@@ -579,14 +724,18 @@ Day: _day
     <</if>>
 
     <<if randomChance(10)>>
-    /* Receiving a message event */
-      <<set _result to arrayChoice([
-        "Hey, Steve! You just received a message from your parents. They really love you, hum?",
-        "Yoooo, isn't this a message from the girl you like? Way to go, man!"
-      ])>>
+      <<silently>>
+        /* Receiving a message event */
+        <<set _result to arrayChoice([
+          "Hey, Steve! You just received a message from your parents. They really love you, hum?",
+          "Yoooo, isn't this a message from the girl you like? Way to go, man!"
+        ])>>
+      <</silently>>
       _result
-      <<script>>addSocialDist(-2)<</script>>
-      <<script>>addHealth(1)<</script>>
+      <<silently>>
+        <<script>>addSocialDist(-2)<</script>>
+        <<script>>addHealth(1)<</script>>
+      <</silently>>
     <</if>>
 
     [[Let's eat, then|EatAlonePool]]
@@ -601,14 +750,16 @@ Day: _day
 
     [[Eating alone it is, then, Steve|EatAlonePool]]
   <<else>>
-    <<script>>addSocialDist(-9)<</script>>
-    <<script>>addHealth(-2)<</script>>
-    <<script>>addWariness(-4)<</script>>
+    <<silently>>
+      <<script>>addSocialDist(-9)<</script>>
+      <<script>>addHealth(-2)<</script>>
+      <<script>>addWariness(-4)<</script>>
 
-    <<set _result to arrayChoice([
-      "Eating with friends is also good. So long as everyone follows the proper protocols, right, Steve?",
-      "Everyone needs time with some friends. Enjoy while you can, but you should still remember to take care from now on."
-    ])>>
+      <<set _result to arrayChoice([
+        "Eating with friends is also good. So long as everyone follows the proper protocols, right, Steve?",
+        "Everyone needs time with some friends. Enjoy while you can, but you should still remember to take care from now on."
+      ])>>
+    <</silently>>
 
     _result
 
@@ -635,32 +786,38 @@ Day: _day
         <<script>>addSocialDist(4)<</script>>
         <<set _chance to arrayChoice([0,1,2])>>
         <<if _chance == 0>> /* Random outcome 0 (Bad advice) */
-          <<script>>addWariness(-4)<</script>>
-          <<set _result to arrayChoice([
-            "Wait, one colleague just started saying that his friend's wife's neighbour took a vaccine that gave him cancer? Please do not believe in that, Steve. Steve?",
-            "No, Steve, don't listen to Joe. He's talking about how vaccines will turn you into an aligator, again. His source is twitter, Steve! T-W-I-T-T-E-R!",
-            "Covid is just a hoax for the government to be able to control people's actions and deprive them of their freedom?? No, Steve, don't listen to that!"
-          ])>>
+          <<silently>>
+            <<script>>addWariness(-4)<</script>>
+            <<set _result to arrayChoice([
+              "Wait, one colleague just started saying that his friend's wife's neighbour took a vaccine that gave him cancer? Please do not believe in that, Steve. Steve?",
+              "No, Steve, don't listen to Joe. He's talking about how vaccines will turn you into an aligator, again. His source is twitter, Steve! T-W-I-T-T-E-R!",
+              "Covid is just a hoax for the government to be able to control people's actions and deprive them of their freedom?? No, Steve, don't listen to that!"
+            ])>>
+          <</silently>>
           _result
         <<elseif _chance == 1>> /* Random outcome 1 (Good advice) */
-          <<script>>addWariness(8)<</script>>
-          <<set _result to arrayChoice([
-            "Ah, Jill is talking about her doctor husband, saying how hospitals are finding it harder and harder to treat everyone. \nThat's right, Steve, it's important to be careful.",
-            "Oh, everyone's discussing what sort of precautions they all take in their daily lives. It's a good chance to learn to be more careful yourself, Steve!",
-            "One person is saying a friend of theirs got covid yesterday. Thankfully, they weren't in contact, but still, no one's really safe from the virus, huh, Steve?"
-          ])>>
+          <<silently>>
+            <<script>>addWariness(8)<</script>>
+            <<set _result to arrayChoice([
+              "Ah, Jill is talking about her doctor husband, saying how hospitals are finding it harder and harder to treat everyone. \nThat's right, Steve, it's important to be careful.",
+              "Oh, everyone's discussing what sort of precautions they all take in their daily lives. It's a good chance to learn to be more careful yourself, Steve!",
+              "One person is saying a friend of theirs got covid yesterday. Thankfully, they weren't in contact, but still, no one's really safe from the virus, huh, Steve?"
+            ])>>
+          <</silently>>
         <<elseif _chance == 2>> /* Random outcome 1 (Scary advice) */
-          <<script>>addWariness(20)<</script>>
-          <<set _result to arrayChoice([
-            "Everyone looks a bit down right now. They're talking about the new covid infection rates. They've been getting really high, really fast. Steve looks terrified right now",
-            "Your country is relatively safe right now, but someone read that other countries that were getting better, suddenly had to go back to lockdown to counter the virus spread. Scary stuff, Steve.",
-          ])>>
+          <<silently>>
+            <<script>>addWariness(20)<</script>>
+            <<set _result to arrayChoice([
+              "Everyone looks a bit down right now. They're talking about the new covid infection rates. They've been getting really high, really fast. Steve looks terrified right now",
+              "Your country is relatively safe right now, but someone read that other countries that were getting better, suddenly had to go back to lockdown to counter the virus spread. Scary stuff, Steve.",
+            ])>>
+          <</silently>>
         <</if>>
       <</replace>>
   <</link>>
   <<link "Focus on your lunch">>
       <<replace "#links">>\
-        <<script>>addSocialDist(8)<</script>>
+        <<script>>addSocialDist(4)<</script>>
         Steve decides to eat in silence, not interacting much in the conversation. He even scooches back a little, so as to distance himself from his maskless friends.
 
         His friends, of course, quickly forget he's even there. But at least, you took the proper precautions, right Steve!""
@@ -679,21 +836,27 @@ Day: _day
   @@#links;
   <<link "Join in">>
       <<replace "#links">>\
-        <<script>>addSocialDist(4)<</script>>
-        <<set _chance to arrayChoice([0,1])>>
+        <<silently>>
+          <<script>>addSocialDist(4)<</script>>
+          <<set _chance to arrayChoice([0,1])>>
+        <</silently>>
         <<if _chance == 0>> /* Random outcome 0 (Unhealthy friends) */
-          <<script>>addHealth(-6)<</script>>
-          <<set _result to arrayChoice([
-            "Oh no, it seems the conversation got a bit too lively and they sort of forgot to keep their distance.\nSteve got caught up in it. Hope none of them are infected.",
-            "Steve's friends are not even trying to keep a safe distance. This could be bad..."
-          ])>>
+          <<silently>>
+            <<script>>addHealth(-6)<</script>>
+            <<set _result to arrayChoice([
+              "Oh no, it seems the conversation got a bit too lively and they sort of forgot to keep their distance.\nSteve got caught up in it. Hope none of them are infected.",
+              "Steve's friends are not even trying to keep a safe distance. This could be bad..."
+            ])>>
+          <</silently>>
           _result
         <<elseif _chance == 1>> /* Random outcome 1 (Socialise) */
-          <<script>>addSocialDist(-8)<</script>>
-          <<set _result to arrayChoice([
-            "This is great! Everyone is having fun talking together, while also keeping a safe distance and protecting each other. Isn't it great to have just thoughtful colleagues, Steve.",
-            "Steve looks like he's having a good time, socialising. Everyone's also taking the proper precautions, too, so it should be fine."
-          ])>>
+          <<silently>>
+            <<script>>addSocialDist(-8)<</script>>
+            <<set _result to arrayChoice([
+              "This is great! Everyone is having fun talking together, while also keeping a safe distance and protecting each other. Isn't it great to have just thoughtful colleagues, Steve.",
+              "Steve looks like he's having a good time, socialising. Everyone's also taking the proper precautions, too, so it should be fine."
+            ])>>
+          <</silently>>
         <</if>>
       <</replace>>
   <</link>>
@@ -712,7 +875,7 @@ Day: _day
 
 :: EatAlonePool
   /* this passage will have the random events that Steve might do while eating with friends */
-  
+  <<include "DebugStats">>
   Steve is eating all alone... Time to entertain yourself with something.
 
   @@#links;
@@ -728,7 +891,7 @@ Day: _day
           ])>>
           _result
         <<elseif _chance == 1>> /* Random outcome 1 (Unhealthy tips from net) */
-          <<script>>addWariness(-4)<</script>>
+          <<script>>addWariness(-8)<</script>>
           <<set _result to arrayChoice(fake_news_array)>>
         <<elseif _chance == 2>> /* Random outcome 1 (Scary news) */
           <<script>>addWariness(16)<</script>>
@@ -743,6 +906,7 @@ Day: _day
             "Ooh great! A new episode from Steve's favourite series came out! Guess you know what you'll do right now, huh."
           ])>>
         <</if>>
+        _result
       <</replace>>
   <</link>>
   <<link "Go take a walk through the hallway a bit.">>
@@ -764,6 +928,7 @@ Day: _day
             "Hm, wrong choice it seems, the hall is crowded and there are even some people not wearing their masks! This could be dangerous."
           ])>>
         <</if>>
+        _result
       <</replace>>
   <</link>>
   @@
@@ -774,12 +939,14 @@ Day: _day
 :: OfficePhase2
   <<include "DebugStats">>
   <<include "StablePhaseCommon">>
-  <<set $stable_passage to "OfficePhase2">>
-  <<script>>addSocialDist(-2)<</script>>
-  <<set _result to arrayChoice([
-    "Onto another round of work, then! But first, should you do something, Steve?",
-    "Now that you've nourished yourself, time to get ready to work again."
-  ])>>
+  <<silently>>
+    <<set $stable_passage to "OfficePhase2">>
+    <<script>>addSocialDist(-2)<</script>>
+    <<set _result to arrayChoice([
+      "Onto another round of work, then! But first, should you do something, Steve?",
+      "Now that you've nourished yourself, time to get ready to work again."
+    ])>>
+  <</silently>>
 
   _result
 
@@ -819,9 +986,10 @@ Day: _day
           Steve reluctantly agrees.
           He sees all his colleagues leaving together however and starts considering if that was the best idea....
         <<elseif _chance == 1>> /* Random outcome 1 */
-          <<script>>addHealth(-4)<</script>>
+          <<script>>addHealth(-8)<</script>>
           There is still so much work to do, after all.... Steve is exhausted, maybe he shouldn't have accepted after all.....
         <</if>>
+        [[Finally it's over|NightPhase]]
       <</replace>>
   <</link>>
   <<link "Refuse">>
@@ -841,11 +1009,11 @@ Day: _day
           <<script>>addSocialDist(2)<</script>>
           Managed to dodge work AND socially distance yourself from your boss. Nicely done, Steve!
         <</if>>
+        [[Finally it's over|NightPhase]]
       <</replace>>
   <</link>>
   @@
 
-  [[Finally it's over|NightPhase]]
 
 
 :: FriendsInvite
@@ -928,6 +1096,7 @@ Day: _day
           
           It's a 10-bill! How lucky, Steve!
         <</if>>
+        [[You're home!|NightPhase]]
       <</replace>>
   <</link>>
   <<link "Shortcut">>
@@ -952,25 +1121,29 @@ Day: _day
         <<elseif _chance == 2>> /* Random outcome 2 */
           Before he knows it, Steve is already home! This day was so stressful, that Steve decides to just laze about on the couch, until he has to cook dinner.
         <</if>>
+        [[You're home!|NightPhase]]
       <</replace>>
   <</link>>
   @@
   
-  [[You're home!|NightPhase]]
 
 
 :: GoParty
   <<include "DebugStats">>
-  /* Used when Steve goes out after work */
-  <<set _result to arrayChoice([
-    "Damn, that was indeed a nice party! Wait, how much did it cost?",
-    "I hope all people in here remembered to bring their masks, riiight?"
-  ])>>
+  <<silently>>
+    /* Used when Steve goes out after work */
+    <<set _result to arrayChoice([
+      "Damn, that was indeed a nice party! Wait, how much did it cost?",
+      "I hope all people in here remembered to bring their masks, riiight?"
+    ])>>
+  <</silently>>
   _result
-  <<script>>addHealth(-3)<</script>>
-  <<script>>addMoney(-5)<</script>>
-  <<script>>addSocialDist(-10)<</script>>
-  <<script>>addWariness(-5)<</script>>
+  <<silently>>
+    <<script>>addHealth(-3)<</script>>
+    <<script>>addMoney(-5)<</script>>
+    <<script>>addSocialDist(-10)<</script>>
+    <<script>>addWariness(-5)<</script>>
+  <</silently>>
 
   [[Go home|NightPhase]]
 
@@ -1005,6 +1178,8 @@ Day: _day
     "Today was a tiresome day, but at least you are free now.",
     "Finally at home, right? So, what do you want to do, Steve?"
   ])>>
+  <<set $stable_passage to "NightPhase">>
+
   _result
 
   /* --- Steve's Night Actions --- */
@@ -1035,9 +1210,11 @@ Day: _day
 
     [[Well... Yeah, it is night right now.|$stable_passage]]
   <<else>>
-    <<script>>addHealth(-2)<</script>>
-    <<script>>addWariness(20)<</script>>
-    <<script>>setMask(true)<</script>>
+    <<silently>>
+      <<script>>addHealth(-2)<</script>>
+      <<script>>addWariness(20)<</script>>
+      <<script>>setMask(true)<</script>>
+    <</silently>>
     Steve put his mask on.
     It's true that its nightime and he is alone and he should probably take it off before going to bed, but... why not...
     Better safe than sorry, right Steve? Steve agrees a bit too quicky....
@@ -1061,9 +1238,11 @@ Day: _day
 
     [[Just don't go to bed with it, Steve...|$stable_passage]]
   <<else>>
-    <<script>>addHealth(2)<</script>>
-    <<script>>addWariness(-2)<</script>>
-    <<script>>setMask(false)<</script>>
+    <<silently>>
+      <<script>>addHealth(2)<</script>>
+      <<script>>addWariness(-2)<</script>>
+      <<script>>setMask(false)<</script>>
+    <</silently>>
     Finally, you can take the mask off safely!
 
     [[Well, until a few hours, when you have to put it back on, of course.|$stable_passage]]
@@ -1219,7 +1398,7 @@ Day: _day
 :: PanickEnding2
   Seems like doesn't plan on leaving his house anytime soon. Or ever.
 
-  The outside is nothing bu danger.
+  The outside is nothing but danger.
 
   Even if he gets the vaccine, there's no guarantee he won't get infected later on.
 
@@ -1664,19 +1843,19 @@ window.logVariableError = function(variable) {
 // The following constants are used in different contexts (because their values were the same anyways)
 
 // lowest limit for checking stat values
-if (!window.LOWEST_STAT) window.LOWEST_STAT = 10;
+if (!window.LOWEST_STAT) window.LOWEST_STAT = 30;
 else logVariableError("LOWEST_STAT")
 
 // lower limit for checking stat values
-if (!window.MIDLOW_STAT) window.MIDLOW_STAT = 10;
+if (!window.MIDLOW_STAT) window.MIDLOW_STAT = 40;
 else logVariableError("MIDLOW_STAT")
 
 // upper limit for checking stat values
-if (!window.MIDHIGH_STAT) window.MIDHIGH_STAT = 10;
+if (!window.MIDHIGH_STAT) window.MIDHIGH_STAT = 60;
 else logVariableError("MIDHIGH_STAT")
 
 // highest limit for checking stat values
-if (!window.HIGHEST_STAT) window.HIGHEST_STAT = 10;
+if (!window.HIGHEST_STAT) window.HIGHEST_STAT = 70;
 else logVariableError("HIGHEST_STAT")
 
 // collection of fake news
@@ -1691,7 +1870,7 @@ if (!window.fake_news_array) window.fake_news_array = [
 else logVariableError("fake_news_array")
 
 // the last day of the game
-if (!window.END_DAY) window.END_DAY = 10; // TODO: change this to an appropriate value
+if (!window.END_DAY) window.END_DAY = 4; // TODO: change this to an appropriate value
 else logVariableError("END_DAY")
 
 
@@ -1700,7 +1879,7 @@ else logVariableError("END_DAY")
 // -------------------
 
 // wariness (or carefulness)
-if (!window._wariness) window._wariness = 71;
+if (!window._wariness) window._wariness = 50;
 else logVariableError("_wariness")
 window.getWariness = function() {
   return _wariness;
@@ -1719,7 +1898,7 @@ window.isPanick = function() {
 }
 
 // social_dist
-if (!window._social_dist) window._social_dist = 71;
+if (!window._social_dist) window._social_dist = 50;
 else logVariableError("_social_dist")
 window.getSocialDist = function() {
   return _social_dist;
