@@ -25,12 +25,12 @@ CovidGame2
   <</silently>>
   Day: _day
   <div class="hud-flex-box">
-  <div class="hud-box">Health: <div class="hud-bar"><div id="health" class="w3-red w3-center">_health</div></div></div>
-  <div class="hud-box">Carefulness: <div class="hud-bar"><div id="wariness" class="w3-green w3-center">_carefulness</div></div></div>
+  <div class="hud-box">Health: <div class="hud-bar"><div id="health" class="w3-red w3-center hud-content"></div></div></div>
+  <div class="hud-box">Carefulness: <div class="hud-bar"><div id="wariness" class="w3-green w3-center hud-content"></div></div></div>
   </div>
   <div class="hud-flex-box">
-  <div class="hud-box">Social Distance: <div class="hud-bar"><div id="social-dist" class="w3-blue w3-center">_social_dist</div></div></div>
-  <div class="hud-box">Money: <div class="hud-bar"><div id="money" class="w3-yellow w3-center">_money</div></div></div>
+  <div class="hud-box">Social Distance: <div class="hud-bar"><div id="social-dist" class="w3-blue w3-center hud-content"></div></div></div>
+  <div class="hud-box">Money: <div class="hud-bar"><div id="money" class="w3-yellow w3-center hud-content"></div></div></div>
   </div>
   <<silently>>
   <<done>>
@@ -3315,10 +3315,14 @@ var settingDialogTags = function () {
   .hud-bar {
     width: 90%;
     background-color: #202324;
+    height: 2em;
   }
   .hud-flex-box {
     display: flex;
     justify-content: space-between;
+  }
+  .hud-content {
+    height: 100%;
   }
   .hud-box {
     width: 100%;
