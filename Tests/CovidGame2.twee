@@ -456,9 +456,20 @@ Day: _day
 
 
 :: TeleworkPool
-  TODO: add events that mostly have to do with Steve browsing the web or something while working. use the fake news array variable in those events.
+  
+  Working alone is nice and all, but it can be boring sometimes...
 
-  Remove this link later
+  Steve finds it a bit hard to concentrate and his mind, sometimes, wanders off a bit.
+
+  <<nobr>>
+  <<set _eat_friends_event to either("SurfNet", "Idling", "TakeWalk")>>
+  /* TODO: surf net was going to write events with fake_news_array, similarly to the one in EatAlone
+  Idling was gonna have just text with no real downsides or upsides
+  TakeWalk was also gonna be the equivalent to the one in EatAlone, only at Steve's home or nearby outside
+  Telework is supposed to be just boring, uneventful stuff */
+  <</nobr>>
+  <<include _eat_friends_event>>
+
   [[NightPhase]]
 
 
@@ -840,17 +851,112 @@ Day: _day
 :: FriendsInvite
   <<include "DebugStats">>
 
-  TODO: finish this
+  As he's preparing to leave, Steve's friends invite him to hang out!
 
-  [[NightPhase]]
+  That's not very safe, but Steve really likes to be with people. Still, maybe you shouldn't, Steve...
+
+  @@#links;
+  <<link "Go with them">>
+      <<replace "#links">>\
+        <<script>>addSocialDist(-20)<</script>>
+        <<set _chance to arrayChoice([0,1,2])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(-20)<</script>>
+          What have you done, Steve....
+
+          Turns out their definition of "hanging out" is throwing a huge party!
+          So many people came, in such a confined space, that Steve lost count on how many different people he interacted with.
+
+          You're still in a pandemic, you know.
+          There's no way no one in that party was infected, Steve!
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          Steve's friends decide to have dinner at a nearby bar.
+
+          Everything went pretty well, all things considered!
+          Everyone kept their masks on and, while eating, actually kept a safe distance from each other. Good for you, Steve!
+        <<elseif _chance == 2>> /* Random outcome 1 */
+          <<script>>addHealth(-12)<</script>>
+          Not good... As soon as they left the office, everyone took their masks off, but started talking and laughing way too close to each other.
+
+          Maybe you should tell them to- Wha! No, Steve, don't take your mask off as well!
+        <</if>>
+        
+        [[Time to return home|NightPhase]]
+      <</replace>>
+  <</link>>
+  <<link "Go home">>
+      <<replace "#links">>\
+        <<script>>addSocialDist(15)<</script>>
+        His friends say they understand and say goodbye to him.
+
+        You really wanted to go with them, didn't you, Steve..... Well, you know that you can't hang out normally with people right now. It's dangerous!
+        In fact, they are the ones who should be more responsible. Don't worry, there will be other times.
+
+        Before starting his way back, Steve looks longingly at his friends as they disappear from sight. Look at them... So cheerful...
+
+        [[Come on, Steve, let's go home|WalkHome]]
+      <</replace>>
+  <</link>>
+  @@
 
 
 :: WalkHome
   <<include "DebugStats">>
 
-  TODO: finish this
+  Steve begins his walk back home. It's nighttime already, as usual.
+  He considers taking the longer way home, or take a shortcut.
   
-  [[NightPhase]]
+  @@#links;
+  <<link "Longer way home">>
+      <<replace "#links">>\
+        <<set _chance to arrayChoice([0,1,2])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(4)<</script>>
+          As he walks about, passing through still open stores and other establishments, Steve ponders about all the small businesses that suffered and, some, even had to close doors, due to the pandemic.
+
+          But seeing those that still resist, no matter how much they're struggling, Steve feels a sense of renewed hopefulness and that cheer him up a bit.
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          <<script>>addHealth(-4)<</script>>
+          Steve walks around town a bit.
+
+          He finds a friend with whom he dan't talked to in a while!
+          ...Unfortunately the friend is not wearing a mask and is getting a bit too close for comfort.
+        <<elseif _chance == 2>> /* Random outcome 1 */
+          <<script>>addMoney(10)<</script>>
+          Steve walks around town for a while.
+          Suddenly, he notices something on the floor.
+          
+          It's a 10-bill! How lucky, Steve!
+        <</if>>
+      <</replace>>
+  <</link>>
+  <<link "Shortcut">>
+      <<replace "#links">>\
+        Steve decides to take a shorter way, passing through some back alleys and less crowded streets.
+
+        <<set _chance to arrayChoice([0,1,2])>>
+        <<if _chance == 0>> /* Random outcome 0 */
+          <<script>>addHealth(5)<</script>>
+          Since he cut way, he actually got home a bit earlier!
+
+          Great! Now you can relax a bit, before having to prepare dinner and what not, Steve.
+        <<elseif _chance == 1>> /* Random outcome 1 */
+          <<script>>addMoney(-20)<</script>>
+          <<script>>addHealth(-4)<</script>>
+          It seems it wasn't a very good idea, though...
+
+          Steve is confronted with someone pointing a knife at him. Steve's being mugged!!
+
+          Well, Steve didn't really have much on him anyway, but it was still a scary experience.
+          At least, the thief was wearing a mask, though...
+        <<elseif _chance == 2>> /* Random outcome 2 */
+          Before he knows it, Steve is already home! This day was so stressful, that Steve decides to just laze about on the couch, until he has to cook dinner.
+        <</if>>
+      <</replace>>
+  <</link>>
+  @@
+  
+  [[You're home!|NightPhase]]
 
 
 :: GoParty
