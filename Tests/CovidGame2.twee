@@ -103,6 +103,7 @@ Day: _day
     <<set $stable_passage to "MorningPhase">>
   <</silently>>
 
+  <<nobr>>
   <<if isDepressed()>>
     Another meaningless day begins... How is Steve supposed to even keep track anymore...
     No matter how many days pass, that void in Steve's very soul, derived from that craving for human contact, keeps getting wider and wider...
@@ -114,6 +115,8 @@ Day: _day
   <<else>>
     Good morning Steve, get ready for another day!
   <</if>>
+  <</nobr>>
+
 
   <<if randomChance(60)>>
     <<if isSick()>>
@@ -507,12 +510,13 @@ Day: _day
 
   Steve finds it a bit hard to concentrate and his mind, sometimes, wanders off a bit.
 
-  <<nobr>>
-  /* <<set _eat_friends_event to either("SurfNet", "Idling", "TakeWalk")>> <-- I think this shouldn't be random, but a choice */
-  /* TODO: surf net was going to write events with fake_news_array, similarly to the one in EatAlone
-  Idling was gonna have just text with no real downsides or upsides
-  TakeWalk was also gonna be the equivalent to the one in EatAlone, only at Steve's home or nearby outside
-  Telework is supposed to be just boring, uneventful stuff */
+  <<silently>>
+    /* <<set _eat_friends_event to either("SurfNet", "Idling", "TakeWalk")>> <-- I think this shouldn't be random, but a choice */
+    /* TODO: surf net was going to write events with fake_news_array, similarly to the one in EatAlone
+    Idling was gonna have just text with no real downsides or upsides
+    TakeWalk was also gonna be the equivalent to the one in EatAlone, only at Steve's home or nearby outside
+    Telework is supposed to be just boring, uneventful stuff */
+  <</silently>>
 
   @@#links;
   <<link "Surf the net">>
@@ -525,7 +529,6 @@ Day: _day
             "Steve is reading the news. Doctors are, one again, warning people to take extra care when outside.",
             "It seems a new study came out, once again confirming the usefulness of properly washing your hands thouroughly. Make sure to keep it in mind!"
           ])>>
-          _result
         <<elseif _chance == 1>> /* Random outcome 1 (Unhealthy tips from net) */
           <<script>>addWariness(-8)<</script>>
           <<set _result to arrayChoice(fake_news_array)>>
@@ -543,6 +546,17 @@ Day: _day
           ])>>
         <</if>>
         _result
+        <<silently>>
+
+        /* <<include _eat_friends_event>> */
+
+        <<set _result2 to arrayChoice([
+          "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
+          "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
+        ])>>
+        <</silently>>
+        _result2
+        [[Go to Night|NightPhase]]
       <</replace>>
   <</link>>
   <<link "Relax a little bit">>
@@ -556,7 +570,11 @@ Day: _day
             "A good pause is enough to restore Steve's energy!"
           ])>>
         <<elseif _chance == 1>> /* Random outcome (Steve finds an insect) */
-          <<script>>addHealth(-3)<</script>>
+          <<silently>>
+            <<script>>addHealth(-8)<</script>>
+            <<script>>addWariness(5)<</script>>
+          <</silently>>
+
           <<set _result to arrayChoice([
             "Yikes! A wild menacing spider appeared! Steve is TERRIFIED of Arthropods and that gave him a mini-heart attack. He managed to make the creature flee in the end, but at what cost?",
             "Wait, Steve... Is that a SPIDER???? Stopping running in circles and think in a solution! Yeah, keep this dark creature away with your broom."
@@ -569,9 +587,16 @@ Day: _day
           ])>>
         <</if>>
         _result
+        <<set _result2 to arrayChoice([
+          "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
+          "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
+        ])>>
+        _result2
+
+        [[Go to Night|NightPhase]]
       <</replace>>
   <</link>>
-  <<link "Go take a walk through the hallway a bit.">>
+  <<link "Go take a walk in the interval.">>
       <<replace "#links">>\
         Steve decides to stretch his legs a bit and walk while he eats.
         
@@ -582,7 +607,6 @@ Day: _day
             "This walk felt amazing! Steve managed to dodge his maskless neighbours with perfection!",
             "Who could imagine that such a walk could feel so good, huh?"
           ])>>
-          _result
         <<elseif _chance == 2>> /* Random outcome 1 (Unlucko) */
           <<script>>addHealth(-14)<</script>>
           <<set _result to arrayChoice([
@@ -591,19 +615,24 @@ Day: _day
           ])>>
         <</if>>
         _result
+
+          <<silently>>
+
+          /* <<include _eat_friends_event>> */
+
+          <<set _result2 to arrayChoice([
+            "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
+            "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
+          ])>>
+        <</silently>>
+        _result2
+
+        [[Go to Night|NightPhase]]
       <</replace>>
   <</link>>
   @@
 
-  <</nobr>>
-  /* <<include _eat_friends_event>> */
 
-  <<set _result to arrayChoice([
-    "The rest of the work went as usual. But Steve, you need to be careful to not telework everyday. You know that your boss don't like it that much.",
-    "Working in pajamas has its advantages, however gaining money from going presential as well. We could manage to work on-line today, but we can just do this once in a while."
-  ])>>
-
-  [[NightPhase]]
 
 
 :: OfficePhase1 {"position":"725,50","size":"100,100"}
@@ -636,7 +665,7 @@ Day: _day
 
 
 :: OfficeMaskOn {"position":"775,325","size":"100,100"}
-/* Work in office mask on test. Being outside, Steve should put on a mask. */
+  /* Work in office mask on test. Being outside, Steve should put on a mask. */
   <<include "DebugStats">>
   /* this passage determines whether Steve puts on mask and shows the correct message */
   <<if isCareless()>>
@@ -813,6 +842,8 @@ Day: _day
             ])>>
           <</silently>>
         <</if>>
+        [[Well, lunch time is over, back to work!|OfficePhase2]]
+
       <</replace>>
   <</link>>
   <<link "Focus on your lunch">>
@@ -821,11 +852,12 @@ Day: _day
         Steve decides to eat in silence, not interacting much in the conversation. He even scooches back a little, so as to distance himself from his maskless friends.
 
         His friends, of course, quickly forget he's even there. But at least, you took the proper precautions, right Steve!""
+        [[Well, lunch time is over, back to work!|OfficePhase2]]
+
       <</replace>>
   <</link>>
   @@
 
-  [[Well, lunch time is over, back to work!|OfficePhase2]]
 
 
 :: SmallChat
@@ -920,7 +952,6 @@ Day: _day
             "And it feels good! Steve also has a chance to eat by the window, so he's also getting a bit of fresh air.",
             "Thankfully, there's no one in the hall right now, so it's a pleasant walk."
           ])>>
-          _result
         <<elseif _chance == 2>> /* Random outcome 1 (Unlucko) */
           <<script>>addHealth(-14)<</script>>
           <<set _result to arrayChoice([
@@ -966,6 +997,7 @@ Day: _day
 :: OfficeEndPool
   /* this passage will have the random events that happen at the end of Steve's work */
   <<nobr>>
+  <<script>>addMoney(1)<</script>>
   <<set _eat_friends_event to either("Overtime", "FriendsInvite", "WalkHome")>>
   <</nobr>>
   <<include _eat_friends_event>>
@@ -1173,13 +1205,14 @@ Day: _day
 
 :: NightPhase
   <<include "DebugStats">>
-  /* Used when Steve goes out after work */
-  <<set _result to arrayChoice([
-    "Today was a tiresome day, but at least you are free now.",
-    "Finally at home, right? So, what do you want to do, Steve?"
-  ])>>
-  <<set $stable_passage to "NightPhase">>
-
+  <<silently>>
+    /* Used when Steve goes out after work */
+    <<set _result to arrayChoice([
+      "Today was a tiresome day, but at least you are free now.",
+      "Finally at home, right? So, what do you want to do, Steve?"
+    ])>>
+    <<set $stable_passage to "NightPhase">>
+  <</silently>>
   _result
 
   /* --- Steve's Night Actions --- */
@@ -1273,7 +1306,7 @@ Day: _day
 
   His vaccine was scheduled to early in the morning, so he won't even have to skip work! ...wait, that's a bad thing...
 
-  [[Anyway, off you go, Steve]]
+  [[Anyway, off you go, Steve|GoodEnding2]]
 
 
 :: GoodEnding2
