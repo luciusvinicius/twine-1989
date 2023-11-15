@@ -58,8 +58,11 @@ CovidGame2
     <<script>>goToNextDay()<</script>>
     <<script>>setMask(false)<</script>>
   <</nobr>>
-  <<if getDay() == END_DAY>>
+  <<if _remaining_days == 0>>
     [[It's here! Vaccine day has arrived!|EndingPool]]
+  <<elseif _remaining_days == 1>>
+    There is _remaining_days day before the release of the vaccine.
+    [[Just one more day|MorningPhase]]
   <<else>>
     There are _remaining_days days before the release of the vaccine.
     [[Another day begins|MorningPhase]]
@@ -362,6 +365,7 @@ CovidGame2
           Walking on the street, Steve has a chance to greet his neighbours. Safely, of course.
           It's a good chance to keep in touch with people. Good for you Steve.
         <</if>>
+        [[Work begins!|OfficePhase1]]
       <</replace>>
   <</link>>
   <<link "Expertly avoid any and all living soul on sight">>
@@ -383,11 +387,12 @@ CovidGame2
           Steve was so caught up in avoiding people that he forgot where he was going. He should be in the office already!
           His boss won't be happy...
         <</if>>
+        [[Work begins!|OfficePhase1]]
       <</replace>>
   <</link>>
   @@
 
-  [[Work begins!|OfficePhase1]]
+  
 
 
 :: MorningBus
@@ -865,6 +870,7 @@ CovidGame2
               "Your country is relatively safe right now, but someone read that other countries that were getting better, suddenly had to go back to lockdown to counter the virus spread. Scary stuff, Steve.",
             ])>>
           <</silently>>
+          _result
         <</if>>
         [[Well, lunch time is over, back to work!|OfficePhase2]]
 
@@ -913,7 +919,9 @@ CovidGame2
               "Steve looks like he's having a good time, socialising. Everyone's also taking the proper precautions, too, so it should be fine."
             ])>>
           <</silently>>
+          _result
         <</if>>
+        [[Well, lunch time is over, back to work!|OfficePhase2]]
       <</replace>>
   <</link>>
   <<link "Stay away from them a bit, that doesn't look too healthy">>
@@ -922,11 +930,12 @@ CovidGame2
         Steve decides to eat in silence, not interacting much in the conversation. He even scooches back a little, so as to distance himself from his maskless friends.
 
         His friends, of course, quickly forget he's even there. But at least, you took the proper precautions, right Steve!""
+        [[Well, lunch time is over, back to work!|OfficePhase2]]
       <</replace>>
   <</link>>
   @@
 
-  [[Well, lunch time is over, back to work!|OfficePhase2]]
+  
 
 
 :: EatAlonePool
@@ -1154,7 +1163,7 @@ CovidGame2
           He finds a friend with whom he dan't talked to in a while!
           ...Unfortunately the friend is not wearing a mask and is getting a bit too close for comfort.
         <<elseif _chance == 2>> /* Random outcome 1 */
-          <<script>>addMoney(10)<</script>>
+          <<script>>addMoney(8)<</script>>
           Steve walks around town for a while.
           Suddenly, he notices something on the floor.
           
@@ -1861,7 +1870,7 @@ if (!window.fake_news_array) window.fake_news_array = [
 else logVariableError("fake_news_array")
 
 // the last day of the game
-if (!window.END_DAY) window.END_DAY = 7; // TODO: change this to an appropriate value (one week?)
+if (!window.END_DAY) window.END_DAY = 4; // TODO: change this to an appropriate value (one week?)
 else logVariableError("END_DAY")
 
 window.getRemainingDays = function() {
